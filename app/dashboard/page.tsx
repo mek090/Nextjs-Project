@@ -9,7 +9,7 @@ import { redirect } from "next/navigation"
 import { SignInButton, useUser } from "@clerk/nextjs"
 import { useEffect, useState } from "react"
 import { findRoleprofile } from "@/actions/actions"
-import db from "@/utils/db"
+import { prisma } from "@/lib/prisma"
 
 export const dynamic = 'force-dynamic'
 
@@ -26,7 +26,7 @@ const Dashboard = async () => {
   //   )
 
   // }
-  const profile = await db.profile.findUnique({
+  const profile = await prisma.profile.findUnique({
     where: {
       clerkId: user.id
     }
@@ -35,7 +35,7 @@ const Dashboard = async () => {
 
 
   // ตรวจสอบว่าเป็น admin หรือไม่
-  // const profile = await db.profile.findUnique({
+  // const profile = await prisma.profile.findUnique({
   //   where: { clerkId: user.id }
   // })
   // if (!profile || profile.role !== 'admin') redirect('/')

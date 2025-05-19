@@ -11,6 +11,7 @@ import SignOutLink from "./SignOutLink"
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { findRoleprofile } from "@/actions/actions"
+import { Skeleton } from "../ui/skeleton"
 
 const menuGroups = [links, links2, links3]
 
@@ -46,9 +47,14 @@ export function DropdownListmenu() {
 
   if (!isLoaded) {
     return (
-      <Button variant="outline">
-        <RotateCw className="animate-spin" />
-      </Button>
+      <>
+        <button>
+
+          <Skeleton className="w-10 h-10" />
+          {/* <RotateCw className="animate-spin" /> */}
+        </button>
+      </>
+
     )
   }
 
@@ -67,9 +73,10 @@ export function DropdownListmenu() {
 
   if (!role) {
     return (
-      <Button variant="outline">
-        <RotateCw className="animate-spin" />
-      </Button>
+      <button>
+          <Skeleton className="w-10 h-10" />
+          {/* <RotateCw className="animate-spin" /> */}
+        </button>
     )
   }
 

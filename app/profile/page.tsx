@@ -1,5 +1,5 @@
 import { currentUser } from '@clerk/nextjs/server'
-import db from '@/utils/db'
+import { prisma } from '@/lib/prisma'
 import { Star } from 'lucide-react'
 import Link from 'next/link'
 import ProfileForm from '@/components/profile/ProfileForm'
@@ -8,7 +8,7 @@ export default async function ProfilePage() {
   const user = await currentUser()
   if (!user) return <p>กรุณาเข้าสู่ระบบ</p>
 
-  const profile = await db.profile.findUnique({
+  const profile = await prisma.profile.findUnique({
     where: { clerkId: user.id },
     include: {
       reviews: {

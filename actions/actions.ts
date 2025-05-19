@@ -2,7 +2,7 @@
 
 import { imageSchema, locationSchema, profileSchema, validateWithZod } from "@/utils/schemas"
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
-import db from "@/utils/db"
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { z, ZodSchema } from "zod";
 import { uploadFile } from "@/utils/supabase";
@@ -10,7 +10,6 @@ import { auth } from "@clerk/nextjs/server";
 import path from "path";
 import fs from "fs/promises";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
 
 
 
@@ -47,7 +46,7 @@ export const createProfileAction = async (prevState: any, formData: FormData) =>
         const validateField = validateWithZod(profileSchema, rawData);
         // console.log('validated ', validateField)
 
-        await db.profile.create({
+        await prisma.profile.create({
             data: {
                 clerkId: user.id,
                 email: user.emailAddresses[0].emailAddress,
@@ -100,7 +99,7 @@ export const createLocationAction = async (
 
             const fullPath = await uploadFile(validateFile.image);
 
-            await db.location.create({
+            await prisma.location.create({
                 data: {
                     ...validateField,
                     image: fullPath,
@@ -136,7 +135,7 @@ export const fetchLocation = async (params?: { search?: string, category?: strin
     const search = params?.search || '';
     const category = params?.category || '';
 
-    const locations = await db.location.findMany({
+    const locations = await prisma.location.findMany({
         where: {
             AND: [
                 category ? { category } : {},
@@ -176,7 +175,7 @@ export const fetchLocation = async (params?: { search?: string, category?: strin
 
 export const fetchFavoriteId = async ({ locationId }: { locationId: string }) => {
     const user = await getAuthUser()
-    const favorite = await db.favorite.findFirst({
+    const favorite = await prisma.favorite.findFirst({
         where: {
             locationId: locationId,
             profileId: user.id
@@ -191,7 +190,7 @@ export const fetchFavoriteId = async ({ locationId }: { locationId: string }) =>
 export const toggleFavoriteAction = async (locationId: string, userId: string, isFavorite: boolean) => {
     try {
         // เช็คสถานะปัจจุบันก่อน
-        const existingFavorite = await db.favorite.findFirst({
+        const existingFavorite = await prisma.favorite.findFirst({
             where: {
                 profileId: userId,
                 locationId: locationId,
@@ -200,7 +199,7 @@ export const toggleFavoriteAction = async (locationId: string, userId: string, i
 
         if (isFavorite && !existingFavorite) {
             // Add favorite only if it doesn't exist
-            await db.favorite.create({
+            await prisma.favorite.create({
                 data: {
                     profileId: userId,
                     locationId: locationId,
@@ -208,7 +207,7 @@ export const toggleFavoriteAction = async (locationId: string, userId: string, i
             });
         } else if (!isFavorite && existingFavorite) {
             // Remove favorite only if it exists
-            await db.favorite.delete({
+            await prisma.favorite.delete({
                 where: {
                     id: existingFavorite.id
                 }
@@ -223,7 +222,7 @@ export const toggleFavoriteAction = async (locationId: string, userId: string, i
 
 export const checkFavoriteStatus = async (userId: string, locationId: string) => {
     try {
-        const favorite = await db.favorite.findFirst({
+        const favorite = await prisma.favorite.findFirst({
             where: {
                 profileId: userId,
                 locationId: locationId,
@@ -239,7 +238,7 @@ export const checkFavoriteStatus = async (userId: string, locationId: string) =>
 
 export const fetchFavorite = async () => {
     const user = await getAuthUser()
-    const favorites = await db.favorite.findMany({
+    const favorites = await prisma.favorite.findMany({
         where: {
             profileId: user.id
         },
@@ -271,7 +270,7 @@ export const fetchLocationDetail = async ({ id }: { id: string }) => {
         const user = await currentUser();
         console.log('Current user:', user?.id);
 
-        const location = await db.location.findFirst({
+        const location = await prisma.location.findFirst({
             where: {
                 id,
             },
@@ -308,7 +307,7 @@ export const fetchLocationDetail = async ({ id }: { id: string }) => {
 //     const profile = await currentUser();
 //         console.log('Current user:', user?.id);
 
-//     const user = await db.profile.findFirst({
+//     const user = await prisma.profile.findFirst({
 //         where: {
 //             id,
 //         },
@@ -352,7 +351,7 @@ export async function updateProfileAction(formData: FormData) {
             }
         }
 
-        const profile = await db.profile.update({
+        const profile = await prisma.profile.update({
             where: { clerkId: userId },
             data: {
                 firstname,
@@ -376,7 +375,7 @@ export const createReviewAction = async (locationId: string, rating: number, con
         const user = await currentUser();
         if (!user) throw new Error('Please sign in.');
 
-        const review = await db.review.create({
+        const review = await prisma.review.create({
             data: {
                 content,
                 rating,
@@ -404,7 +403,7 @@ export const createReviewAction = async (locationId: string, rating: number, con
         console.log('Created review:', review);
 
         // Update location rating
-        const location = await db.location.findUnique({
+        const location = await prisma.location.findUnique({
             where: { id: locationId },
             include: {
                 reviews: true,
@@ -414,7 +413,7 @@ export const createReviewAction = async (locationId: string, rating: number, con
         if (location) {
             const avgRating = location.reviews.reduce((acc, review) => acc + review.rating, 0) / location.reviews.length;
             console.log('Updating location rating:', avgRating);
-            await db.location.update({
+            await prisma.location.update({
                 where: { id: locationId },
                 data: { rating: avgRating },
             });
@@ -430,7 +429,7 @@ export const createReviewAction = async (locationId: string, rating: number, con
 export const fetchLocationReviews = async (locationId: string) => {
     try {
         console.log('Fetching reviews for location:', locationId);
-        const reviews = await db.review.findMany({
+        const reviews = await prisma.review.findMany({
             where: {
                 locationId,
             },
@@ -460,7 +459,7 @@ export const fetchLocationReviews = async (locationId: string) => {
 // ... existing code ...
 
 export const fetchTopLocations = async () => {
-    const locations = await db.location.findMany({
+    const locations = await prisma.location.findMany({
         select: {
             id: true,
             name: true,
@@ -498,7 +497,7 @@ export const fetchTopLocations = async () => {
 
 export async function findRoleprofile({ id }: { id: string }) {
     try {
-        const profile = await db.profile.findUnique({
+        const profile = await prisma.profile.findUnique({
             where: { clerkId: id }
         });
         console.log('Found profile:', profile);
@@ -514,34 +513,96 @@ export async function findRoleprofile({ id }: { id: string }) {
 
 
 export async function getDashboardStats() {
-  const [
-    totalUsers,
-    activePlaces,
-    totalFavorites,
-    totalActivities,
-    recentActivities
-  ] = await Promise.all([
-    prisma.profile.count(),
-    prisma.location.count(),
-    prisma.favorite.count(),
-    prisma.review.count(),
-    prisma.review.findMany({
-      take: 3,
-      orderBy: {
-        createdAt: 'desc'
-      },
-      include: {
-        profile: true,
-        location: true
-      }
-    })
-  ])
+    const [
+        totalUsers,
+        activePlaces,
+        totalFavorites,
+        totalActivities,
+        recentActivities
+    ] = await Promise.all([
+        prisma.profile.count(),
+        prisma.location.count(),
+        prisma.favorite.count(),
+        prisma.review.count(),
+        prisma.review.findMany({
+            take: 3,
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                profile: true,
+                location: true
+            }
+        })
+    ])
 
-  return {
-    totalUsers,
-    activePlaces,
-    totalFavorites,
-    totalActivities,
-    recentActivities
-  }
-} 
+    return {
+        totalUsers,
+        activePlaces,
+        totalFavorites,
+        totalActivities,
+        recentActivities
+    }
+}
+
+//ดึงข้อมูลผู้ใช้
+export async function getAllusers() {
+    try {
+        const users = await prisma.profile.findMany({
+            orderBy: { createdAt: 'desc' }
+        })
+        return { users }
+    } catch (error) {
+        return { error: 'Failed to fetch users' }
+    }
+}
+
+
+//update user
+export async function updateUser(formData: FormData) {
+    try {
+        const user = await currentUser()
+        if (!user) throw new Error('Unauthorized')
+
+        const data = {
+            id: formData.get('id') as string,
+            firstname: formData.get('firstname') as string,
+            lastname: formData.get('lastname') as string,
+            username: formData.get('username') as string,
+            role: formData.get('role') as string,
+        }
+
+        const updatedUser = await prisma.profile.update({
+            where: { id: data.id },
+            data: {
+                firstname: data.firstname,
+                lastname: data.lastname,
+                username: data.username,
+                role: data.role,
+            }
+        })
+
+        revalidatePath('/dashboard/manageuser')
+        return { success: true, user: updatedUser }
+    } catch (error) {
+        return { error: 'Failed to update user' }
+    }
+}
+
+
+// ลบผู้ใช้
+export async function deleteUser(id: string) {
+    try {
+        const user = await currentUser()
+        if (!user) throw new Error('Unauthorized')
+
+        await prisma.profile.delete({
+            where: { id }
+        })
+
+        revalidatePath('/dashboard/manageuser')
+        return { success: true }
+    } catch (error) {
+        return { error: 'Failed to delete user' }
+    }
+}

@@ -2,10 +2,12 @@ import { fetchLocationDetail, fetchLocationReviews } from "@/actions/actions"
 import FavoriteToggleButton from "@/components/card/FavoriteToggleButton"
 import Breadcrumbs from "@/components/location/Breadcrumbs"
 import Description from "@/components/location/Description"
+import DescriptionAI from "@/components/location/DescriptionAI"
 import ImageContainer from "@/components/location/ImageContainer"
 import ShareButton from "@/components/location/ShareButton"
 import ReviewSection from "@/components/location/ReviewSection"
 import MapLocation from "@/components/map/MapLocation"
+import LocationChatBot from "@/components/location/LocationChatBot"
 import { redirect } from "next/navigation"
 import { notFound } from 'next/navigation'
 
@@ -54,6 +56,11 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                             name={location.name}
                         />
                         <Description description={location.description} />
+                        <DescriptionAI
+                            locationName={location.name}
+                            locationDescription={location.description}
+                            locationDistrict={location.districts}
+                        />
                     </div>
                     <div>
                         <MapLocation location={{
@@ -66,6 +73,12 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                 <ReviewSection
                     locationId={location.id}
                     reviews={reviews}
+                />
+
+                <LocationChatBot
+                    locationName={location.name}
+                    locationDescription={location.description}
+                    locationDistrict={location.districts}
                 />
             </section>
         )

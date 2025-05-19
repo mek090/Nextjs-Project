@@ -1,0 +1,167 @@
+"use client";
+
+import { useState } from "react";
+import { Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@clerk/nextjs";
+import { SignInButton } from "@clerk/nextjs";
+import Image from 'next/image'
+import { createReviewAction } from '@/actions/actions'
+
+interface Review {
+  id: string;
+  content: string;
+  rating: number;
+  createdAt: string;
+  profile: {
+    firstname: string;
+    lastname: string;
+    username: string;
+    profileImage: string | null;
+  };
+}
+
+interface ReviewSectionProps {
+  locationId: string;
+  reviews: Review[];
+}
+
+const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
+  const { userId } = useAuth();
+  const [rating, setRating] = useState(0);
+  const [content, setContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rating || !content.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      await createReviewAction(locationId, rating, content);
+      setRating(0);
+      setContent("");
+      // Refresh the page to show new review
+      window.location.reload();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!userId) {
+    return (
+      <div className="mt-8 p-6 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-4">รีวิว</h2>
+        <div className="text-center py-8">
+          <p className="text-gray-600 mb-4">กรุณาเข้าสู่ระบบเพื่อเขียนรีวิว</p>
+          <SignInButton mode="modal">
+            <Button>เข้าสู่ระบบ</Button>
+          </SignInButton>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-8">
+      <h2 className="text-2xl font-bold mb-4">รีวิว</h2>
+
+      {/* Review Form */}
+      <form onSubmit={handleSubmit} className="mb-8">
+        <div className="mb-4">
+          <label className="block text-sm font-medium  mb-2">
+            ให้คะแนน
+          </label>
+          <div className="flex gap-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                type="button"
+                onClick={() => setRating(star)}
+                className="focus:outline-none"
+              >
+                <Star
+                  className={`w-6 h-6 ${
+                    star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium  mb-2">
+            รีวิว
+          </label>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={4}
+            className="w-full border p-2 rounded"
+            placeholder="เขียนรีวิวของคุณที่นี่..."
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={!rating || !content.trim() || isSubmitting}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          {isSubmitting ? "กำลังส่ง..." : "ส่งรีวิว"}
+        </button>
+      </form>
+
+      {/* Reviews List */}
+      <div className="space-y-6">
+        {reviews.map((review) => (
+          <div key={review.id} className="border-2 p-4 rounded-lg shadow">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="relative w-12 h-12 flex-shrink-0">
+                <Image
+                  src={review.profile.profileImage || '/default-avatar.png'}
+                  alt={review.profile.firstname}
+                  fill
+                  className="rounded-full object-cover"
+                />
+              </div>
+              <div>
+                <p className="font-medium">
+                  {review.profile.firstname} {review.profile.lastname}
+                </p>
+                <div className="flex items-center mt-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${
+                        i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <p >{review.content}</p>
+            <p className="text-sm  mt-2">
+              {new Date(review.createdAt).toLocaleDateString("th-TH", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+        ))}
+        {reviews.length === 0 && (
+          <p className=" text-center py-4">
+            ยังไม่มีรีวิว
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ReviewSection; 

@@ -1,0 +1,547 @@
+'use server'
+
+import { imageSchema, locationSchema, profileSchema, validateWithZod } from "@/utils/schemas"
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import db from "@/utils/db"
+import { redirect } from "next/navigation";
+import { z, ZodSchema } from "zod";
+import { uploadFile } from "@/utils/supabase";
+import { auth } from "@clerk/nextjs/server";
+import path from "path";
+import fs from "fs/promises";
+import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/prisma";
+
+
+
+
+const getAuthUser = async () => {
+    const user = await currentUser()
+    // console.log(user)
+    if (!user) {
+        throw new Error('You must be signed in.')
+    }
+    if (!user.privateMetadata.hasProfile) redirect('/profile/create')
+    return user
+}
+
+
+
+
+const renderError = (error: unknown): { message: string } => {
+    return {
+        message: error instanceof Error ? error.message : 'An error server'
+    }
+};
+
+
+
+
+
+export const createProfileAction = async (prevState: any, formData: FormData) => {
+    try {
+        const user = await currentUser()
+        if (!user) throw new Error('Plaease sign in first.')
+
+        const rawData = Object.fromEntries(formData)
+        const validateField = validateWithZod(profileSchema, rawData);
+        // console.log('validated ', validateField)
+
+        await db.profile.create({
+            data: {
+                clerkId: user.id,
+                email: user.emailAddresses[0].emailAddress,
+                profileImage: user.imageUrl ?? '',
+                ...validateField
+            }
+        })
+
+        const client = await clerkClient()
+        await client.users.updateUserMetadata(user.id, {
+            privateMetadata: {
+                hasProfile: true
+            }
+        })
+
+        // return {
+        //     message: 'Create Profile success!!'
+        // }
+    } catch (error) {
+        return renderError(error)
+    }
+    redirect('/')
+}
+
+
+export const createLocationAction = async (
+    prevState: any,
+    formData: FormData
+) => {
+    try {
+        const user = await getAuthUser();
+        const rawData = Object.fromEntries(formData);
+
+        // ตั้งค่า default ถ้าไม่มีค่า
+        if (!rawData.openTime) rawData.openTime = '';
+        if (!rawData.closeTime) rawData.closeTime = '';
+
+        // ตรวจสอบไฟล์รูปภาพ
+        const imageFile = formData.get('image') as File;
+        if (!imageFile) {
+            return {
+                success: false,
+                message: 'กรุณาอัพโหลดรูปภาพ'
+            };
+        }
+
+        try {
+            const validateFile = validateWithZod(imageSchema, { image: imageFile });
+            const validateField = validateWithZod(locationSchema, rawData);
+
+            const fullPath = await uploadFile(validateFile.image);
+
+            await db.location.create({
+                data: {
+                    ...validateField,
+                    image: fullPath,
+                    profileId: user.id
+                }
+            });
+
+            return {
+                success: true,
+                message: 'สร้างสถานที่สำเร็จ!',
+                shouldRedirect: true
+            };
+        } catch (validationError) {
+            console.error('Validation error:', validationError);
+            return {
+                success: false,
+                message: validationError instanceof Error ? validationError.message : 'เกิดข้อผิดพลาดในการตรวจสอบข้อมูล'
+            };
+        }
+    } catch (error) {
+        console.error('Error in createLocationAction:', error);
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการสร้างสถานที่'
+        };
+    }
+};
+
+
+
+
+export const fetchLocation = async (params?: { search?: string, category?: string }) => {
+    const search = params?.search || '';
+    const category = params?.category || '';
+
+    const locations = await db.location.findMany({
+        where: {
+            AND: [
+                category ? { category } : {},
+                {
+                    OR: [
+                        { name: { contains: search, mode: 'insensitive' } },
+                        { description: { contains: search, mode: 'insensitive' } },
+                        { districts: { contains: search, mode: 'insensitive' } }
+                    ]
+                }
+            ]
+        },
+        select: {
+            id: true,
+            name: true,
+            image: true,
+            description: true,
+            districts: true,
+            price: true,
+            lat: true,
+            lng: true,
+            rating: true,
+            openTime: true,
+            closeTime: true
+        },
+        orderBy: {
+            createdAt: 'desc'
+        }
+    });
+
+    return locations;
+};
+
+
+
+
+
+export const fetchFavoriteId = async ({ locationId }: { locationId: string }) => {
+    const user = await getAuthUser()
+    const favorite = await db.favorite.findFirst({
+        where: {
+            locationId: locationId,
+            profileId: user.id
+        },
+        select: {
+            id: true
+        }
+    })
+    return favorite?.id || null
+}
+
+export const toggleFavoriteAction = async (locationId: string, userId: string, isFavorite: boolean) => {
+    try {
+        // เช็คสถานะปัจจุบันก่อน
+        const existingFavorite = await db.favorite.findFirst({
+            where: {
+                profileId: userId,
+                locationId: locationId,
+            }
+        });
+
+        if (isFavorite && !existingFavorite) {
+            // Add favorite only if it doesn't exist
+            await db.favorite.create({
+                data: {
+                    profileId: userId,
+                    locationId: locationId,
+                }
+            });
+        } else if (!isFavorite && existingFavorite) {
+            // Remove favorite only if it exists
+            await db.favorite.delete({
+                where: {
+                    id: existingFavorite.id
+                }
+            });
+        }
+        return { success: true };
+    } catch (error) {
+        console.error("Error toggling favorite:", error);
+        throw new Error("Failed to toggle favorite");
+    }
+}
+
+export const checkFavoriteStatus = async (userId: string, locationId: string) => {
+    try {
+        const favorite = await db.favorite.findFirst({
+            where: {
+                profileId: userId,
+                locationId: locationId,
+            }
+        });
+        return favorite !== null;
+    } catch (error) {
+        console.error("Error checking favorite status:", error);
+        throw new Error("Failed to check favorite status");
+    }
+}
+
+
+export const fetchFavorite = async () => {
+    const user = await getAuthUser()
+    const favorites = await db.favorite.findMany({
+        where: {
+            profileId: user.id
+        },
+        select: {
+            location: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    description: true,
+                    price: true,
+                    districts: true,
+                    lat: true,
+                    lng: true,
+                    category: true,
+                    rating: true,
+                    openTime: true,
+                    closeTime: true
+                }
+            }
+        }
+    })
+    return favorites.map((favorite) => favorite.location)
+}
+
+export const fetchLocationDetail = async ({ id }: { id: string }) => {
+    try {
+        console.log('Fetching location detail for ID:', id);
+        const user = await currentUser();
+        console.log('Current user:', user?.id);
+
+        const location = await db.location.findFirst({
+            where: {
+                id,
+            },
+            include: {
+                profile: true,
+                favorites: {
+                    where: {
+                        profileId: user?.id || '',
+                    },
+                },
+            },
+        });
+
+        console.log('Found location:', location);
+
+        if (!location) {
+            console.log('Location not found');
+            return null;
+        }
+
+        return {
+            ...location,
+            isFavorite: location.favorites.length > 0
+        };
+    } catch (error) {
+        console.error('Error fetching location detail:', error);
+        throw error;
+    }
+};
+
+// export const fineprofile = async ({ id }: { id: string }) => {
+//     try {
+//         console.log('Fetching location detail for ID:', id);
+//     const profile = await currentUser();
+//         console.log('Current user:', user?.id);
+
+//     const user = await db.profile.findFirst({
+//         where: {
+//             id,
+//         },
+
+//         });
+
+//         console.log('Found profile:', profile);
+
+
+
+//     } catch (error) {
+//         console.error('Error fetching location detail:', error);
+//         throw error;
+//     }
+// };
+
+export async function updateProfileAction(formData: FormData) {
+    try {
+        const userId = formData.get("userId") as string
+        if (!userId) {
+            throw new Error("Unauthorized")
+        }
+
+        const firstname = formData.get("firstname") as string
+        const lastname = formData.get("lastname") as string
+        const username = formData.get("username") as string
+        const profileImage = formData.get("profileImage") as File
+
+        if (!firstname || !lastname || !username) {
+            throw new Error("กรุณากรอกข้อมูลให้ครบ")
+        }
+
+        // Handle profile image upload to Supabase
+        let profileImageUrl = undefined
+        if (profileImage && profileImage.size > 0) {
+            try {
+                profileImageUrl = await uploadFile(profileImage)
+            } catch (error) {
+                console.error("Error uploading profile image:", error)
+                throw new Error("เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ")
+            }
+        }
+
+        const profile = await db.profile.update({
+            where: { clerkId: userId },
+            data: {
+                firstname,
+                lastname,
+                username,
+                ...(profileImageUrl && { profileImage: profileImageUrl })
+            },
+        })
+
+        revalidatePath('/profile')
+        return { success: true, profile }
+    } catch (error) {
+        console.error("Error updating profile:", error)
+        return { success: false, error: "เกิดข้อผิดพลาดในการอัพเดทโปรไฟล์" }
+    }
+}
+
+export const createReviewAction = async (locationId: string, rating: number, content: string) => {
+    try {
+        console.log('Creating review:', { locationId, rating, content });
+        const user = await currentUser();
+        if (!user) throw new Error('Please sign in.');
+
+        const review = await db.review.create({
+            data: {
+                content,
+                rating,
+                profile: {
+                    connect: {
+                        clerkId: user.id,
+                    },
+                },
+                location: {
+                    connect: {
+                        id: locationId,
+                    },
+                },
+            },
+            include: {
+                profile: {
+                    select: {
+                        firstname: true,
+                        lastname: true,
+                        username: true,
+                    },
+                },
+            },
+        });
+        console.log('Created review:', review);
+
+        // Update location rating
+        const location = await db.location.findUnique({
+            where: { id: locationId },
+            include: {
+                reviews: true,
+            },
+        });
+
+        if (location) {
+            const avgRating = location.reviews.reduce((acc, review) => acc + review.rating, 0) / location.reviews.length;
+            console.log('Updating location rating:', avgRating);
+            await db.location.update({
+                where: { id: locationId },
+                data: { rating: avgRating },
+            });
+        }
+
+        return review;
+    } catch (error) {
+        console.error('Error creating review:', error);
+        throw error;
+    }
+};
+
+export const fetchLocationReviews = async (locationId: string) => {
+    try {
+        console.log('Fetching reviews for location:', locationId);
+        const reviews = await db.review.findMany({
+            where: {
+                locationId,
+            },
+            include: {
+                profile: {
+                    select: {
+                        firstname: true,
+                        lastname: true,
+                        username: true,
+                        profileImage: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+        console.log('Found reviews:', reviews);
+        return reviews;
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        throw error;
+    }
+};
+
+
+// ... existing code ...
+
+export const fetchTopLocations = async () => {
+    const locations = await db.location.findMany({
+        select: {
+            id: true,
+            name: true,
+            image: true,
+            description: true,
+            districts: true,
+            price: true,
+            lat: true,
+            lng: true,
+            rating: true,
+            openTime: true,
+            closeTime: true,
+            _count: {
+                select: {
+                    reviews: true
+                }
+            }
+        },
+        orderBy: [
+            {
+                rating: 'desc'
+            },
+            {
+                reviews: {
+                    _count: 'desc'
+                }
+            }
+        ],
+        take: 4
+    });
+
+    return locations;
+};
+
+
+export async function findRoleprofile({ id }: { id: string }) {
+    try {
+        const profile = await db.profile.findUnique({
+            where: { clerkId: id }
+        });
+        console.log('Found profile:', profile);
+        return profile;
+    } catch (err) {
+        console.error("Server action error:", err);
+        throw err;
+    }
+}
+
+
+
+
+
+export async function getDashboardStats() {
+  const [
+    totalUsers,
+    activePlaces,
+    totalFavorites,
+    totalActivities,
+    recentActivities
+  ] = await Promise.all([
+    prisma.profile.count(),
+    prisma.location.count(),
+    prisma.favorite.count(),
+    prisma.review.count(),
+    prisma.review.findMany({
+      take: 3,
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: {
+        profile: true,
+        location: true
+      }
+    })
+  ])
+
+  return {
+    totalUsers,
+    activePlaces,
+    totalFavorites,
+    totalActivities,
+    recentActivities
+  }
+} 

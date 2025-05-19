@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+model Profile {
+  id           String     @id @default(uuid())
+  clerkId      String     @unique
+  firstname    String
+  lastname     String
+  username     String
+  email        String
+  profileImage String
+  role         UserRole   @default(user)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  locations    Location[]
+  favorites    Favorite[]
+  reviews      Review[]
+}
+
+model Location {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  category    String // เช่น วัด, ธรรมชาติ, พิพิธภัณฑ์
+  image       String
+  districts   String
+  // location    String // เช่น "อ.เมือง", "บ้านตะโก"
+  lat         Float
+  lng         Float
+  price       Int
+  openTime    String? // เช่น "08:00"
+  closeTime   String? // เช่น "17:00"
+  rating      Float? // ค่าเฉลี่ยจากรีวิว
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  profile   Profile @relation(fields: [profileId], references: [clerkId], onDelete: Cascade)
+  profileId String
+
+  favorites Favorite[]
+  reviews   Review[]
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile   Profile @relation(fields: [profileId], references: [clerkId], onDelete: Cascade)
+  profileId String
+
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  locationId String
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  content   String
+  rating    Int // 1-5
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile   Profile @relation(fields: [profileId], references: [clerkId], onDelete: Cascade)
+  profileId String
+
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  locationId String
+}

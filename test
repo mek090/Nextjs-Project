@@ -1,0 +1,77 @@
+[33mcommit 7105f9d16df9fce38b9258fdb1dc1183a74d1c9e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Tue May 6 18:01:42 2025 +0700
+
+    เพิ่มหน้า place ที่ดึงมาจาก api
+
+[33mcommit 2fd86ea65b2df1946be6b937d92538741d2db3de[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Tue May 6 17:20:44 2025 +0700
+
+    ตกแต่ง LocationList
+
+[33mcommit 397276d6c880977794f5f77522827bbf1868c7a8[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Tue May 6 15:58:22 2025 +0700
+
+    update อะไรไม่รู้ลืม แต่ที่ห้ามลืมคือ up ลง git
+
+[33mcommit 0914c3e2b97f9939fbd277d1e842d9e1369402f6[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Tue May 6 14:35:26 2025 +0700
+
+    Update README.md
+
+[33mcommit ee44f590f31553e4b8b834da0931c8ecf4513f7a[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Tue May 6 14:34:20 2025 +0700
+
+    Update README.md
+
+[33mcommit 43d57392afde5f9fbece95c7437069bf3512c552[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Tue May 6 14:28:20 2025 +0700
+
+    ตกแต่ง LocationList
+
+[33mcommit 2c3cdb69f5e74f025c1cb010c86facef60982766[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Tue May 6 14:06:33 2025 +0700
+
+    ตกแต่งlocation card
+
+[33mcommit 0c65422a8f8e7c4b477265ae171e22198c87c3f3[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Tue May 6 14:01:55 2025 +0700
+
+    location card
+
+[33mcommit ddeb745aeb303d41df147f33671b99ec9eeda14d[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Tue May 6 13:15:10 2025 +0700
+
+    แก้ไขการอัพโหลดรูปลง database
+
+[33mcommit 64fd5e1587613897dafc95bcd2cdc8d7e1fd1d9b[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Mon May 5 20:10:10 2025 +0700
+
+    upload picture in supabase
+
+[33mcommit 4128ae83d52bb7c1d19d8e3db136bc328635d8ea[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Mon May 5 17:59:18 2025 +0700
+
+    add test
+
+[33mcommit b20066c494d8d7224df83c273c0fabd800215df4[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Mon May 5 17:52:51 2025 +0700
+
+    Initial project setup with Next.js, Prisma, and core features
+
+[33mcommit 758193b649625a6fff075b95157de7a112f29559[m
+Author: Rittipon 024 <49582945+mek090@users.noreply.github.com>
+Date:   Mon May 5 13:36:25 2025 +0700
+
+    Initial commit from Create Next App

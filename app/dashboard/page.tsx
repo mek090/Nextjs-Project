@@ -10,6 +10,7 @@ import { SignInButton, useUser } from "@clerk/nextjs"
 import { useEffect, useState } from "react"
 import { findRoleprofile } from "@/actions/actions"
 import { prisma } from "@/lib/prisma"
+import Breadcrumbs from "@/components/location/Breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -49,6 +50,12 @@ const Dashboard = async () => {
 
 
     <div className="p-6 space-y-6">
+      <Breadcrumbs
+                    items={[
+                        { label: 'Home', href: '/' },
+                        { label: 'Dashboard'},
+                    ]}
+                />
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard</h1>

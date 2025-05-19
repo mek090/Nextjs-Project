@@ -27,7 +27,14 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
 
         return (
             <section className="max-w-7xl mx-auto px-4 py-8">
-                <Breadcrumbs name={location.name} />
+                <Breadcrumbs
+                    items={[
+                        { label: 'Home', href: '/' },
+                        { label: 'Locations', href: '/locations' },
+                        { label: location.name },
+                    ]}
+                />
+
                 <header className="flex justify-between mt-4 items-center">
                     <h1 className="text-3xl font-bold">
                         {location.name}

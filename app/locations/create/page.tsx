@@ -7,9 +7,19 @@ import ProvincesInput from "@/components/form/DistrictsInput"
 import TextareaInput from "@/components/form/TextareaInput"
 import MapLocation from "@/components/map/MapLocation"
 import ImageInput from "@/components/form/ImageInput"
+import Breadcrumbs from "@/components/location/Breadcrumbs"
 
 const CreateLocation = () => {
-    return (
+    return (<>
+        <header className="m-4">
+            <Breadcrumbs
+                items={[
+                    { label: 'Home', href: '/' },
+                    { label: 'Dashboard', href: '/dashboard' },
+                    { label: 'Create Location' },
+                ]}
+            />
+        </header>
         <section className="max-w-4xl mx-auto p-6 mt-8 border-2 shadow-lg rounded-xl">
             <div className="border-b pb-4 mb-6">
                 <h1 className="text-3xl font-bold text-blue-800">
@@ -80,6 +90,7 @@ const CreateLocation = () => {
                 </div>
             </FormContainer>
         </section>
+    </>
     )
 }
 

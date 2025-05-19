@@ -23,7 +23,7 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
         }
 
         const reviews = await fetchLocationReviews(id)
-        console.log('Reviews data:', reviews)
+        console.log('Reviews data:', JSON.stringify(reviews, null, 2))
 
         return (
             <section className="max-w-7xl mx-auto px-4 py-8">

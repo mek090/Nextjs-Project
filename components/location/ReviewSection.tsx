@@ -7,13 +7,27 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@clerk/nextjs";
 import { SignInButton } from "@clerk/nextjs";
 import Image from 'next/image'
-import { createReviewAction } from '@/actions/actions'
+import { createReviewAction, createReplyAction } from '@/actions/actions'
 
 interface Review {
   id: string;
   content: string;
   rating: number;
   createdAt: string;
+  profile: {
+    firstname: string;
+    lastname: string;
+    username: string;
+    profileImage: string | null;
+  };
+  replies: Reply[];
+}
+
+interface Reply {
+  id: string;
+  contain: string;
+  createAt: string;
+  reviewId: string;
   profile: {
     firstname: string;
     lastname: string;
@@ -32,6 +46,8 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [replyContent, setReplyContent] = useState<{ [reviewId: string]: string }>({});
+  const [isReplying, setIsReplying] = useState<{ [reviewId: string]: boolean }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,12 +67,30 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
     }
   };
 
+  const handleReplySubmit = async (e: React.FormEvent, reviewId: string) => {
+    e.preventDefault();
+
+    const content = replyContent[reviewId]?.trim();
+    if (!content) return;
+
+    setIsReplying(prev => ({ ...prev, [reviewId]: true }));
+    try {
+      await createReplyAction(reviewId, content);
+      setReplyContent(prev => ({ ...prev, [reviewId]: "" }));
+      window.location.reload();
+    } catch (error) {
+      console.error("Error submitting reply:", error);
+    } finally {
+      setIsReplying(prev => ({ ...prev, [reviewId]: false }));
+    }
+  };
+
   if (!userId) {
     return (
       <div className="mt-8 p-6 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-4">รีวิว</h2>
         <div className="text-center py-8">
-          <p className="text-gray-600 mb-4">กรุณาเข้าสู่ระบบเพื่อเขียนรีวิว</p>
+          <p className="text-gray-600 mb-4">กรุณาเข้าสู่ระบบเพื่อเข้าถึงรีวิว</p>
           <SignInButton mode="modal">
             <Button>เข้าสู่ระบบ</Button>
           </SignInButton>
@@ -84,9 +118,8 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
                 className="focus:outline-none"
               >
                 <Star
-                  className={`w-6 h-6 ${
-                    star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                  }`}
+                  className={`w-6 h-6 ${star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                    }`}
                 />
               </button>
             ))}
@@ -136,26 +169,82 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${
-                        i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                      }`}
+                      className={`w-4 h-4 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
                     />
                   ))}
                 </div>
               </div>
             </div>
-            <p >{review.content}</p>
-            <p className="text-sm  mt-2">
+            <p>{review.content}</p>
+            <p className="text-sm mt-2">
               {new Date(review.createdAt).toLocaleDateString("th-TH", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
               })}
             </p>
+
+            {/* แสดง Reply ของรีวิวนี้ */}
+            {review.replies && review.replies.length > 0 && (
+              <div className="ml-12 mt-2">
+                {review.replies.map(reply => (
+                  <div key={reply.id} className="border-l-2 pl-4 mb-2">
+                    <div className="flex items-center gap-3 mb-1">
+                      <div className="relative w-8 h-8 flex-shrink-0">
+                        <Image
+                          src={reply.profile.profileImage || '/default-avatar.png'}
+                          alt={reply.profile.firstname}
+                          fill
+                          className="rounded-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">
+                          {reply.profile.firstname} {reply.profile.lastname}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="ml-11">{reply.contain}</p>
+                    <p className="text-xs text-gray-500 ml-11">
+                      {new Date(reply.createAt).toLocaleDateString("th-TH", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* ฟอร์มตอบกลับ */}
+            <form onSubmit={(e) => handleReplySubmit(e, review.id)} className="ml-12 mt-3">
+              <Textarea
+                rows={2}
+                placeholder="ตอบกลับรีวิวนี้..."
+                value={replyContent[review.id] || ""}
+                onChange={(e) =>
+                  setReplyContent((prev) => ({
+                    ...prev,
+                    [review.id]: e.target.value,
+                  }))
+                }
+              />
+              <div className="mt-1">
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={!replyContent[review.id]?.trim() || isReplying[review.id]}
+                >
+                  {isReplying[review.id] ? "กำลังส่ง..." : "ส่งตอบกลับ"}
+                </Button>
+              </div>
+            </form>
           </div>
         ))}
+
         {reviews.length === 0 && (
-          <p className=" text-center py-4">
+          <p className="text-center py-4">
             ยังไม่มีรีวิว
           </p>
         )}

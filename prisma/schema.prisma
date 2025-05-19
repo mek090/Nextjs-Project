@@ -27,6 +27,7 @@ model Profile {
   locations    Location[]
   favorites    Favorite[]
   reviews      Review[]
+  Reply        Reply[]
 }
 
 model Location {
@@ -77,4 +78,18 @@ model Review {
 
   location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
   locationId String
+
+  replies Reply[]
+}
+
+model Reply {
+  id       String   @id @default(uuid())
+  contain  String
+  createAt DateTime @default(now())
+
+  profile   Profile @relation(fields: [profileId], references: [clerkId], onDelete: Cascade)
+  profileId String
+
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId String
 }

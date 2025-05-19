@@ -428,10 +428,9 @@ export const createReviewAction = async (locationId: string, rating: number, con
 
 export const fetchLocationReviews = async (locationId: string) => {
     try {
-        console.log('Fetching reviews for location:', locationId);
         const reviews = await prisma.review.findMany({
             where: {
-                locationId,
+                locationId: locationId
             },
             include: {
                 profile: {
@@ -442,15 +441,27 @@ export const fetchLocationReviews = async (locationId: string) => {
                         profileImage: true,
                     },
                 },
+                replies: {
+                    include: {
+                        profile: {
+                            select: {
+                                firstname: true,
+                                lastname: true,
+                                username: true,
+                                profileImage: true,
+                            },
+                        },
+                    },
+                },
             },
             orderBy: {
-                createdAt: 'desc',
-            },
+                createdAt: 'desc'
+            }
         });
-        console.log('Found reviews:', reviews);
+
         return reviews;
     } catch (error) {
-        console.error('Error fetching reviews:', error);
+        console.error("Error fetching reviews:", error);
         throw error;
     }
 };
@@ -606,3 +617,78 @@ export async function deleteUser(id: string) {
         return { error: 'Failed to delete user' }
     }
 }
+
+
+
+
+
+export async function getNotifications() {
+    const [
+        totalUsers,
+        activePlaces,
+        totalFavorites,
+        totalActivities,
+        recentActivities
+    ] = await Promise.all([
+        prisma.profile.count(),
+        prisma.location.count(),
+        prisma.favorite.count(),
+        prisma.review.count(),
+        prisma.review.findMany({
+            take: 3,
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                profile: true,
+                location: true
+            }
+        })
+    ])
+
+    return {
+        totalUsers,
+        activePlaces,
+        totalFavorites,
+        totalActivities,
+        recentActivities
+    }
+}
+
+export const createReplyAction = async (reviewId: string, content: string) => {
+  try {
+    const user = await getAuthUser();
+    
+    const reply = await prisma.reply.create({
+      data: {
+        contain: content,
+        profile: {
+          connect: {
+            clerkId: user.id
+          }
+        },
+        review: {
+          connect: {
+            id: reviewId
+          }
+        }
+      },
+      include: {
+        profile: {
+          select: {
+            firstname: true,
+            lastname: true,
+            username: true,
+            profileImage: true,
+          },
+        },
+      },
+    });
+
+    revalidatePath(`/locations/${reviewId}`);
+    return reply;
+  } catch (error) {
+    console.error("Error creating reply:", error);
+    throw error;
+  }
+};

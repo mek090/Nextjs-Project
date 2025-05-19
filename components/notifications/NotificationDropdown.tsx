@@ -93,6 +93,8 @@ export default function NotificationDropdown() {
     return () => clearInterval(interval);
   }, []);
 
+  
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

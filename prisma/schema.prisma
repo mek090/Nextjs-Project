@@ -14,20 +14,20 @@ enum UserRole {
 }
 
 model Profile {
-  id           String     @id @default(uuid())
-  clerkId      String     @unique
-  firstname    String
-  lastname     String
-  username     String
-  email        String
-  profileImage String
-  role         UserRole   @default(user)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  locations    Location[]
-  favorites    Favorite[]
-  reviews      Review[]
-  Reply        Reply[]
+  id            String         @id @default(uuid())
+  clerkId       String         @unique
+  firstname     String
+  lastname      String
+  username      String
+  email         String
+  profileImage  String
+  role          UserRole       @default(user)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  locations     Location[]
+  favorites     Favorite[]
+  reviews       Review[]
+  Reply         Reply[]
   notifications Notification[]
 }
 
@@ -80,7 +80,7 @@ model Review {
   location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
   locationId String
 
-  replies Reply[]
+  replies       Reply[]
   notifications Notification[]
 }
 
@@ -100,7 +100,7 @@ model Reply {
 
 model Notification {
   id        String   @id @default(uuid())
-  type      String   // "REPLY" หรือประเภทอื่นๆ
+  type      String // "REPLY" หรือประเภทอื่นๆ
   message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
@@ -114,6 +114,6 @@ model Notification {
   reviewId String?
 
   // reply ที่เกี่ยวข้อง
-  reply   Reply? @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  reply   Reply?  @relation(fields: [replyId], references: [id], onDelete: Cascade)
   replyId String?
 }

@@ -28,6 +28,7 @@ model Profile {
   favorites    Favorite[]
   reviews      Review[]
   Reply        Reply[]
+  notifications Notification[]
 }
 
 model Location {
@@ -80,6 +81,7 @@ model Review {
   locationId String
 
   replies Reply[]
+  notifications Notification[]
 }
 
 model Reply {
@@ -92,4 +94,26 @@ model Reply {
 
   review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
   reviewId String
+
+  notifications Notification[]
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  type      String   // "REPLY" หรือประเภทอื่นๆ
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // ผู้ที่ได้รับแจ้งเตือน
+  recipient   Profile @relation(fields: [recipientId], references: [clerkId], onDelete: Cascade)
+  recipientId String
+
+  // รีวิวที่เกี่ยวข้อง
+  review   Review? @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId String?
+
+  // reply ที่เกี่ยวข้อง
+  reply   Reply? @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  replyId String?
 }

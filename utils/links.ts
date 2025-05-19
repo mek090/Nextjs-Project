@@ -15,7 +15,7 @@ export const links: NavbarLink[] = [
   { href: '/locations', label: 'Locations', icon: MapPin, hidden: false, },
 
   { href: '/favorite', label: 'Favorite', icon: Heart, hidden: false, },
-  { href: '/notification', label: 'Notification', icon: BellRing, hidden: false, },
+  // { href: '/notification', label: 'Notification', icon: BellRing, hidden: false, },
 ];
 export const links2: NavbarLink[] = [
   { href: '/profile', label: 'Profile', icon: User2, hidden: false, },

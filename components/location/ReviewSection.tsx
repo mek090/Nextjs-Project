@@ -8,6 +8,7 @@ import { useAuth } from "@clerk/nextjs";
 import { SignInButton } from "@clerk/nextjs";
 import Image from 'next/image'
 import { createReviewAction, createReplyAction } from '@/actions/actions'
+import { useRouter } from 'next/navigation'
 
 interface Review {
   id: string;
@@ -43,6 +44,7 @@ interface ReviewSectionProps {
 
 const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
   const { userId } = useAuth();
+  const router = useRouter();
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,8 +60,7 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
       await createReviewAction(locationId, rating, content);
       setRating(0);
       setContent("");
-      // Refresh the page to show new review
-      window.location.reload();
+      router.refresh();
     } catch (error) {
       console.error("Error submitting review:", error);
     } finally {
@@ -77,7 +78,7 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
     try {
       await createReplyAction(reviewId, content);
       setReplyContent(prev => ({ ...prev, [reviewId]: "" }));
-      window.location.reload();
+      router.refresh();
     } catch (error) {
       console.error("Error submitting reply:", error);
     } finally {

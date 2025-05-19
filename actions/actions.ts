@@ -11,21 +11,14 @@ import path from "path";
 import fs from "fs/promises";
 import { revalidatePath } from "next/cache";
 
-
-
-
-const getAuthUser = async () => {
+export const getAuthUser = async () => {
     const user = await currentUser()
-    // console.log(user)
     if (!user) {
         throw new Error('You must be signed in.')
     }
     if (!user.privateMetadata.hasProfile) redirect('/profile/create')
     return user
 }
-
-
-
 
 const renderError = (error: unknown): { message: string } => {
     return {
@@ -658,7 +651,24 @@ export async function getNotifications() {
 export const createReplyAction = async (reviewId: string, content: string) => {
   try {
     const user = await getAuthUser();
+    console.log('Creating reply for user:', user.id);
     
+    // ดึงข้อมูล review เพื่อหาเจ้าของรีวิว
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+      include: {
+        profile: true
+      }
+    });
+
+    if (!review) {
+      throw new Error("Review not found");
+    }
+
+    console.log('Review owner:', review.profileId);
+    console.log('Current user:', user.id);
+
+    // สร้าง reply
     const reply = await prisma.reply.create({
       data: {
         contain: content,
@@ -684,6 +694,37 @@ export const createReplyAction = async (reviewId: string, content: string) => {
         },
       },
     });
+
+    console.log('Reply created:', reply);
+
+    // สร้าง notification ถ้าไม่ใช่การ reply ของตัวเอง
+    if (review.profileId !== user.id) {
+      console.log('Creating notification for review owner');
+      const notification = await prisma.notification.create({
+        data: {
+          type: "REPLY",
+          message: `${reply.profile.firstname} ${reply.profile.lastname} ตอบกลับรีวิวของคุณ`,
+          recipient: {
+            connect: {
+              clerkId: review.profileId
+            }
+          },
+          review: {
+            connect: {
+              id: reviewId
+            }
+          },
+          reply: {
+            connect: {
+              id: reply.id
+            }
+          }
+        }
+      });
+      console.log('Notification created:', notification);
+    } else {
+      console.log('Skipping notification - self reply');
+    }
 
     revalidatePath(`/locations/${reviewId}`);
     return reply;

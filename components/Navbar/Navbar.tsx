@@ -1,3 +1,4 @@
+import NotificationDropdown from "../notifications/NotificationDropdown"
 import { Darkmode } from "./Darkmode"
 import { DropdownListmenu } from "./DropdownListmenu"
 import Logo from "./Logo"
@@ -13,6 +14,7 @@ const Navbar = () => {
 
                 <div className="flex gap-4">
                     <Darkmode />
+                    <NotificationDropdown />
                     <DropdownListmenu />
                 </div>
             </div>

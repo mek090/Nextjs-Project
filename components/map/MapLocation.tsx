@@ -3,11 +3,12 @@
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, LayersControl, ZoomControl } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
+import { MapPin, Compass, Map } from 'lucide-react'
 
 // พิกัดจังหวัดบุรีรัมย์
-const BURIRAM_COORDINATES: [number, number] = [14.9968, 103.1029];
-const DEFAULT_ZOOM = 12;
+const BURIRAM_COORDINATES: [number, number] = [14.9968, 103.1029]
+const DEFAULT_ZOOM = 12
 
 // สร้างไอคอนที่สวยงาม
 const customIcon = L.icon({
@@ -17,7 +18,7 @@ const customIcon = L.icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowSize: [41, 41]
-});
+})
 
 // ไอคอนสำหรับตำแหน่งที่เลือก
 const selectedIcon = L.icon({
@@ -28,12 +29,12 @@ const selectedIcon = L.icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
   className: 'selected-marker' // สามารถเพิ่ม CSS เพื่อเปลี่ยนสีได้
-});
+})
 
 type LatLng = [number, number]
 type LocationMarkerProps = {
-    position: LatLng | null;
-    setPosition: (position: LatLng) => void;
+    position: LatLng | null
+    setPosition: (position: LatLng) => void
 }
 
 function LocationMarker({ position, setPosition }: LocationMarkerProps) {
@@ -60,53 +61,133 @@ function LocationMarker({ position, setPosition }: LocationMarkerProps) {
 
 const MapLocation = ({ location }: { location?: { lat: number, lng: number } }) => {
     // ใช้พิกัดบุรีรัมย์เป็นค่าเริ่มต้น
-    const defaultLocation: LatLng = location ? [location.lat, location.lng] : BURIRAM_COORDINATES;
-    const [position, setPosition] = useState<LatLng | null>(null);
+    const defaultLocation: LatLng = location ? [location.lat, location.lng] : BURIRAM_COORDINATES
+    const [position, setPosition] = useState<LatLng | null>(null)
+    const [activeBaseMap, setActiveBaseMap] = useState<string>("OpenStreetMap")
     
     // เพิ่ม CSS สำหรับแผนที่
     useEffect(() => {
         // เพิ่ม CSS เพื่อปรับแต่งแผนที่
-        const style = document.createElement('style');
+        const style = document.createElement('style')
         style.innerHTML = `
             .custom-map-container {
-                border-radius: 16px;
+                border-radius: 12px;
                 overflow: hidden;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                border: 3px solid #fff;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                border: 2px solid #f0f0f0;
+                transition: all 0.3s ease;
+            }
+            .custom-map-container:hover {
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
             }
             .custom-popup .leaflet-popup-content-wrapper {
-                border-radius: 10px;
+                border-radius: 12px;
                 background-color: rgba(255, 255, 255, 0.95);
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                overflow: hidden;
             }
             .custom-popup .leaflet-popup-tip {
                 background-color: rgba(255, 255, 255, 0.95);
             }
-            .map-title {
-                background-color: #3498db;
-                color: white;
-                padding: 12px 20px;
-                border-radius: 8px 8px 0 0;
-                font-weight: 600;
-                text-align: center;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            .custom-popup .leaflet-popup-content {
+                margin: 12px 18px;
+                line-height: 1.6;
             }
-            .map-container-wrapper {
-                border-radius: 12px;
+            .leaflet-control-layers-toggle {
+                background-color: white;
+                border-radius: 6px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            .leaflet-touch .leaflet-control-layers-toggle {
+                width: 36px;
+                height: 36px;
+            }
+            .leaflet-control-zoom {
+                border-radius: 8px;
                 overflow: hidden;
-                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-                margin-bottom: 20px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             }
-        `;
-        document.head.appendChild(style);
+            .leaflet-touch .leaflet-control-zoom-in, 
+            .leaflet-touch .leaflet-control-zoom-out {
+                font-size: 18px;
+                width: 36px;
+                height: 36px;
+                line-height: 36px;
+            }
+            .selected-marker {
+                filter: hue-rotate(210deg);
+            }
+            .map-type-selector {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 16px;
+            }
+            .map-type-selector button {
+                padding: 8px 16px;
+                border-radius: 6px;
+                background-color: white;
+                border: 1px solid #e2e8f0;
+                margin: 0 6px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 14px;
+                transition: all 0.2s ease;
+            }
+            .map-type-selector button:hover {
+                background-color: #f8fafc;
+            }
+            .map-type-selector button.active {
+                background-color: #3b82f6;
+                color: white;
+                border-color: #2563eb;
+            }
+            .map-coordinate-display {
+                background: linear-gradient(to right, #e0f2fe, #dbeafe);
+                border-radius: 8px;
+                padding: 12px 16px;
+                margin-top: 16px;
+                border: 1px solid #bfdbfe;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+            .map-coordinate-display h3 {
+                color: #1e40af;
+                font-weight: 600;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .map-coordinate-display p {
+                color: #334155;
+                font-size: 15px;
+            }
+        `
+        document.head.appendChild(style)
         
         return () => {
-            document.head.removeChild(style);
-        };
-    }, []);
+            document.head.removeChild(style)
+        }
+    }, [])
+
+    const handleMapTypeChange = (type: string) => {
+        setActiveBaseMap(type)
+        // ต้องการที่จะเปลี่ยน base layer ของ leaflet ด้วย (ไม่สามารถทำได้โดยตรงจากนี่)
+        // ในอนาคตอาจใช้ useRef หรือ imperative handle ของ leaflet เพื่อควบคุม
+    }
 
     return (
-        <div className="map-container-wrapper">
-            {/* <div className="map-title">เลือกตำแหน่งของคุณ</div> */}
+        <div>
+            <div className="flex items-center gap-3 mb-4">
+                <Map className="h-6 w-6 text-blue-500" />
+                <h2 className="text-2xl font-bold text-gray-800">
+                    แผนที่ตำแหน่งสถานที่
+                </h2>
+            </div>
+
+            
             <input type='hidden' name='lat' value={position ? position[0] : ''} />
             <input type='hidden' name='lng' value={position ? position[1] : ''} />
             
@@ -116,16 +197,6 @@ const MapLocation = ({ location }: { location?: { lat: number, lng: number } }) 
                 zoom={DEFAULT_ZOOM}
                 scrollWheelZoom={true}
                 zoomControl={false}>
-
-                {/* แสดง Marker ของบุรีรัมย์
-                <Marker position={BURIRAM_COORDINATES} icon={customIcon}>
-                    <Popup className="custom-popup">
-                        <div className="text-center">
-                            <strong>จังหวัดบุรีรัมย์</strong>
-                            <p>ยินดีต้อนรับสู่บุรีรัมย์</p>
-                        </div>
-                    </Popup>
-                </Marker> */}
 
                 {/* แสดง Marker ของสถานที่ */}
                 {location && (
@@ -173,15 +244,18 @@ const MapLocation = ({ location }: { location?: { lat: number, lng: number } }) 
                         />
                     </LayersControl.BaseLayer>
                 </LayersControl>
-
             </MapContainer>
             
             {position && (
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <h2 className="font-semibold text-blue-800 mb-2">ตำแหน่งที่เลือก:</h2>
+                <div className="map-coordinate-display">
+                    <h3><MapPin size={18} /> ตำแหน่งที่เลือก</h3>
                     <p>ละติจูด: {position[0].toFixed(6)} | ลองจิจูด: {position[1].toFixed(6)}</p>
                 </div>
             )}
+
+            <div className="mt-4 text-sm text-gray-500">
+                <p>* คลิกที่แผนที่เพื่อเลือกตำแหน่ง หรือใช้ปุ่มควบคุมด้านขวาเพื่อปรับมุมมอง</p>
+            </div>
         </div>
     )
 }

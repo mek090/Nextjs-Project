@@ -733,3 +733,96 @@ export const createReplyAction = async (reviewId: string, content: string) => {
     throw error;
   }
 };
+
+export const updateLocationAction = async (
+    prevState: any,
+    formData: FormData
+) => {
+    try {
+        const user = await getAuthUser();
+        const rawData = Object.fromEntries(formData);
+        const locationId = rawData.id as string;
+
+        // ตั้งค่า default ถ้าไม่มีค่า
+        if (!rawData.openTime) rawData.openTime = '';
+        if (!rawData.closeTime) rawData.closeTime = '';
+
+        // ตรวจสอบไฟล์รูปภาพ
+        const imageFile = formData.get('image') as File;
+        let imagePath = rawData.image as string;
+
+        if (imageFile && imageFile.size > 0) {
+            try {
+                const validateFile = validateWithZod(imageSchema, { image: imageFile });
+                imagePath = await uploadFile(validateFile.image);
+            } catch (error) {
+                return {
+                    success: false,
+                    message: 'รูปภาพไม่ถูกต้อง'
+                };
+            }
+        }
+
+        try {
+            const validateField = validateWithZod(locationSchema, rawData);
+
+            await prisma.location.update({
+                where: {
+                    id: locationId,
+                    profileId: user.id
+                },
+                data: {
+                    ...validateField,
+                    image: imagePath
+                }
+            });
+
+            return {
+                success: true,
+                message: 'อัพเดทสถานที่สำเร็จ!',
+                shouldRedirect: true
+            };
+        } catch (validationError) {
+            console.error('Validation error:', validationError);
+            return {
+                success: false,
+                message: validationError instanceof Error ? validationError.message : 'เกิดข้อผิดพลาดในการตรวจสอบข้อมูล'
+            };
+        }
+    } catch (error) {
+        console.error('Error in updateLocationAction:', error);
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการอัพเดทสถานที่'
+        };
+    }
+}
+
+export const deleteLocationAction = async (
+    prevState: any,
+    formData: FormData
+) => {
+    try {
+        const user = await getAuthUser();
+        const locationId = formData.get('id') as string;
+
+        await prisma.location.delete({
+            where: {
+                id: locationId,
+                profileId: user.id
+            }
+        });
+
+        return {
+            success: true,
+            message: 'ลบสถานที่สำเร็จ!',
+            shouldRedirect: true
+        };
+    } catch (error) {
+        console.error('Error in deleteLocationAction:', error);
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการลบสถานที่'
+        };
+    }
+}

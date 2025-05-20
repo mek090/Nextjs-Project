@@ -57,15 +57,18 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                         <div className="absolute bottom-0 left-0 w-full p-6 z-20">
 
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-                                <h1 className="text-4xl md:text-5xl font-bold  drop-shadow-md">
+                                <h1 className="text-4xl text-white md:text-5xl font-bold  drop-shadow-md">
                                     {location.name}
                                 </h1>
                                 <div className="flex items-center gap-3">
-                                    <div className="bg-white/20 backdrop-blur-md rounded-lg px-3 py-2 flex items-center">
+                                    <div className="bg-white dark:bg-gray-800 rounded-lg px-3 py-2 flex items-center">
                                         <Star className="text-yellow-400 mr-1" size={20} />
                                         <span className=" font-semibold">{avgRating}</span>
                                     </div>
+                                    <div className="bg dark:bg-gray-800">
+
                                     <ShareButton locationId={location.id} name={location.name} />
+                                    </div>
                                     <FavoriteToggleButton locationId={location.id} initialIsFavorite={location.isFavorite} />
                                 </div>
                             </div>
@@ -159,7 +162,7 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                         />
                     </div>
 
-                    {/* Chatbot Section */}
+                    {/* Chatbot Section
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 mb-8">
                         <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
                             สอบถามข้อมูลเพิ่มเติม
@@ -172,7 +175,7 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                             locationDescription={location.description}
                             locationDistrict={location.districts}
                         />
-                    </div>
+                    </div> */}
 
                     {/* Related Locations */}
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">

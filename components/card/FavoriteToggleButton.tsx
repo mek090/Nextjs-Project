@@ -69,7 +69,7 @@ const FavoriteToggleButton = ({
         return (
             <SignInButton mode="modal">
                 <Button size='lg'
-                    className="flex items-center justify-center bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-1.5 px-2 rounded-lg transition-colors duration-200 text-sm">
+                    className="flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 hover:bg-gray-50 text-gray-700 py-1.5 px-2 rounded-lg transition-colors duration-200 text-sm">
                     <Heart className="w-4 h-4" />
                 </Button>
             </SignInButton>
@@ -80,13 +80,13 @@ const FavoriteToggleButton = ({
         <Button size='lg'
             onClick={handleToggleFavorite}
             disabled={loading}
-            className="flex items-center justify-center bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-1.5 px-2 rounded-lg transition-all duration-200 text-sm"
+            className="flex items-center justify-center bg-white dark:bg-gray-600 border border-gray-200 hover:bg-gray-50 text-gray-700 py-1.5 px-2 rounded-lg transition-all duration-200 text-sm"
         >
             {loading ? (
                 <RotateCw className="w-4 h-4 animate-spin" />
             ) : (
                 <Heart
-                    className={`w-4 h-4 transition-transform duration-200 ${isFavorite ? "fill-red-500 text-red-500 scale-110" : "scale-100"}`}
+                    className={`w-4 h-4  dark:text-white transition-transform duration-200 ${isFavorite ? "fill-red-500 text-red-500 scale-110" : "scale-100"}`}
                 />
             )}
         </Button>

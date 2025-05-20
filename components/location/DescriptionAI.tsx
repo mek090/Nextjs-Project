@@ -77,10 +77,10 @@ export default function DescriptionAI({ locationName, locationDescription, locat
   }, [locationName, locationDescription, locationDistrict]);
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="h-6 w-6 text-teal-500" />
-        <h2 className="text-2xl font-bold text-gray-800">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
           รายละเอียดเพิ่มเติม AI
         </h2>
       </div>
@@ -93,10 +93,10 @@ export default function DescriptionAI({ locationName, locationDescription, locat
               <Clock className="h-8 w-8 text-blue-500" />
             </div>
           </div>
-          <p className="text-gray-600 font-medium text-center">
+          <p className="text-gray-600 dark:text-white font-medium text-center">
             กำลังสร้างคำอธิบายเพิ่มเติม...
             <br />
-            <span className="text-sm text-gray-500">โปรดรอสักครู่</span>
+            <span className="text-sm text-gray-500 dark:text-white">โปรดรอสักครู่</span>
           </p>
         </div>
       ) : error ? (
@@ -114,7 +114,7 @@ export default function DescriptionAI({ locationName, locationDescription, locat
           </button>
         </div>
       ) : (
-        <div className="prose dark:prose-invert max-w-none bg-gradient-to-b from-white to-blue-50 rounded-lg p-5">
+        <div className="prose dark:prose-invert max-w-none  dark:text-white rounded-lg p-5">
           <ReactMarkdown>{aiDescription}</ReactMarkdown>
         </div>
       )}

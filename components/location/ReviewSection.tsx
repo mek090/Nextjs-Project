@@ -141,7 +141,7 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
   }
 
   return (
-    <div className="mt-10 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+    <div className="mt-10 bg-white dark:bg-gray-800 rounded-xl  dark:border-gray-700">
       <h2 className="text-3xl font-bold mb-8 text-gray-800 dark:text-white flex items-center">
         <MessageCircle className="mr-2 text-blue-500" /> แชร์ประสบการณ์ของคุณ
       </h2>
@@ -221,7 +221,7 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
 
       {/* Review Statistics */}
       {reviews.length > 0 && (
-        <div className="mb-8 p-4 bg-blue-50 dark:bg-gray-700 rounded-lg">
+        <div className="mb-8 p-4 bg-blue-50 dark:bg-gray-700  rounded-lg">
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-lg font-medium text-gray-800 dark:text-white">รีวิวทั้งหมด</h3>
@@ -249,9 +249,9 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
         {reviews.map((review) => (
           <div 
             key={review.id} 
-            className="border-2 border-gray-100 dark:border-gray-700 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-gray-800"
+            className="border-2 border-gray-100 dark:border-gray-700  p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-gray-800"
           >
-            <div className="flex justify-between">
+            <div className="flex justify-between ">
               <div className="flex items-center gap-4 mb-3">
                 <div className="relative w-14 h-14 flex-shrink-0">
                   <Image
@@ -283,7 +283,7 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
                 </div>
               </div>
               
-              <div>
+              {/* <div>
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -292,7 +292,7 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
                 >
                   <Heart className={`w-5 h-5 ${likes[review.id] ? "fill-red-500 text-red-500" : ""}`} />
                 </Button>
-              </div>
+              </div> */}
             </div>
             
             <p className="text-gray-700 dark:text-gray-300 mt-3 mb-4 text-lg">{review.content}</p>
@@ -313,7 +313,7 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
             {review.replies && review.replies.length > 0 && (
               <div className="ml-12 mt-4 space-y-3">
                 {review.replies.map(reply => (
-                  <div key={reply.id} className="border-l-2 border-blue-100 dark:border-blue-900 pl-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-r-lg">
+                  <div key={reply.id} className="border-l-2 border-blue-100 dark:border-blue-900 pl-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-r-lg">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="relative w-8 h-8 flex-shrink-0">
                         <Image

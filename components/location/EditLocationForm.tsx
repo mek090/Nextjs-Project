@@ -30,13 +30,16 @@ const EditLocationForm = ({ location }: EditLocationFormProps) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <FormInput
-                    name="price"
-                    label="ราคาค่าเข้าชม (บาท)"
-                    type="number"
-                    placeholder="0 หากไม่มีค่าใช้จ่าย"
-                    defaultValue={location.price.toString()}
-                />
+                <div className="space-y-4">
+                    <FormInput
+                        name="price"
+                        label="ราคาค่าเข้าชม"
+                        type="text"
+                        placeholder="เช่น ฟรี, 0-100, ติดต่อสอบถาม"
+                        defaultValue={location.price}
+                    />
+                    <p className="text-sm text-gray-500">ระบุราคา เช่น "ฟรี", "0-100 บาท", "ติดต่อสอบถาม"</p>
+                </div>
                 <ProvincesInput defaultValue={location.districts} />
             </div>
 

@@ -1,5 +1,4 @@
 import { fetchLocation } from "@/actions/actions"
-import { LocationCardProps } from "@/utils/types"
 import Breadcrumbs from "@/components/location/Breadcrumbs"
 import { Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
@@ -33,7 +32,7 @@ const ManageLocation = async () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {locations.map((location: LocationCardProps) => (
+                {locations.map((location) => (
                     <Card key={location.id} className="overflow-hidden">
                         <div className="relative h-48">
                             <img
@@ -46,9 +45,9 @@ const ManageLocation = async () => {
                             <CardTitle className="text-xl">{location.name}</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-gray-600 mb-4 line-clamp-2">{location.description}</p>
+                            <p className="dark:text-gray-200 mb-4 line-clamp-2">{location.description}</p>
                             <div className="flex justify-between items-center">
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm dark:text-gray-200">
                                     <p>{location.districts}</p>
                                     {location.openTime && location.closeTime && (
                                         <p>{location.openTime} - {location.closeTime}</p>

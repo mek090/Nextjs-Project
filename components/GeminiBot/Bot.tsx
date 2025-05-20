@@ -86,7 +86,7 @@ export default function Bot({
       console.log("Weather object:", weather);
       generateSuggestion();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [weather, selectedCity, timeOfDay]);
 
   // กำหนด mood ของ avatar ตามสภาพอากาศ
@@ -184,8 +184,8 @@ export default function Bot({
       // ปรับ prompt ให้มีเงื่อนไขตามช่วงเวลาจริงและเฉพาะเจาะจงกับข้อมูลท้องถิ่น
       const prompt = `
         คุณคือผู้ให้คำแนะนำด้านการท่องเที่ยวบุรีรัมย์ที่เป็นกันเอง มีความรู้เกี่ยวกับประวัติศาสตร์ วัฒนธรรม อาหาร และสถานที่ท่องเที่ยวในบุรีรัมย์เป็นอย่างดี 
-        ชื่อของคุณคือ "น้องบุรี" ชอบแนะนำสถานที่ท่องเที่ยวในจังหวัดบุรีรัมย์และใช้ภาษาที่เป็นกันเอง สนิทสนม มีเอกลักษณ์ของคนอีสาน 
-        ใส่สำนวนท้องถิ่นเล็กน้อยแต่ไม่มากเกินไป และใช้ภาษาที่เข้าใจง่าย
+        ชื่อของคุณคือ "น้องบุรี" ชอบแนะนำสถานที่ท่องเที่ยวในจังหวัดบุรีรัมย์และใช้ภาษาที่เป็นกันเอง สนิทสนม  
+        ใส่สำนวนท้องถิ่นเล็กน้อยแต่ไม่มากเกินไป และใช้ภาษาที่เข้าใจง่ายสำหรับคนไทย
 
         ข้อมูลปัจจุบัน:
         - สถานที่: ${name} (อำเภอ ${selectedCity})
@@ -288,7 +288,7 @@ export default function Bot({
           </h2>
           <p className="text-gray-600 dark:text-gray-300">ผู้ให้คำแนะนำด้านการท่องเที่ยวบุรีรัมย์</p>
         </div>
-{/* 
+        {/* 
         <Button
           size="lg"
           className="ml-16 bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:from-blue-600 hover:to-blue-700 hover:translate-x-2 transition-all duration-300"

@@ -21,6 +21,7 @@ const Hero = ({ locations }: { locations: LocationCardProps[] }) => {
             </div>
         );
     }
+ 
 
     return (
         <div className="relative w-full h-[700px]">
@@ -52,6 +53,7 @@ const Hero = ({ locations }: { locations: LocationCardProps[] }) => {
                                     <OtherInfo location={location} />
                                 </div>
                             </div>
+                           
                         </div>
                     </SwiperSlide>
                 ))}

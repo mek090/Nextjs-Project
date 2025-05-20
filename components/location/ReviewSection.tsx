@@ -228,14 +228,16 @@ const ReviewSection = ({ locationId, reviews }: ReviewSectionProps) => {
               <p className="text-gray-600 dark:text-gray-300">{reviews.length} รีวิว</p>
             </div>
             <div className="flex items-center">
-              <div className="flex">
+              {/* <div className="flex">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     className={`w-5 h-5 fill-yellow-400 text-yellow-400`}
                   />
                 ))}
-              </div>
+              </div> */}
+              <h3 className="text-lg font-medium text-gray-800 dark:text-white">Rating : </h3>
+               
               <span className="ml-2 font-medium text-gray-800 dark:text-white">
                 {(reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1)}
               </span>

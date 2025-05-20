@@ -41,7 +41,7 @@ model Location {
   // location    String // เช่น "อ.เมือง", "บ้านตะโก"
   lat         Float
   lng         Float
-  price       Int
+  price       String   @default("0") // เช่น "ฟรี", "0-100", "ติดต่อสอบถาม"
   openTime    String? // เช่น "08:00"
   closeTime   String? // เช่น "17:00"
   rating      Float? // ค่าเฉลี่ยจากรีวิว

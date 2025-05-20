@@ -19,30 +19,15 @@ export const imageSchema = z.object({
 
 
 export const locationSchema = z.object({
-  name: z.string()
-    .min(2, { message: "ชื่อต้องมากกว่า 2 อักขระ" })
-    .max(30, { message: "ชื่อต้องน้อยกว่า 30 อักขระ" })
-    .trim(),
-  category: z.string().min(1, { message: "ต้องเลือกประเภท" }),
-  description: z.string()
-    .min(2, { message: "รายละเอียดต้องมากกว่า 2 อักขระ" })
-    .max(500, { message: "รายละเอียดต้องน้อยกว่า 500 อักขระ" })
-    .trim(),
-  price: z.coerce.number({
-    required_error: "ต้องกรอกราคา",
-    invalid_type_error: "ต้องกรอกเป็นตัวเลข"
-  }).int().min(0, { message: 'ราคาต้องมากกว่า 0' }),
-  districts: z.string().min(1, { message: "ต้องเลือกเขต/อำเภอ" }),
-  lat: z.coerce.number({
-    required_error: "ต้องระบุละติจูด",
-    invalid_type_error: "ต้องกรอกเป็นตัวเลข"
-  }),
-  lng: z.coerce.number({
-    required_error: "ต้องระบุลองจิจูด",
-    invalid_type_error: "ต้องกรอกเป็นตัวเลข"
-  }),
-  openTime: z.string().optional(), // ทำให้เป็น optional
-  closeTime: z.string().optional() // ทำให้เป็น optional
+  name: z.string().min(2, 'ชื่อสถานที่ต้องมีอย่างน้อย 2 ตัวอักษร'),
+  description: z.string().min(10, 'รายละเอียดต้องมีอย่างน้อย 10 ตัวอักษร'),
+  category: z.string().min(1, 'กรุณาเลือกหมวดหมู่'),
+  districts: z.string().min(1, 'กรุณาเลือกตำบล/แขวง'),
+  price: z.string().min(1, 'กรุณาระบุราคา'),
+  openTime: z.string().optional(),
+  closeTime: z.string().optional(),
+  lat: z.coerce.number(),
+  lng: z.coerce.number(),
 });
 
 

@@ -16,6 +16,7 @@ const CreateLocation = () => {
                 items={[
                     { label: 'Home', href: '/' },
                     { label: 'Dashboard', href: '/dashboard' },
+                    { label: 'Manage Location', href: '/dashboard/managelocation' },
                     { label: 'Create Location' },
                 ]}
             />
@@ -40,12 +41,15 @@ const CreateLocation = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <FormInput
-                        name="price"
-                        label="ราคาค่าเข้าชม (บาท)"
-                        type="number"
-                        placeholder="0 หากไม่มีค่าใช้จ่าย"
-                    />
+                    <div className="space-y-4">
+                        <FormInput
+                            name="price"
+                            label="ราคาค่าใช้จ่าย (บาท)"
+                            type="text"
+                            placeholder="เช่น ฟรี, 0-100, ติดต่อสอบถาม"
+                        />
+                        <p className="text-sm text-gray-500">ระบุราคา เช่น "ฟรี", "0-100 บาท", "ติดต่อสอบถาม"</p>
+                    </div>
                     <ProvincesInput />
                 </div>
 

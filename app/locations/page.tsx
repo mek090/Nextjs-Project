@@ -1,8 +1,9 @@
-import { fetchLocation, fetchRoleById } from "@/actions/actions"
+import { fetchLocation } from "@/actions/actions"
 import LocationList from "@/components/home/LocationList"
-import CategoryList from "@/components/home/CategoryList"
+import CategoryListAll from "@/components/home/CategoryListAll"
 import { Suspense } from "react"
 import LoadingCard from "@/components/card/LoadingCard"
+import LocationListAll from "@/components/home/LocationListAll"
 
 export default async function LocationsPage({
   searchParams
@@ -27,7 +28,7 @@ export default async function LocationsPage({
         </p>
       </div>
 
-      {/* <CategoryList /> */}
+      <CategoryListAll />
       
       <Suspense fallback={
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -36,7 +37,7 @@ export default async function LocationsPage({
           ))}
         </div>
       }>
-        <LocationList Locations={locations} />
+        <LocationListAll Locations={locations} />
       </Suspense>
     </div>
   )

@@ -7,23 +7,31 @@ import {
     Hotel,
     Bed,
     MapPinned ,
+    Castle ,
+    Leaf ,
+    Church ,
+    MapPin ,
   } from "lucide-react";
   
   export const categories = [
     {
-      label: "location",
-      icon: MapPinned,
+      label: "Culture",
+      icon: Castle,
     },
     {
-      label: "hotel",
-      icon: Hotel,
+      label: "Nature",
+      icon: Leaf ,
     },
     {
-      label: "store",
+      label: "Spots",
+      icon: MapPin,
+    },
+    {
+      label: "Markets",
       icon: Store,
     },
     {
-      label: "food",
-      icon: Utensils,
+      label: "Temples",
+      icon: Church,
     },
   ];

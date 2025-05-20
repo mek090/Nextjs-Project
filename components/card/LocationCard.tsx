@@ -50,8 +50,8 @@ const LocationCard = ({
     };
 
 
-    
-    
+
+
     return (
         <article className="bg-gray-50 dark:bg-gray-700 group relative h-full rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
 
@@ -65,7 +65,7 @@ const LocationCard = ({
                         sizes="300px"
                         className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                         priority={false}
-                        />
+                    />
 
                     {/* Simple gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
@@ -86,7 +86,7 @@ const LocationCard = ({
                             {formatPrice(price)}
                         </div>
                     )}
-                    </Link>
+                </Link>
             </div>
 
             {/* Card content */}
@@ -162,8 +162,8 @@ const LocationCard = ({
                             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                         </svg>
                     </Link>
+                </div>
             </div>
-        </div>
         </article >
     );
 };

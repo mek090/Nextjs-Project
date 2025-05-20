@@ -9,7 +9,7 @@ import ReviewSection from "@/components/location/ReviewSection"
 import MapLocation from "@/components/map/MapLocation"
 import LocationChatBot from "@/components/location/LocationChatBot"
 import { notFound } from 'next/navigation'
-import { MapPin, Star, Clock, Phone, Globe } from 'lucide-react'
+import { MapPin, Star, Clock, Phone, Globe, HandCoins } from 'lucide-react'
 
 const LocationDetail = async ({ params }: { params: { id: string } }) => {
     try {
@@ -67,7 +67,7 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                                     </div>
                                     <div className="bg dark:bg-gray-800">
 
-                                    <ShareButton locationId={location.id} name={location.name} />
+                                        <ShareButton locationId={location.id} name={location.name} />
                                     </div>
                                     <FavoriteToggleButton locationId={location.id} initialIsFavorite={location.isFavorite} />
                                 </div>
@@ -83,11 +83,15 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                         </div>
                         <div className="flex items-center">
                             <Clock className="text-blue-500 mr-2" size={20} />
-                            <span className="font-medium">{location.openingHours || 'ไม่ได้ระบุข้อมูล'}</span>
+                            <span className="font-medium">{location.openTime || 'ไม่ได้ระบุข้อมูล'}</span>
+                            <p className="mx-2"> - </p> 
+                            <span className="font-medium">{location.closeTime || 'ไม่ได้ระบุข้อมูล'}</span>
                         </div>
                         <div className="flex items-center">
-                            <Phone className="text-blue-500 mr-2" size={20} />
-                            <span className="font-medium">{location.phone || 'ไม่ได้ระบุข้อมูล'}</span>
+                            <HandCoins  className="text-blue-500 mr-2" size={20} />
+                            <p className="mr-2">ค่าใช้จ่าย</p>
+                            <span className="font-medium">{location.price || 'ไม่ได้ระบุข้อมูล'}</span>
+                            <p className="mx-2">บาท</p>
                         </div>
                         {/* <div className="flex items-center">
                         <Globe className="text-blue-500 mr-2" size={20} />
@@ -170,12 +174,13 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                         <p className="text-gray-600 mb-6">
                             มีคำถามเกี่ยวกับสถานที่นี้? แชทกับ AI ของเราเพื่อขอข้อมูลเพิ่มเติม
                         </p>
-                        <LocationChatBot
-                            locationName={location.name}
-                            locationDescription={location.description}
-                            locationDistrict={location.districts}
-                        />
+                        
                     </div> */}
+                    <LocationChatBot
+                        locationName={location.name}
+                        locationDescription={location.description}
+                        locationDistrict={location.districts}
+                    />
 
                     {/* Related Locations */}
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">

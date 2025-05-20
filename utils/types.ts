@@ -56,6 +56,7 @@ export type LocationCardProps = {
   name: string,
   image: string,
   description: string,
+  category: string,
   districts: string,
   price: number,
   lat: number,

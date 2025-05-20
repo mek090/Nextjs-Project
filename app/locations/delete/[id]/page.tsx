@@ -4,6 +4,10 @@ import Breadcrumbs from "@/components/location/Breadcrumbs"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Trash2 } from "lucide-react"
+import CancelButton from "@/components/location/CancelButton"
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
+import { prisma } from "@/lib/prisma"
 
 export const dynamic = 'force-dynamic'
 
@@ -12,6 +16,22 @@ const DeleteLocation = async ({ params }: { params: { id: string } }) => {
 
     if (!location) {
         notFound()
+    }
+
+    async function deleteLocation() {
+        'use server'
+        try {
+            await prisma.location.delete({
+                where: {
+                    id: params.id
+                }
+            });
+            revalidatePath('/dashboard/managelocation')
+            redirect('/dashboard/managelocation')
+        } catch (error) {
+            console.error('Error in deleteLocation:', error);
+            throw error;
+        }
     }
 
     return (
@@ -43,8 +63,7 @@ const DeleteLocation = async ({ params }: { params: { id: string } }) => {
                             การกระทำนี้ไม่สามารถย้อนกลับได้ คุณแน่ใจหรือไม่ว่าต้องการลบสถานที่นี้?
                         </p>
                         <div className="flex justify-end gap-4 mt-6">
-                            <form action={deleteLocationAction}>
-                                <input type="hidden" name="id" value={location.id} />
+                            <form action={deleteLocation}>
                                 <Button
                                     type="submit"
                                     variant="destructive"
@@ -54,12 +73,7 @@ const DeleteLocation = async ({ params }: { params: { id: string } }) => {
                                     ยืนยันการลบ
                                 </Button>
                             </form>
-                            <Button
-                                variant="outline"
-                                onClick={() => window.history.back()}
-                            >
-                                ยกเลิก
-                            </Button>
+                            <CancelButton />
                         </div>
                     </div>
                 </CardContent>

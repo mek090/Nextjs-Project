@@ -52,17 +52,16 @@ export type WeatherIcons = {
 
 
 export type LocationCardProps = {
-  id:string
+  id: string
   name: string,
   image: string,
   description: string,
   category: string,
   districts: string,
-  price: number,
+  price: string,
   lat: number,
   lng: number,
-  rating: number,
-  openTime: string,
-  closeTime: string,
-
+  rating: number | null,
+  openTime: string | null,
+  closeTime: string | null,
 }

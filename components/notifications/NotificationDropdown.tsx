@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "../ui/skeleton";
+import { SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
 
 interface Notification {
   id: string;
@@ -37,28 +39,35 @@ export default function NotificationDropdown() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
+  const { user, isLoaded } = useUser();
+  // const [isLoaded, setIsLoaded] = useState(false);
+
 
   const fetchNotifications = async () => {
     try {
       const response = await fetch("/api/notifications");
       const data = await response.json();
       console.log('Fetched notifications data:', data);
-      
+
       if (!data || !Array.isArray(data.notifications)) {
         console.error("Invalid notifications data:", data);
         setNotifications([]);
         setUnreadCount(0);
+        // setIsLoaded(true);
         return;
       }
 
       setNotifications(data.notifications);
       const unread = data.notifications.filter((n: Notification) => !n.isRead).length;
-      console.log('Unread notifications:', unread);
       setUnreadCount(unread);
+      // setIsLoaded(true);
+      // console.log('Unread notifications:', unread);
+      // setUnreadCount(unread);
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setNotifications([]);
       setUnreadCount(0);
+      // setIsLoaded(true);
     }
   };
 
@@ -93,7 +102,23 @@ export default function NotificationDropdown() {
     return () => clearInterval(interval);
   }, []);
 
-  
+  if (!unreadCount) {
+    return (
+      <>
+        <button>
+
+          <Skeleton className="w-10 h-10" />
+          {/* <RotateCw className="animate-spin" /> */}
+        </button>
+      </>
+
+    )
+  }
+
+ if (!user) {
+    return null;
+  }
+
 
   return (
     <DropdownMenu>
@@ -116,9 +141,8 @@ export default function NotificationDropdown() {
           notifications.map((notification) => (
             <DropdownMenuItem
               key={notification.id}
-              className={`p-4 cursor-pointer ${
-                !notification.isRead ? "bg-gray-200" : ""
-              }`}
+              className={`p-4 cursor-pointer ${!notification.isRead ? "bg-gray-200" : ""
+                }`}
               onClick={() => handleNotificationClick(notification)}
             >
               <div className="flex flex-col gap-1">

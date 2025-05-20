@@ -146,6 +146,7 @@ export const fetchLocation = async (params?: { search?: string, category?: strin
             name: true,
             image: true,
             description: true,
+            category: true,
             districts: true,
             price: true,
             lat: true,

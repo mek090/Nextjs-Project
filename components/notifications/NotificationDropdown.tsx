@@ -117,7 +117,7 @@ export default function NotificationDropdown() {
             <DropdownMenuItem
               key={notification.id}
               className={`p-4 cursor-pointer ${
-                !notification.isRead ? "bg-gray-50" : ""
+                !notification.isRead ? "bg-gray-200" : ""
               }`}
               onClick={() => handleNotificationClick(notification)}
             >

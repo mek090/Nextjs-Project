@@ -4,6 +4,7 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { useState } from "react"
 
+
 const ImageInput = () => {
     const name = 'image'
     const [error, setError] = useState<string | null>(null)
@@ -15,10 +16,10 @@ const ImageInput = () => {
             const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
             
             if (file.size > maxSize) {
-                setError(`ขนาดไฟล์ต้องไม่เกิน ${maxSize / (1024 * 1024)}MB`)
+                toest.error(`ขนาดไฟล์ต้องไม่เกิน ${maxSize / (1024 * 1024)}MB`)
                 e.target.value = '' // รีเซ็ต input
             } else if (!allowedTypes.includes(file.type)) {
-                setError(`รองรับเฉพาะไฟล์ประเภท: ${allowedTypes.join(', ')}`)
+                toest.error(`รองรับเฉพาะไฟล์ประเภท: ${allowedTypes.join(', ')}`)
                 e.target.value = '' // รีเซ็ต input
             } else {
                 setError(null)

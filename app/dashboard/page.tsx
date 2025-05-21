@@ -1,32 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Activity, Users, MapPin, Star } from "lucide-react"
-import { getDashboardStats } from "@/actions/actions"
-import { formatDistanceToNow } from "date-fns"
+import { getEnhancedDashboardStats } from "@/actions/actions"
+import { format } from "date-fns"
 import { links4 } from "@/utils/links"
 import Link from "next/link"
 import { currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
-import { SignInButton, useUser } from "@clerk/nextjs"
-import { useEffect, useState } from "react"
-import { findRoleprofile } from "@/actions/actions"
 import { prisma } from "@/lib/prisma"
 import Breadcrumbs from "@/components/location/Breadcrumbs"
+import { UserActivitiesList } from "@/components/dashboard/UserActivitiesList"
+import { RecentReviewsList } from "@/components/dashboard/RecentReviewsList"
+import { TopLocations } from "@/components/dashboard/TopLocations"
 
 export const dynamic = 'force-dynamic'
 
-
-
-
-
 const Dashboard = async () => {
-  const stats = await getDashboardStats()
+  const stats = await getEnhancedDashboardStats()
   const user = await currentUser();
-  // if (!user) {
-  //   return (
-  //     <SignInButton mode="modal" ></SignInButton>
-  //   )
-
-  // }
   const profile = await prisma.profile.findUnique({
     where: {
       clerkId: user.id
@@ -34,33 +24,20 @@ const Dashboard = async () => {
   })
   if (!profile || profile.role !== 'admin') redirect('/')
 
-
-  // ตรวจสอบว่าเป็น admin หรือไม่
-  // const profile = await prisma.profile.findUnique({
-  //   where: { clerkId: user.id }
-  // })
-  // if (!profile || profile.role !== 'admin') redirect('/')
-
-
-
-
   return (
-
-
-
-
     <div className="p-6 space-y-6">
       <Breadcrumbs
-                    items={[
-                        { label: 'Home', href: '/' },
-                        { label: 'Dashboard'},
-                    ]}
-                />
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Dashboard' },
+        ]}
+      />
+
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="flex items-center space-x-4">
-          <span className="text-sm text-muted-foreground">Welcome back, Admin</span>
+          {/* <span className="text-sm text-muted-foreground">Welcome back, Admin</span> */}
         </div>
       </div>
 
@@ -107,31 +84,6 @@ const Dashboard = async () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {stats.recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-center space-x-4">
-                <div className="h-2 w-2 rounded-full bg-primary" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium">
-                    {activity.profile.firstname} {activity.profile.lastname} reviewed {activity.location.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Quick Actions */}
       <Card>
         <CardHeader>
@@ -152,11 +104,24 @@ const Dashboard = async () => {
                 </Link>
               );
             })}
-
           </div>
         </CardContent>
       </Card>
-    </div >
+      
+      {/* Top Locations */}
+      <TopLocations
+        topRated={stats.topRatedLocations}
+        mostFavorited={stats.mostFavoritedLocations}
+      />
+
+      {/* User Activities Section */}
+      <UserActivitiesList activities={stats.userActivities} />
+
+      {/* Recent Reviews Section */}
+      <RecentReviewsList reviews={stats.recentReviews} />
+
+
+    </div>
   )
 }
 

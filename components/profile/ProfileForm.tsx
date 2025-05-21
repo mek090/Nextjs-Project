@@ -26,15 +26,15 @@ export default function ProfileForm({ profile, userId }: ProfileFormProps) {
       // ตรวจสอบขนาดไฟล์
       const maxSize = 2 * 1024 * 1024; // 2MB
       if (file.size > maxSize) {
-        alert(`ขนาดไฟล์ต้องไม่เกิน ${maxSize / (1024 * 1024)}MB`);
+        toast.error(`ขนาดไฟล์ต้องไม่เกิน ${maxSize / (1024 * 1024)}MB`);
         e.target.value = '';
         return;
       }
 
       // ตรวจสอบประเภทไฟล์
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp','image/gif'];
       if (!allowedTypes.includes(file.type)) {
-        alert('รองรับเฉพาะไฟล์ภาพประเภท JPEG, PNG และ WebP');
+        toast.error('รองรับเฉพาะไฟล์ภาพประเภท JPEG, PNG และ WebP');
         e.target.value = '';
         return;
       }

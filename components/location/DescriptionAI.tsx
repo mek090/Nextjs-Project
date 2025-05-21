@@ -45,6 +45,9 @@ export default function DescriptionAI({
   const [nearbyLocations, setNearbyLocations] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("description");
 
+
+
+
   useEffect(() => {
     const generateDescription = async () => {
       try {
@@ -361,11 +364,11 @@ export default function DescriptionAI({
 
     // แยกหัวข้อต่างๆ จาก Markdown
     const sections = aiDescription.split('## ').filter(section => section.trim());
-    
+
     return sections.map((section, index) => {
       const [title, ...content] = section.split('\n');
       const contentText = content.join('\n').trim();
-      
+
       if (!contentText) return null;
 
       // เลือกไอคอนตามหัวข้อ

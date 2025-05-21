@@ -26,6 +26,7 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
         const reviews = await fetchLocationReviews(id)
         console.log('Reviews data:', JSON.stringify(reviews, null, 2))
 
+
         // Calculate average rating
         const avgRating = reviews.length > 0
             ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
@@ -84,11 +85,11 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                         <div className="flex items-center">
                             <Clock className="text-blue-500 mr-2" size={20} />
                             <span className="font-medium">{location.openTime || 'ไม่ได้ระบุข้อมูล'}</span>
-                            <p className="mx-2"> - </p> 
+                            <p className="mx-2"> - </p>
                             <span className="font-medium">{location.closeTime || 'ไม่ได้ระบุข้อมูล'}</span>
                         </div>
                         <div className="flex items-center">
-                            <HandCoins  className="text-blue-500 mr-2" size={20} />
+                            <HandCoins className="text-blue-500 mr-2" size={20} />
                             <p className="mr-2">ค่าใช้จ่าย</p>
                             <span className="font-medium">{location.price || 'ไม่ได้ระบุข้อมูล'}</span>
                             <p className="mx-2">บาท</p>
@@ -118,6 +119,7 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                                     locationName={location.name}
                                     locationDescription={location.description}
                                     locationDistrict={location.districts}
+                                    locationCategory={location.category}
                                 />
                             </div>
                         </div>

@@ -828,3 +828,74 @@ export const deleteLocationAction = async (
         };
     }
 }
+
+export const analyzeUserProfile = async (userId: string) => {
+    try {
+        const profile = await prisma.profile.findUnique({
+            where: { clerkId: userId },
+            include: {
+                reviews: {
+                    include: {
+                        location: true
+                    }
+                },
+                favorites: {
+                    include: {
+                        location: true
+                    }
+                }
+            }
+        });
+
+        if (!profile) {
+            throw new Error('Profile not found');
+        }
+
+        // วิเคราะห์ประเภทสถานที่ที่ผู้ใช้ชอบ
+        const locationCategories = profile.reviews.map(review => review.location.category);
+        const categoryCount = locationCategories.reduce((acc, category) => {
+            acc[category] = (acc[category] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+
+        // หาประเภทสถานที่ที่ผู้ใช้ชอบที่สุด
+        const favoriteCategory = Object.entries(categoryCount)
+            .sort((a, b) => b[1] - a[1])[0]?.[0] || 'ไม่พบข้อมูล';
+
+        // คำนวณคะแนนเฉลี่ยที่ผู้ใช้ให้
+        const averageRating = profile.reviews.reduce((acc, review) => acc + review.rating, 0) / 
+            (profile.reviews.length || 1);
+
+        // วิเคราะห์อำเภอที่ผู้ใช้ไปบ่อยที่สุด
+        const districts = profile.reviews.map(review => review.location.districts);
+        const districtCount = districts.reduce((acc, district) => {
+            acc[district] = (acc[district] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+
+        const favoriteDistrict = Object.entries(districtCount)
+            .sort((a, b) => b[1] - a[1])[0]?.[0] || 'ไม่พบข้อมูล';
+
+        // สรุปข้อมูลการวิเคราะห์
+        const analysis = {
+            totalReviews: profile.reviews.length,
+            totalFavorites: profile.favorites.length,
+            averageRating: averageRating.toFixed(1),
+            favoriteCategory,
+            favoriteDistrict,
+            categoryBreakdown: categoryCount,
+            districtBreakdown: districtCount,
+            recentReviews: profile.reviews
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .slice(0, 5),
+            favoriteLocations: profile.favorites
+                .map(fav => fav.location)
+                .slice(0, 5)
+        };
+
+        return analysis;
+    } catch (error) {
+        console.error('Error analyzing user profile:', error);
+        throw error;
+    }
+};

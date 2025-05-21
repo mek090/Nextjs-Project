@@ -27,7 +27,7 @@ export const links3: NavbarLink[] = [
   { href: '/support', label: 'Support', icon: LifeBuoy, hidden: false, },
 ];
 export const links4: NavbarLink[] = [
-  { href: '/locations/create', label: 'Create Location', icon: MapPin, hidden: false, },
+  { href: '/dashboard/managelocation', label: 'Manage Location', icon: MapPin, hidden: false, },
   { href: '/dashboard/manageuser', label: 'Manage User', icon: UserRoundCog, hidden: false, },
 
 ];

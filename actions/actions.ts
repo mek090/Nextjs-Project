@@ -867,9 +867,9 @@ export const analyzeUserProfile = async (userId: string) => {
             throw new Error('Profile not found');
         }
 
-        // วิเคราะห์ประเภทสถานที่ที่ผู้ใช้ชอบ
-        const locationCategories = profile.reviews.map(review => review.location.category);
-        const categoryCount = locationCategories.reduce((acc, category) => {
+        // วิเคราะห์ประเภทสถานที่ที่ผู้ใช้ชอบจาก favorites
+        const favoriteCategories = profile.favorites.map(fav => fav.location.category);
+        const categoryCount = favoriteCategories.reduce((acc, category) => {
             acc[category] = (acc[category] || 0) + 1;
             return acc;
         }, {} as Record<string, number>);
@@ -882,8 +882,8 @@ export const analyzeUserProfile = async (userId: string) => {
         const averageRating = profile.reviews.reduce((acc, review) => acc + review.rating, 0) / 
             (profile.reviews.length || 1);
 
-        // วิเคราะห์อำเภอที่ผู้ใช้ไปบ่อยที่สุด
-        const districts = profile.reviews.map(review => review.location.districts);
+        // วิเคราะห์อำเภอที่ผู้ใช้ไปบ่อยที่สุดจาก favorites
+        const districts = profile.favorites.map(fav => fav.location.districts);
         const districtCount = districts.reduce((acc, district) => {
             acc[district] = (acc[district] || 0) + 1;
             return acc;

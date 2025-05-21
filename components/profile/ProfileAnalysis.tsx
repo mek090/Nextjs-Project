@@ -317,7 +317,7 @@ export default function ProfileAnalysis({ userId }: ProfileAnalysisProps) {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">{analysis.favoriteCategory}</div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">ประเภทที่เข้าชมบ่อยที่สุด</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">ประเภทที่เพิ่มเป็นสถานที่โปรดมากที่สุด</p>
                     </CardContent>
                 </Card>
 

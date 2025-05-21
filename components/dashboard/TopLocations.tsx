@@ -38,7 +38,7 @@ export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocations
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>สถานที่ยอดนิยม</CardTitle>
-            <Link href="/admin/locations" className="text-sm text-primary hover:underline">
+            <Link href="/dashboard/top-rated" className="text-sm text-primary hover:underline">
               ดูทั้งหมด
             </Link>
           </div>
@@ -87,7 +87,7 @@ export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocations
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>สถานที่เพิ่มในรายการโปรดมากที่สุด</CardTitle>
-            <Link href="/admin/locations" className="text-sm text-primary hover:underline">
+            <Link href="/dashboard/most-favorited" className="text-sm text-primary hover:underline">
               ดูทั้งหมด
             </Link>
           </div>

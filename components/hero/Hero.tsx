@@ -40,7 +40,7 @@ const Hero = ({ locations }: { locations: LocationCardProps[] }) => {
                 className="w-full h-full group"
                 speed={800}
             >
-                {locations.map((location) => (
+                {locations.slice(0, 4).map((location) => (
                     <SwiperSlide key={location.id}>
                         <div className="relative w-full h-full">
                             <img

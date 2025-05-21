@@ -10,6 +10,7 @@ import { auth } from "@clerk/nextjs/server";
 import path from "path";
 import fs from "fs/promises";
 import { revalidatePath } from "next/cache";
+import { UserRole } from "@prisma/client";
 
 export const getAuthUser = async () => {
     const user = await currentUser()
@@ -583,7 +584,7 @@ export async function updateUser(formData: FormData) {
                 firstname: data.firstname,
                 lastname: data.lastname,
                 username: data.username,
-                role: data.role,
+                role: data.role as UserRole,
             }
         })
 

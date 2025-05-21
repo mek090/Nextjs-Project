@@ -8,6 +8,7 @@ import { LocationCardProps } from "@/utils/types";
 import LocationRating from "./LocationRating";
 import FavoriteToggleButton from "./FavoriteToggleButton";
 import LoadingCard from "./LoadingCard";
+import { number } from "zod";
 
 
 // คอมโพเนนต์การ์ดแสดงสถานที่
@@ -43,10 +44,14 @@ const LocationCard = ({
 
 
     // Format price display for better readability
-    const formatPrice = (price: number): string => {
-        if (price === 0) return 'ฟรี';
-        if (price < 1000) return `${price} บาท`;
-        return `${(price / 1000).toFixed(1)}K บาท`;
+    const formatPrice = (price: string | number): string => {
+        const num = typeof price === 'string' ? Number(price) : price;
+
+        if (isNaN(num)) return `${price}`;
+
+        if (num === 0) return 'ฟรี';
+        if (num < 1000) return `${num} บาท`;
+        return `${(num / 1000).toFixed(1)}K บาท`;
     };
 
 

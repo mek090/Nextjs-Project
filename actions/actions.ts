@@ -339,10 +339,23 @@ export async function updateProfileAction(formData: FormData) {
         let profileImageUrl = undefined
         if (profileImage && profileImage.size > 0) {
             try {
+                // ตรวจสอบขนาดไฟล์
+                const maxSize = 2 * 1024 * 1024; // 2MB
+                if (profileImage.size > maxSize) {
+                    throw new Error(`ขนาดไฟล์ต้องไม่เกิน ${maxSize / (1024 * 1024)}MB`);
+                }
+
+                // ตรวจสอบประเภทไฟล์
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!allowedTypes.includes(profileImage.type)) {
+                    throw new Error('รองรับเฉพาะไฟล์ภาพประเภท JPEG, PNG และ WebP');
+                }
+
+                // อัพโหลดไฟล์
                 profileImageUrl = await uploadFile(profileImage)
             } catch (error) {
                 console.error("Error uploading profile image:", error)
-                throw new Error("เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ")
+                throw new Error(error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ")
             }
         }
 
@@ -360,7 +373,10 @@ export async function updateProfileAction(formData: FormData) {
         return { success: true, profile }
     } catch (error) {
         console.error("Error updating profile:", error)
-        return { success: false, error: "เกิดข้อผิดพลาดในการอัพเดทโปรไฟล์" }
+        return { 
+            success: false, 
+            error: error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการอัพเดทโปรไฟล์" 
+        }
     }
 }
 

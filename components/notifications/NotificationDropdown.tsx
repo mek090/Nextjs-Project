@@ -102,20 +102,19 @@ export default function NotificationDropdown() {
     return () => clearInterval(interval);
   }, []);
 
-  if (!unreadCount) {
+  if (!notifications.length === null) {
     return (
-      <>
-        <button>
-
+      <button>
+        {!notifications.length ? (
           <Skeleton className="w-10 h-10" />
-          {/* <RotateCw className="animate-spin" /> */}
-        </button>
-      </>
-
-    )
+        ) : (
+          <BellRing className="h-5 w-5" />
+        )}
+      </button>
+    );
   }
 
- if (!user) {
+  if (!user) {
     return null;
   }
 

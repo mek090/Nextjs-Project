@@ -33,8 +33,9 @@ const bucket = 'location-bucket'
 const url = process.env.SUPABASE_URL as string
 const key = process.env.SUPABASE_KEY as string
 
+
 // Create Supabase client
-const supabase = createClient(url, key)
+export const supabase = createClient(url, key)
 
 // Upload file with improved error handling
 export async function uploadFile(image: File): Promise<string> {
@@ -45,7 +46,7 @@ export async function uploadFile(image: File): Promise<string> {
         }
 
         // 2. ตรวจสอบประเภทไฟล์
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif','image/html'];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/html'];
         if (!allowedTypes.includes(image.type)) {
             throw new Error('รองรับเฉพาะไฟล์ภาพประเภท JPEG, PNG, GIF และ WebP');
         }

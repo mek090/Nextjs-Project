@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAuth } from '@clerk/nextjs';
+import { toast } from 'sonner';
 
 interface Place {
   place_id: string;
@@ -11,13 +13,14 @@ interface Place {
   photos?: Array<{
     photo_reference: string;
   }>;
-  rating?: number;
+  // rating?: number;
 }
 
 export default function PlacesPage() {
   const [places, setPlaces] = useState<Place[]>([]);
   const [category, setCategory] = useState('');
   const [loading, setLoading] = useState(false);
+  const { userId } = useAuth();
 
   const categories = [
     { id: '', label: 'ทั้งหมด' },
@@ -38,6 +41,64 @@ export default function PlacesPage() {
       console.error('Error fetching places:', error);
     }
     setLoading(false);
+  };
+
+  const savePlaceToDatabase = async (place: Place) => {
+    try {
+      // ดึงข้อมูลเพิ่มเติมจาก Place Details API
+      const detailsResponse = await fetch(`/api/places/details?place_id=${place.place_id}`);
+      const detailsData = await detailsResponse.json();
+      const placeDetails = detailsData.result;
+
+      if (!placeDetails) {
+        throw new Error('ไม่สามารถดึงข้อมูลสถานที่ได้');
+      }
+
+      // แยกที่อยู่เป็นส่วนๆ
+      const addressParts = place.formatted_address.split(',');
+      const district = addressParts[0].trim();
+
+      // แยกเวลาทำการ
+      let openTime = null;
+      let closeTime = null;
+      if (placeDetails.opening_hours?.weekday_text?.[0]) {
+        const timeParts = placeDetails.opening_hours.weekday_text[0].split(' ');
+        if (timeParts.length >= 3) {
+          openTime = timeParts.slice(1, -1).join(' ');
+          closeTime = timeParts[timeParts.length - 1];
+        }
+      }
+
+      const response = await fetch('/api/places/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: place.name,
+          description: `สถานที่ท่องเที่ยว ${place.name} ในบุรีรัมย์\nที่อยู่: ${place.formatted_address}\nคะแนนรีวิว: ${place.rating || 'ไม่มีคะแนน'}\nจำนวนรีวิว: ${placeDetails.user_ratings_total || 0} รีวิว`,
+          category: category || 'Spots',
+          districts: district,
+          lat: placeDetails.geometry?.location?.lat || 0,
+          lng: placeDetails.geometry?.location?.lng || 0,
+          price: '0',
+          image: place.photos ? [`https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`] : [],
+          // rating: place.rating || 0,
+          openTime,
+          closeTime,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save place');
+      }
+
+      toast.success('บันทึกสถานที่เรียบร้อยแล้ว');
+    } catch (error) {
+      console.error('Error saving place:', error);
+      toast.error(error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการบันทึกสถานที่');
+    }
   };
 
   useEffect(() => {
@@ -75,11 +136,7 @@ export default function PlacesPage() {
       {/* Places Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {places.map((place) => (
-          <Link 
-            href={`/places/${place.place_id}`} 
-            key={place.place_id}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200"
-          >
+          <div key={place.place_id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
             {place.photos && place.photos[0] && (
               <div className="relative h-48">
                 <Image
@@ -93,14 +150,28 @@ export default function PlacesPage() {
             <div className="p-4">
               <h2 className="text-xl font-semibold mb-2">{place.name}</h2>
               <p className="text-gray-600 mb-2">{place.formatted_address}</p>
-              {place.rating && (
-                <div className="flex items-center">
+              {/* {place.rating && (
+                <div className="flex items-center mb-4">
                   <span className="text-yellow-400">★</span>
                   <span className="ml-1">{place.rating.toFixed(1)}</span>
                 </div>
-              )}
+              )} */}
+              <div className="flex justify-between items-center">
+                <Link 
+                  href={`/places/${place.place_id}`}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  ดูรายละเอียด
+                </Link>
+                <button
+                  onClick={() => savePlaceToDatabase(place)}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  เพิ่มสถานที่
+                </button>
+              </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 

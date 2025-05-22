@@ -3,6 +3,7 @@ import Weatherapi from "@/components/weather/Weather"
 import BuriramChatBotOverlay from "./chat/page"
 import { Suspense } from "react"
 import LoadingCard from "@/components/card/LoadingCard"
+import Bot from "@/components/ChatYimm/bot"
 
 
 
@@ -33,7 +34,8 @@ const page = async ({
       </div>
 
       <div>
-        <BuriramChatBotOverlay />
+        {/* <BuriramChatBotOverlay /> */}
+        <Bot />
       </div>
 
       <div className="bg-gradient-to-br from-blue-50 to-teal-100 dark:from-gray-900 dark:to-gray-800 rounded-lg p-4">

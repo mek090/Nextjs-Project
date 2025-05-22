@@ -773,87 +773,72 @@ export const updateLocationAction = async (
     prevState: any,
     formData: FormData
 ) => {
+    const user = await getAuthUser();
+    const locationId = formData.get('id') as string;
+    const currentImages = JSON.parse(formData.get('currentImages') as string) || [];
+
+    // ตรวจสอบว่ามีการอัพโหลดรูปภาพใหม่หรือไม่
+    const newImages = formData.getAll('image') as string[];
+    const imageUrls = newImages.length > 0 ? newImages : currentImages;
+
+    const rawData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        category: formData.get('category'),
+        districts: formData.get('districts'),
+        price: formData.get('price'),
+        lat: formData.get('lat'),
+        lng: formData.get('lng'),
+        openTime: formData.get('openTime'),
+        closeTime: formData.get('closeTime'),
+    };
+
     try {
-        const user = await getAuthUser();
-        const rawData = Object.fromEntries(formData);
-        const locationId = rawData.id as string;
+        const validateField = validateWithZod(locationSchema, rawData);
 
-        // ตั้งค่า default ถ้าไม่มีค่า
-        if (!rawData.openTime) rawData.openTime = '';
-        if (!rawData.closeTime) rawData.closeTime = '';
+        // ตรวจสอบว่า user เป็น admin หรือไม่
+        const userProfile = await prisma.profile.findUnique({
+            where: { clerkId: user.id }
+        });
 
-        // ตรวจสอบไฟล์รูปภาพ
-        const imageFiles = formData.getAll('images') as File[];
-        let imageUrls = rawData.image ? JSON.parse(rawData.image as string) : [];
-
-        if (imageFiles.length > 0) {
-            try {
-                const validateFiles = validateWithZod(imageSchema, { images: imageFiles });
-                const newImageUrls = await Promise.all(
-                    validateFiles.images.map(image => uploadFile(image))
-                );
-                imageUrls = [...imageUrls, ...newImageUrls];
-            } catch (error) {
-                return {
-                    success: false,
-                    message: 'รูปภาพไม่ถูกต้อง'
-                };
-            }
-        }
-
-        try {
-            const validateField = validateWithZod(locationSchema, rawData);
-
-            // ตรวจสอบว่า user เป็น admin หรือไม่
-            const userProfile = await prisma.profile.findUnique({
-                where: { clerkId: user.id }
-            });
-
-            if (!userProfile) {
-                return {
-                    success: false,
-                    message: 'ไม่พบข้อมูลผู้ใช้'
-                };
-            }
-
-            // ตรวจสอบว่าสถานที่นี้มีอยู่จริง
-            const existingLocation = await prisma.location.findFirst({
-                where: {
-                    id: locationId,
-                    ...(userProfile.role !== 'ADMIN' ? { profileId: user.id } : {})
-                }
-            });
-
-            if (!existingLocation) {
-                return {
-                    success: false,
-                    message: 'ไม่พบสถานที่หรือคุณไม่มีสิทธิ์แก้ไข'
-                };
-            }
-
-            // อัพเดทข้อมูลสถานที่
-            await prisma.location.update({
-                where: {
-                    id: locationId
-                },
-                data: {
-                    ...validateField,
-                    image: imageUrls
-                }
-            });
-
-            return {
-                success: true,
-                message: 'อัพเดทสถานที่สำเร็จ!',
-                shouldRedirect: true
-            };
-        } catch (validationError) {
-            console.error('Validation error:', validationError);
+        if (!userProfile) {
             return {
                 success: false,
-                message: validationError instanceof Error ? validationError.message : 'เกิดข้อผิดพลาดในการตรวจสอบข้อมูล'
+                message: 'ไม่พบข้อมูลผู้ใช้'
             };
         }
+
+        // ตรวจสอบว่าสถานที่นี้มีอยู่จริง
+        const existingLocation = await prisma.location.findFirst({
+            where: {
+                id: locationId,
+                ...(userProfile.role !== 'admin' ? { profileId: user.id } : {})
+            }
+        });
+
+        if (!existingLocation) {
+            return {
+                success: false,
+                message: 'ไม่พบสถานที่หรือคุณไม่มีสิทธิ์แก้ไข'
+            };
+        }
+
+        // อัพเดทข้อมูลสถานที่
+        await prisma.location.update({
+            where: {
+                id: locationId
+            },
+            data: {
+                ...validateField,
+                image: imageUrls
+            }
+        });
+
+        return {
+            success: true,
+            message: 'อัพเดทสถานที่สำเร็จ!',
+            shouldRedirect: true
+        };
     } catch (error) {
         console.error('Error in updateLocationAction:', error);
         return {
@@ -861,7 +846,7 @@ export const updateLocationAction = async (
             message: error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการอัพเดทสถานที่'
         };
     }
-}
+};
 
 export const deleteLocationAction = async (
     prevState: any,

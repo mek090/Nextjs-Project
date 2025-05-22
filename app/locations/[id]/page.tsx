@@ -8,9 +8,35 @@ import ReviewSection from "@/components/location/ReviewSection"
 import MapLocation from "@/components/map/MapLocation"
 import LocationChatBot from "@/components/location/LocationChatBot"
 import { notFound } from 'next/navigation'
-import { MapPin, Star, Clock, Phone, Globe, HandCoins } from 'lucide-react'
+import { MapPin, Star, Clock, Phone, Globe, HandCoins, X } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from "next/image"
+import { useState } from "react"
+import ImageGrid from '@/components/location/ImageGrid'
+
+// ImageModal Component
+const ImageModal = ({ image, onClose }: { image: string; onClose: () => void }) => {
+    return (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
+            <div className="relative max-w-4xl w-full h-[80vh]">
+                <button
+                    onClick={onClose}
+                    className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+                >
+                    <X size={32} />
+                </button>
+                <div className="relative w-full h-full">
+                    <Image
+                        src={image}
+                        alt="Location image"
+                        fill
+                        className="object-contain"
+                    />
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // เพิ่ม generateMetadata function
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -153,18 +179,10 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                                         <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
                                             รูปภาพเพิ่มเติม
                                         </h2>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                                            {(typeof location.image === 'string' ? [] : location.image.slice(1)).map((img, index) => (
-                                                <div key={index} className="relative h-[200px]">
-                                                    <Image
-                                                        src={img}
-                                                        alt={`${location.name} - Image ${index + 2}`}
-                                                        fill
-                                                        className="object-cover rounded-lg"
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
+                                        <ImageGrid 
+                                            images={typeof location.image === 'string' ? [] : location.image.slice(1)}
+                                            locationName={location.name}
+                                        />
                                     </div>
                                 </div>
                             </div>

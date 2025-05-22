@@ -20,6 +20,7 @@ export default function Weatherapi() {
   const [selectedCity, setSelectedCity] = useState<string>("Buriram");
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [timeOfDay, setTimeOfDay] = useState<string>("กลางวัน");
 
   useEffect(() => {
@@ -30,10 +31,12 @@ export default function Weatherapi() {
     async function fetchData() {
       try {
         setLoading(true);
+        setError(null);
         const data = await getWeatherData(selectedCity);
         setWeather(data);
       } catch (error) {
         console.error("Error fetching weather data:", error);
+        setError("ไม่สามารถโหลดข้อมูลสภาพอากาศได้ กรุณาลองใหม่อีกครั้ง");
       } finally {
         setLoading(false);
       }
@@ -131,6 +134,12 @@ export default function Weatherapi() {
       <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-6 items-start">
         {/* ส่วนซ้าย - สภาพอากาศ */}
         <div className="flex-1 w-full min-h-0 flex flex-col gap-6">
+          {error && (
+            <div className="bg-red-100 dark:bg-red-900/50 p-4 rounded-xl text-red-700 dark:text-red-200">
+              <p className="text-center">{error}</p>
+            </div>
+          )}
+
           {loading && (
             <div className="bg-white dark:bg-gray-800 bg-opacity-90 p-8 rounded-2xl shadow-xl text-center backdrop-blur-lg border border-gray-300 dark:border-white/30">
               <div className="flex items-center justify-center">

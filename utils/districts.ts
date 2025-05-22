@@ -1,5 +1,5 @@
 export const districts = [
-  { DISTRICT_ID: 1, DISTRICT_NAME: "เมืองบุรีรัมย์" },
+  { DISTRICT_ID: 1, DISTRICT_NAME: "บุรีรัมย์" },
   { DISTRICT_ID: 2, DISTRICT_NAME: "คูเมือง" },
   { DISTRICT_ID: 3, DISTRICT_NAME: "กระสัง" },
   { DISTRICT_ID: 4, DISTRICT_NAME: "นางรอง" },

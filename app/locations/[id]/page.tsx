@@ -12,19 +12,28 @@ import { MapPin, Star, Clock, Phone, Globe, HandCoins } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from "next/image"
 
+// เพิ่ม generateMetadata function
+export async function generateMetadata({ params }: { params: { id: string } }) {
+    return {
+        title: 'Location Detail',
+    }
+}
+
 const LocationDetail = async ({ params }: { params: { id: string } }) => {
     try {
-        const { id } = params
-        console.log('Fetching location with ID:', id)
-        const location = await fetchLocationDetail({ id })
-        console.log('Location data:', location)
+        // ใช้ Promise.all เพื่อรอให้ params พร้อมใช้งาน
+        const [location, reviews] = await Promise.all([
+            fetchLocationDetail({ id: params.id }),
+            fetchLocationReviews(params.id)
+        ]);
+
+        console.log('Location data:', location);
 
         if (!location) {
             console.log('Location not found, redirecting to home')
             notFound()
         }
 
-        const reviews = await fetchLocationReviews(id)
         console.log('Reviews data:', JSON.stringify(reviews, null, 2))
 
         // Calculate average rating

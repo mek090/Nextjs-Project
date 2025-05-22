@@ -207,6 +207,8 @@ export default function DescriptionAI({
     }
   };
 
+
+
   const renderTabs = () => {
     return (
       <div className="flex border-b mb-4">
@@ -289,6 +291,8 @@ export default function DescriptionAI({
 
   const renderWeather = () => {
     console.log('weatherData', weatherData)
+    console.log('Location name', locationName)
+
     return weatherData ? (
       <div className="space-y-6">
         <div className="flex items-center gap-2 mb-4">
@@ -413,6 +417,7 @@ export default function DescriptionAI({
   };
 
   const renderLocationHeader = () => {
+    console.log('กำลังดึงข้อมูลอากาศสำหรับ: ', locationDistrict);
     return (
       <div className="flex items-start gap-4 mb-6">
         <div>

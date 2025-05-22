@@ -36,7 +36,7 @@ model Location {
   name        String
   description String
   category    String // เช่น วัด, ธรรมชาติ, พิพิธภัณฑ์
-  image       String
+  image       String[] @default([]) @db.Text // ใช้ PostgreSQL array type
   districts   String
   // location    String // เช่น "อ.เมือง", "บ้านตะโก"
   lat         Float

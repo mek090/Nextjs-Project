@@ -54,7 +54,7 @@ export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocations
                 <div className="relative h-16 w-16 rounded-lg overflow-hidden">
                   {location.image ? (
                     <Image
-                      src={location.image}
+                      src={Array.isArray(location.image) ? location.image[0] : location.image}
                       alt={location.name}
                       fill
                       className="object-cover"
@@ -103,7 +103,7 @@ export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocations
                 <div className="relative h-16 w-16 rounded-lg overflow-hidden">
                   {location.image ? (
                     <Image
-                      src={location.image}
+                      src={Array.isArray(location.image) ? location.image[0] : location.image}
                       alt={location.name}
                       fill
                       className="object-cover"

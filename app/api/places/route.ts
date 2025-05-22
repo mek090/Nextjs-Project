@@ -7,12 +7,16 @@ export async function GET(request: Request) {
   let query = "Buriram";
 
   // ปรับ query ตามประเภทที่เลือก
-  if (category === "city") {
-    query += " nightlife";
-  } else if (category === "nature") {
-    query += " natural park";
-  } else if (category === "history") {
-    query += " historical";
+  if (category === "Culture") {
+    query += " culture";
+  } else if (category === "Nature") {
+    query += " nature";
+  } else if (category === "Spots") {
+    query += " spots";
+  } else if (category === "Markets") {
+    query += " markets";
+  } else if (category === "Temples") {
+    query += " temples";
   }
 
   try {
@@ -23,7 +27,9 @@ export async function GET(request: Request) {
       throw new Error(`Failed to fetch places: ${response.statusText}`);
     }
     const data = await response.json();
+    console.log('Get This : ',data);
     return NextResponse.json(data);
+
   } catch (error) {
     console.error("Error fetching data:", error);
     return NextResponse.json({ error: "Error fetching data" }, { status: 500 });

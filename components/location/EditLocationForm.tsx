@@ -54,6 +54,7 @@ const EditLocationForm = ({ location }: EditLocationFormProps) => {
             <div className="mb-6">
                 <h2 className="text-xl font-semibold text-blue-800 mb-4">รูปภาพสถานที่</h2>
                 <p className="text-sm text-gray-600 mb-3">อัพโหลดรูปภาพสถานที่ท่องเที่ยว</p>
+                <input type="hidden" name="image" value={JSON.stringify(location.image)} />
                 <ImageInput defaultValue={location.image} />
             </div>
 

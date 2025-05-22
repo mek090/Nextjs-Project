@@ -1,15 +1,11 @@
 "use client";
 
-
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { LocationCardProps } from "@/utils/types";
 import LocationRating from "./LocationRating";
 import FavoriteToggleButton from "./FavoriteToggleButton";
 import LoadingCard from "./LoadingCard";
-import { number } from "zod";
-
 
 // คอมโพเนนต์การ์ดแสดงสถานที่
 const LocationCard = ({
@@ -20,7 +16,6 @@ const LocationCard = ({
     isLoading = false
 }: {
     Location: LocationCardProps,
-    onFavorite?: (id: string, isFavorite: boolean) => void,
     onShare?: (id: string) => void,
     onReview?: (id: string) => void,
     isAlreadyFavorite?: boolean,
@@ -42,7 +37,6 @@ const LocationCard = ({
         closeTime
     } = Location;
 
-
     // Format price display for better readability
     const formatPrice = (price: string | number): string => {
         const num = typeof price === 'string' ? Number(price) : price;
@@ -54,17 +48,13 @@ const LocationCard = ({
         return `${(num / 1000).toFixed(1)}K บาท`;
     };
 
-
-
-
     return (
         <article className="bg-gray-50 dark:bg-gray-700 group relative h-full rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
-
             {/* Image with subtle overlay effect */}
             <div className="relative w-full h-48 overflow-hidden">
                 <Link href={`/locations/${id}`}>
                     <Image
-                        src={image}
+                        src={typeof image === 'string' ? image : (Array.isArray(image) && image.length > 0 ? image[0] : '/placeholder.jpg')}
                         alt={name}
                         fill
                         sizes="300px"
@@ -139,6 +129,7 @@ const LocationCard = ({
 
                     {/* Review Button */}
                     <button
+                        onClick={() => onReview?.(id)}
                         className="flex items-center justify-center bg-white dark:bg-gray-600 border border-gray-200 hover:bg-gray-50 text-gray-700 py-1.5 px-2 rounded-lg transition-colors duration-200 text-sm"
                         aria-label="รีวิว"
                     >
@@ -149,7 +140,8 @@ const LocationCard = ({
 
                     {/* Share Button */}
                     <button
-                        className="flex items-center justify-center bg-white dark:bg-gray-600 border border-gray-200 hover:bg-gray-50 text-gray-700 py-1.5 px-2 rounded-lg transition-colors duration-200 text-sm "
+                        onClick={() => onShare?.(id)}
+                        className="flex items-center justify-center bg-white dark:bg-gray-600 border border-gray-200 hover:bg-gray-50 text-gray-700 py-1.5 px-2 rounded-lg transition-colors duration-200 text-sm"
                         aria-label="แชร์"
                     >
                         <svg className="w-4 h-4 dark:text-white" viewBox="0 0 20 20" fill="currentColor">
@@ -169,7 +161,7 @@ const LocationCard = ({
                     </Link>
                 </div>
             </div>
-        </article >
+        </article>
     );
 };
 

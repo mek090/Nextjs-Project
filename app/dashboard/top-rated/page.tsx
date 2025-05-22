@@ -55,7 +55,7 @@ export default async function TopRatedLocationsPage() {
               <div className="relative h-48 w-full">
                 {location.image ? (
                   <Image
-                    src={location.image}
+                    src={Array.isArray(location.image) ? location.image[0] : location.image}
                     alt={location.name}
                     fill
                     className="object-cover rounded-t-lg"

@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: false,
   images: {
+    domains: ['qwnhsckiyphwggwoaqmr.supabase.co'],
+
     remotePatterns: [
       {
         protocol: 'https',
@@ -26,9 +28,21 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'img.clerk.com',
-      }
-    ]
-  }
+      },
+      {
+        protocol: 'https',
+        hostname: 'maps.googleapis.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
+
+
+    ],
+  },
 };
 
 export default nextConfig;

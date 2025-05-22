@@ -348,7 +348,7 @@ export default function ProfileAnalysis({ userId }: ProfileAnalysisProps) {
                                 <Link href={`/locations/${review.location.id}`} className="flex-shrink-0 transform transition-transform hover:scale-105 duration-200">
                                     <div className="relative w-20 h-20 md:w-24 md:h-24 overflow-hidden rounded-lg shadow-md">
                                         <Image
-                                            src={review.location.image}
+                                            src={review.location.image[0]}
                                             alt={review.location.name}
                                             fill
                                             className="object-cover"
@@ -403,7 +403,7 @@ export default function ProfileAnalysis({ userId }: ProfileAnalysisProps) {
                             >
                                 <div className="relative aspect-video rounded-lg overflow-hidden shadow-md">
                                     <Image
-                                        src={location.image}
+                                        src={location.image[0]} 
                                         alt={location.name}
                                         fill
                                         className="object-cover transition-transform duration-500 group-hover:scale-110"

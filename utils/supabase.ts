@@ -45,9 +45,9 @@ export async function uploadFile(image: File): Promise<string> {
         }
 
         // 2. ตรวจสอบประเภทไฟล์
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif','image/html'];
         if (!allowedTypes.includes(image.type)) {
-            throw new Error('รองรับเฉพาะไฟล์ภาพประเภท JPEG, PNG และ WebP');
+            throw new Error('รองรับเฉพาะไฟล์ภาพประเภท JPEG, PNG, GIF และ WebP');
         }
 
         // 3. ตรวจสอบขนาดไฟล์ (ไม่เกิน 5MB)

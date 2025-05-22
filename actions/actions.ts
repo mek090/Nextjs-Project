@@ -79,8 +79,8 @@ export const createLocationAction = async (
         if (!rawData.closeTime) rawData.closeTime = '';
 
         // ตรวจสอบไฟล์รูปภาพ
-        const imageFile = formData.get('image') as File;
-        if (!imageFile) {
+        const imageFiles = formData.getAll('images') as File[];
+        if (!imageFiles.length) {
             return {
                 success: false,
                 message: 'กรุณาอัพโหลดรูปภาพ'
@@ -88,15 +88,19 @@ export const createLocationAction = async (
         }
 
         try {
-            const validateFile = validateWithZod(imageSchema, { image: imageFile });
+            const validateFiles = validateWithZod(imageSchema, { images: imageFiles });
             const validateField = validateWithZod(locationSchema, rawData);
 
-            const fullPath = await uploadFile(validateFile.image);
+            // Upload all images
+            const imageUrls = await Promise.all(
+                validateFiles.images.map(image => uploadFile(image))
+            );
 
+            // Create location with all images
             await prisma.location.create({
                 data: {
                     ...validateField,
-                    image: fullPath,
+                    image: imageUrls,
                     profileId: user.id
                 }
             });
@@ -154,11 +158,24 @@ export const fetchLocation = async (params?: { search?: string, category?: strin
             lng: true,
             rating: true,
             openTime: true,
-            closeTime: true
+            closeTime: true,
+            _count: {
+                select: {
+                    favorites: true,
+                    reviews: true
+                }
+            }
         },
-        orderBy: {
-            createdAt: 'desc'
-        }
+        orderBy: [
+            {
+                favorites: {
+                    _count: 'desc'
+                }
+            },
+            {
+                rating: 'desc'
+            }
+        ]
     });
 
     return locations;
@@ -346,7 +363,7 @@ export async function updateProfileAction(formData: FormData) {
                 }
 
                 // ตรวจสอบประเภทไฟล์
-                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp','image/gif'];
                 if (!allowedTypes.includes(profileImage.type)) {
                     throw new Error('รองรับเฉพาะไฟล์ภาพประเภท JPEG, PNG และ WebP');
                 }
@@ -766,13 +783,16 @@ export const updateLocationAction = async (
         if (!rawData.closeTime) rawData.closeTime = '';
 
         // ตรวจสอบไฟล์รูปภาพ
-        const imageFile = formData.get('image') as File;
-        let imagePath = rawData.image as string;
+        const imageFiles = formData.getAll('images') as File[];
+        let imageUrls = rawData.image ? JSON.parse(rawData.image as string) : [];
 
-        if (imageFile && imageFile.size > 0) {
+        if (imageFiles.length > 0) {
             try {
-                const validateFile = validateWithZod(imageSchema, { image: imageFile });
-                imagePath = await uploadFile(validateFile.image);
+                const validateFiles = validateWithZod(imageSchema, { images: imageFiles });
+                const newImageUrls = await Promise.all(
+                    validateFiles.images.map(image => uploadFile(image))
+                );
+                imageUrls = [...imageUrls, ...newImageUrls];
             } catch (error) {
                 return {
                     success: false,
@@ -791,7 +811,7 @@ export const updateLocationAction = async (
                 },
                 data: {
                     ...validateField,
-                    image: imagePath
+                    image: imageUrls
                 }
             });
 

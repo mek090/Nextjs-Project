@@ -36,7 +36,7 @@ const ManageLocation = async () => {
                     <Card key={location.id} className="overflow-hidden">
                         <div className="relative h-48">
                             <img
-                                src={location.image}
+                                src={location.image[0]}
                                 alt={location.name}
                                 className="w-full h-full object-cover"
                             />

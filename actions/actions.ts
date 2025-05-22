@@ -288,11 +288,11 @@ export const fetchLocationDetail = async ({ id }: { id: string }) => {
             },
             include: {
                 profile: true,
-                favorites: {
+                favorites: user ? {
                     where: {
-                        profileId: user?.id || '',
+                        profileId: user.id,
                     },
-                },
+                } : undefined,
             },
         });
 
@@ -305,7 +305,7 @@ export const fetchLocationDetail = async ({ id }: { id: string }) => {
 
         return {
             ...location,
-            isFavorite: location.favorites.length > 0
+            isFavorite: user ? location.favorites.length > 0 : false
         };
     } catch (error) {
         console.error('Error fetching location detail:', error);

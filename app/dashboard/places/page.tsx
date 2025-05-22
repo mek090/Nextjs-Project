@@ -54,6 +54,12 @@ export default function PlacesPage() {
         throw new Error('ไม่สามารถดึงข้อมูลสถานที่ได้');
       }
 
+      console.log('Place Details:', {
+        name: placeDetails.name,
+        opening_hours: placeDetails.opening_hours,
+        weekday_text: placeDetails.opening_hours?.weekday_text,
+      });
+
       // ส่งข้อมูลไปให้ Gemini วิเคราะห์
       const geminiResponse = await fetch('/api/gemini/analyze-place', {
         method: 'POST',
@@ -63,8 +69,6 @@ export default function PlacesPage() {
         body: JSON.stringify({
           name: place.name,
           address: place.formatted_address,
-          rating: placeDetails.rating,
-          user_ratings_total: placeDetails.user_ratings_total,
           business_status: placeDetails.business_status,
           opening_hours: placeDetails.opening_hours,
           price_level: placeDetails.price_level,
@@ -78,15 +82,46 @@ export default function PlacesPage() {
 
       const analyzedData = await geminiResponse.json();
 
-      // แยกเวลาทำการ
+      // แปลงเวลาทำการเป็นรูปแบบ 24 ชั่วโมง
       let openTime = null;
       let closeTime = null;
       if (placeDetails.opening_hours?.weekday_text?.[0]) {
-        const timeParts = placeDetails.opening_hours.weekday_text[0].split(' ');
-        if (timeParts.length >= 3) {
-          openTime = timeParts.slice(1, -1).join(' ');
-          closeTime = timeParts[timeParts.length - 1];
+        const timeText = placeDetails.opening_hours.weekday_text[0];
+        console.log('Original time text:', timeText);
+        const timeMatch = timeText.match(/(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday):\s*(\d{1,2}):(\d{2})\s*(AM|PM)\s*–\s*(\d{1,2}):(\d{2})\s*(AM|PM)/);
+        if (timeMatch) {
+          // แปลงเวลาเปิดเป็น 24 ชั่วโมง
+          let openHours = parseInt(timeMatch[1]);
+          const openMinutes = timeMatch[2];
+          const openPeriod = timeMatch[3];
+
+          if (openPeriod === 'PM' && openHours !== 12) openHours += 12;
+          if (openPeriod === 'AM' && openHours === 12) openHours = 0;
+          openTime = `${openHours.toString().padStart(2, '0')}:${openMinutes}`;
+
+          // แปลงเวลาปิดเป็น 24 ชั่วโมง
+          let closeHours = parseInt(timeMatch[4]);
+          const closeMinutes = timeMatch[5];
+          const closePeriod = timeMatch[6];
+
+          if (closePeriod === 'PM' && closeHours !== 12) closeHours += 12;
+          if (closePeriod === 'AM' && closeHours === 12) closeHours = 0;
+          closeTime = `${closeHours.toString().padStart(2, '0')}:${closeMinutes}`;
+
+          console.log('Converted times:', { openTime, closeTime });
+        } else {
+          console.log('No time match found in:', timeText);
+          // ถ้าไม่พบรูปแบบเวลาที่ตรงกัน ให้ใช้ค่าเริ่มต้นสำหรับวัด
+          openTime = '08:00';
+          closeTime = '17:00';
+          console.log('Using default times for temple:', { openTime, closeTime });
         }
+      } else {
+        console.log('No opening hours data');
+        // ถ้าไม่มีข้อมูลเวลาทำการ ให้ใช้ค่าเริ่มต้นสำหรับวัด
+        openTime = '08:00';
+        closeTime = '17:00';
+        console.log('Using default times for temple:', { openTime, closeTime });
       }
 
       // ใช้ข้อมูลที่ Gemini วิเคราะห์แล้ว
@@ -94,29 +129,34 @@ export default function PlacesPage() {
       const price = analyzedData.price;
       const selectedCategory = analyzedData.category || category;
       const district = analyzedData.district;
+      const thaiName = analyzedData.thaiName || place.name; // ใช้ชื่อภาษาไทยที่ Gemini แนะนำ หรือใช้ชื่อเดิมถ้าไม่มี
 
       // รวบรวมรูปภาพที่ Gemini คัดเลือกแล้ว
       const images = analyzedData.selectedPhotos.map(photo => 
         `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photo.photo_reference}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
       );
 
+      const requestBody = {
+        name: thaiName, // ใช้ชื่อภาษาไทย
+        description,
+        category: selectedCategory,
+        districts: district,
+        lat: placeDetails.geometry?.location?.lat || 0,
+        lng: placeDetails.geometry?.location?.lng || 0,
+        price,
+        image: images,
+        openTime,
+        closeTime,
+      };
+
+      console.log('Request body:', requestBody);
+
       const response = await fetch('/api/places/save', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: place.name,
-          description,
-          category: selectedCategory,
-          districts: district,
-          lat: placeDetails.geometry?.location?.lat || 0,
-          lng: placeDetails.geometry?.location?.lng || 0,
-          price,
-          image: images,
-          openTime,
-          closeTime,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {

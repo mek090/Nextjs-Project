@@ -1,17 +1,24 @@
 'use client'
 
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Autoplay, Pagination, Navigation } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
+import 'swiper/css/navigation'
+import Image from 'next/image'
+import { useState } from 'react'
 import { LocationCardProps } from "@/utils/types"
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Navigation, Autoplay, EffectFade } from 'swiper/modules';
+import OtherInfo from "./OtherInfo"
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 import 'swiper/css/pagination';
-import OtherInfo from "./OtherInfo";
 
 const Hero = ({ locations }: { locations: LocationCardProps[] }) => {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
     if (!locations || locations.length === 0) {
         return (
             <div className="relative w-full h-[400px] bg-gray-200 animate-pulse">
@@ -21,60 +28,52 @@ const Hero = ({ locations }: { locations: LocationCardProps[] }) => {
             </div>
         );
     }
- 
+
+    // เลือกสถานที่ที่มีรูปภาพสวยๆ มาแสดง
+    const featuredLocations = locations
+        .filter(location => location.image && location.image.length > 0)
+        .slice(0, 5);
 
     return (
-        <div className="relative w-full h-[700px]">
+        <div className="relative h-[600px] w-full">
             <Swiper
-                navigation={true}
-                modules={[Navigation, Autoplay, Pagination, EffectFade]}
-                effect="fade"
+                spaceBetween={0}
+                centeredSlides={true}
                 autoplay={{
-                    delay: 5500,
+                    delay: 5000,
                     disableOnInteraction: false,
                 }}
                 pagination={{
                     clickable: true,
                 }}
-                loop={true}
-                className="w-full h-full group"
-                speed={800}
+                navigation={true}
+                modules={[Autoplay, Pagination, Navigation]}
+                className="h-full w-full"
+                onSlideChange={(swiper) => setCurrentImageIndex(swiper.activeIndex)}
             >
-                {locations.slice(0, 4).map((location) => (
+                {featuredLocations.map((location, index) => (
                     <SwiperSlide key={location.id}>
-                        <div className="relative w-full h-full">
-                            <img
-                                src={location.image}
+                        <div className="relative h-full w-full">
+                            <Image
+                                src={Array.isArray(location.image) ? location.image[0] : location.image}
                                 alt={location.name}
-                                className="w-full h-full object-cover brightness-75 rounded-lg group-hover:brightness-50 transition-all duration-300"
+                                fill
+                                className="object-cover"
+                                priority={index === 0}
                             />
+                            <div className="absolute inset-0 bg-black/40" />
                             <div className="absolute inset-x-0 bottom-0 flex items-end p-8 bg-gradient-to-t from-black/60 to-transparent">
-                                <div className="w-full max-w-2xl opacity-0 transition-opacity duration-800 swiper-no-duplicate-effect">
+                                <div className="w-full max-w-2xl">
                                     <OtherInfo location={location} />
                                 </div>
                             </div>
-                           
                         </div>
                     </SwiperSlide>
                 ))}
             </Swiper>
-
-            {/* Custom styles for Swiper */}
-            <style jsx global>{`
-                .swiper-slide-active .swiper-no-duplicate-effect {
-                    opacity: 1 !important;
-                }
-                .swiper-slide:not(.swiper-slide-active) .swiper-no-duplicate-effect {
-                    opacity: 0 !important;
-                    transition: opacity 0.3s ease-out;
-                }
-                /* ป้องกันการแสดงผลซ้ำซ้อนในขณะที่ slide กำลังเปลี่ยน */
-                .swiper-slide-duplicate-active .swiper-no-duplicate-effect {
-                    opacity: 0 !important;
-                }
-            `}</style>
+            
         </div>
-    );
-};
+    )
+}
 
-export default Hero;
+export default Hero

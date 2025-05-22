@@ -804,10 +804,37 @@ export const updateLocationAction = async (
         try {
             const validateField = validateWithZod(locationSchema, rawData);
 
-            await prisma.location.update({
+            // ตรวจสอบว่า user เป็น admin หรือไม่
+            const userProfile = await prisma.profile.findUnique({
+                where: { clerkId: user.id }
+            });
+
+            if (!userProfile) {
+                return {
+                    success: false,
+                    message: 'ไม่พบข้อมูลผู้ใช้'
+                };
+            }
+
+            // ตรวจสอบว่าสถานที่นี้มีอยู่จริง
+            const existingLocation = await prisma.location.findFirst({
                 where: {
                     id: locationId,
-                    profileId: user.id
+                    ...(userProfile.role !== 'ADMIN' ? { profileId: user.id } : {})
+                }
+            });
+
+            if (!existingLocation) {
+                return {
+                    success: false,
+                    message: 'ไม่พบสถานที่หรือคุณไม่มีสิทธิ์แก้ไข'
+                };
+            }
+
+            // อัพเดทข้อมูลสถานที่
+            await prisma.location.update({
+                where: {
+                    id: locationId
                 },
                 data: {
                     ...validateField,

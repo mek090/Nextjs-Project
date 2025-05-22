@@ -20,6 +20,9 @@ export default function PlacesPage() {
   const [places, setPlaces] = useState<Place[]>([]);
   const [category, setCategory] = useState('');
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Place[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const { userId } = useAuth();
 
   const categories = [
@@ -42,6 +45,36 @@ export default function PlacesPage() {
     }
     setLoading(false);
   };
+
+  const searchPlaces = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/api/places/search?query=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      setSearchResults(data.results || []);
+    } catch (error) {
+      console.error('Error searching places:', error);
+      toast.error('เกิดข้อผิดพลาดในการค้นหาสถานที่');
+    }
+    setIsSearching(false);
+  };
+
+  // ใช้ debounce เพื่อลดการเรียก API บ่อยเกินไป
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery) {
+        searchPlaces(searchQuery);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const savePlaceToDatabase = async (place: Place) => {
     try {
@@ -180,6 +213,24 @@ export default function PlacesPage() {
       <h1 className="text-3xl font-bold mb-8 text-center">ข้อมูลสถานที่ท่องเที่ยวในบุรีรัมย์</h1>
       <h3 className="text-3xl font-bold mb-8 text-center">With Google Places</h3>
       
+      {/* Search Bar */}
+      <div className="max-w-2xl mx-auto mb-8">
+        <div className="relative">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="ค้นหาสถานที่ท่องเที่ยว..."
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {isSearching && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Category Filter */}
       <div className="flex flex-wrap gap-2 justify-center mb-8">
         {categories.map((cat) => (
@@ -206,7 +257,7 @@ export default function PlacesPage() {
 
       {/* Places Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {places.map((place) => (
+        {(searchQuery ? searchResults : places).map((place) => (
           <div key={place.place_id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
             {place.photos && place.photos[0] && (
               <div className="relative h-48">
@@ -247,9 +298,9 @@ export default function PlacesPage() {
       </div>
 
       {/* No Results */}
-      {!loading && places.length === 0 && (
+      {!loading && !isSearching && (searchQuery ? searchResults : places).length === 0 && (
         <div className="text-center py-8 text-gray-500">
-          ไม่พบสถานที่ท่องเที่ยวในหมวดหมู่นี้
+          {searchQuery ? 'ไม่พบสถานที่ที่ค้นหา' : 'ไม่พบสถานที่ท่องเที่ยวในหมวดหมู่นี้'}
         </div>
       )}
     </div>

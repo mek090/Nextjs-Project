@@ -68,7 +68,6 @@ export default function PlacesPage() {
           business_status: placeDetails.business_status,
           opening_hours: placeDetails.opening_hours,
           price_level: placeDetails.price_level,
-          reviews: placeDetails.reviews,
           photos: placeDetails.photos,
         }),
       });
@@ -78,10 +77,6 @@ export default function PlacesPage() {
       }
 
       const analyzedData = await geminiResponse.json();
-
-      // แยกที่อยู่เป็นส่วนๆ
-      const addressParts = place.formatted_address.split(',');
-      const district = addressParts[0].trim();
 
       // แยกเวลาทำการ
       let openTime = null;
@@ -98,6 +93,7 @@ export default function PlacesPage() {
       const description = analyzedData.description;
       const price = analyzedData.price;
       const selectedCategory = analyzedData.category || category;
+      const district = analyzedData.district;
 
       // รวบรวมรูปภาพที่ Gemini คัดเลือกแล้ว
       const images = analyzedData.selectedPhotos.map(photo => 

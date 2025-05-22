@@ -34,7 +34,6 @@ export async function POST(request: Request) {
       วิเคราะห์ข้อมูลสถานที่ท่องเที่ยวต่อไปนี้และให้คำแนะนำในการจัดหมวดหมู่และข้อมูลที่ควรบันทึก:
 
       ชื่อสถานที่: ${name}
-      ที่อยู่: ${address}
       อำเภอ: ${district}
       คะแนนรีวิว: ${rating || 'ไม่มีข้อมูล'}
       จำนวนรีวิว: ${user_ratings_total || 0}
@@ -74,6 +73,9 @@ export async function POST(request: Request) {
 
     // แปลง index ของรูปภาพเป็น photo_reference
     analyzedData.selectedPhotos = analyzedData.selectedPhotos.map((index: number) => photos[index]);
+
+    // เพิ่ม district เข้าไปในข้อมูลที่จะส่งกลับ
+    analyzedData.district = district;
 
     return NextResponse.json(analyzedData);
   } catch (error) {

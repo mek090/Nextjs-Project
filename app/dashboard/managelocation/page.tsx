@@ -24,12 +24,20 @@ const ManageLocation = async () => {
 
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-blue-800">จัดการสถานที่ท่องเที่ยว</h1>
-                <Link href="/locations/create">
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                        เพิ่มสถานที่ใหม่
-                    </Button>
-                </Link>
+                <div className="flex gap-2">
+                    <Link href="/dashboard/places">
+                        <Button className="bg-blue-600 hover:bg-blue-700">
+                            เพิ่มสถานที่ใหม่จาก Google Places
+                        </Button>
+                    </Link>
+                    <Link href="/locations/create">
+                        <Button className="bg-blue-600 hover:bg-blue-700">
+                            เพิ่มสถานที่ใหม่
+                        </Button>
+                    </Link>
+                </div>
             </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {locations.map((location) => (

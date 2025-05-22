@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.18.1",
     "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
+    "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.8.1",
     "@radix-ui/react-dialog": "^1.1.13",
     "@radix-ui/react-dropdown-menu": "^2.1.12",

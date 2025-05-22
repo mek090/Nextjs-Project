@@ -54,6 +54,31 @@ export default function PlacesPage() {
         throw new Error('ไม่สามารถดึงข้อมูลสถานที่ได้');
       }
 
+      // ส่งข้อมูลไปให้ Gemini วิเคราะห์
+      const geminiResponse = await fetch('/api/gemini/analyze-place', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: place.name,
+          address: place.formatted_address,
+          rating: placeDetails.rating,
+          user_ratings_total: placeDetails.user_ratings_total,
+          business_status: placeDetails.business_status,
+          opening_hours: placeDetails.opening_hours,
+          price_level: placeDetails.price_level,
+          reviews: placeDetails.reviews,
+          photos: placeDetails.photos,
+        }),
+      });
+
+      if (!geminiResponse.ok) {
+        throw new Error('ไม่สามารถวิเคราะห์ข้อมูลสถานที่ได้');
+      }
+
+      const analyzedData = await geminiResponse.json();
+
       // แยกที่อยู่เป็นส่วนๆ
       const addressParts = place.formatted_address.split(',');
       const district = addressParts[0].trim();
@@ -69,6 +94,16 @@ export default function PlacesPage() {
         }
       }
 
+      // ใช้ข้อมูลที่ Gemini วิเคราะห์แล้ว
+      const description = analyzedData.description;
+      const price = analyzedData.price;
+      const selectedCategory = analyzedData.category || category;
+
+      // รวบรวมรูปภาพที่ Gemini คัดเลือกแล้ว
+      const images = analyzedData.selectedPhotos.map(photo => 
+        `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photo.photo_reference}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
+      );
+
       const response = await fetch('/api/places/save', {
         method: 'POST',
         headers: {
@@ -76,14 +111,13 @@ export default function PlacesPage() {
         },
         body: JSON.stringify({
           name: place.name,
-          description: `สถานที่ท่องเที่ยว ${place.name} ในบุรีรัมย์\nที่อยู่: ${place.formatted_address}\nคะแนนรีวิว: ${place.rating || 'ไม่มีคะแนน'}\nจำนวนรีวิว: ${placeDetails.user_ratings_total || 0} รีวิว`,
-          category: category || 'Spots',
+          description,
+          category: selectedCategory,
           districts: district,
           lat: placeDetails.geometry?.location?.lat || 0,
           lng: placeDetails.geometry?.location?.lng || 0,
-          price: '0',
-          image: place.photos ? [`https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`] : [],
-          // rating: place.rating || 0,
+          price,
+          image: images,
           openTime,
           closeTime,
         }),
@@ -107,7 +141,8 @@ export default function PlacesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">สถานที่ท่องเที่ยวในบุรีรัมย์</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">ข้อมูลสถานที่ท่องเที่ยวในบุรีรัมย์</h1>
+      <h3 className="text-3xl font-bold mb-8 text-center">With Google Places</h3>
       
       {/* Category Filter */}
       <div className="flex flex-wrap gap-2 justify-center mb-8">
@@ -158,7 +193,7 @@ export default function PlacesPage() {
               )} */}
               <div className="flex justify-between items-center">
                 <Link 
-                  href={`/places/${place.place_id}`}
+                  href={`/dashboard/places/${place.place_id}`}
                   className="text-blue-600 hover:text-blue-800"
                 >
                   ดูรายละเอียด

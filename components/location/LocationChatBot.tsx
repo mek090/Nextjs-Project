@@ -31,22 +31,31 @@ export default function LocationChatBot({ locationName, locationDescription, loc
 
     try {
       const prompt = `
-        คุณคือผู้ให้คำแนะนำด้านการท่องเที่ยวบุรีรัมย์ที่เป็นกันเอง มีความรู้เกี่ยวกับประวัติศาสตร์ วัฒนธรรม อาหาร และสถานที่ท่องเที่ยวในบุรีรัมย์เป็นอย่างดี
-        ชื่อของคุณคือ "น้องบุรี" ชอบแนะนำสถานที่ท่องเที่ยวในจังหวัดบุรีรัมย์และใช้ภาษาที่เป็นกันเอง สนิทสนม มีเอกลักษณ์ของคนอีสาน
+คุณคือ "น้องบุรี" ผู้ช่วยให้คำแนะนำด้านการท่องเที่ยวในจังหวัดบุรีรัมย์ที่เป็นมิตรและมีความรู้ดี
 
-        ข้อมูลสถานที่:
-        - ชื่อสถานที่: ${locationName}
-        - คำอธิบาย: ${locationDescription}
-        - อำเภอ: ${locationDistrict}
+บุคลิกภาพของคุณ:
+- เป็นกันเอง อัธยาศัยดี และให้ข้อมูลที่ถูกต้อง
+- ใช้ภาษาไทยกลางที่สุภาพ ไม่ใช้ภาษาถิ่น
+- มีความรู้เกี่ยวกับประวัติศาสตร์ วัฒนธรรม อาหาร และสถานที่ท่องเที่ยวในบุรีรัมย์
+- ตอบคำถามอย่างกระชับ เข้าใจง่าย
+- ไม่ต้องทักทายซ้ำ เข้าประเด็นคำถามเลย
 
-        คำถามจากผู้ใช้: ${userMessage}
+ข้อมูลสถานที่ปัจจุบัน:
+- ชื่อสถานที่: ${locationName}
+- คำอธิบาย: ${locationDescription}
+- อำเภอ: ${locationDistrict}
 
-        กรุณาให้คำแนะนำในรูปแบบการสนทนา ทักทายด้วยความเป็นกันเอง ใช้ภาษาสั้นกระชับ เป็นธรรมชาติ 
-        ใส่เอกลักษณ์ของคนอีสานเล็กน้อย (เช่น คำลงท้าย "เด้อ" "นะคะ" หรือสำนวนท้องถิ่น) 
-        ตอบเหมือนกำลังคุยกับนักท่องเที่ยวจริงๆ แนะนำจุดเด่นของสถานที่ท่องเที่ยวและข้อมูลที่น่าสนใจ
-        และสอดแทรกความรู้เกี่ยวกับวัฒนธรรมหรือเกร็ดความรู้ท้องถิ่นที่น่าสนใจ
+คำถามจากผู้ใช้: ${userMessage}
 
-        ความยาวประมาณ 2-3 ย่อหน้า ใช้ emoji ประกอบเล็กน้อยเพื่อความน่าสนใจ แต่ไม่มากเกินไป
+คำแนะนำในการตอบ:
+1. ตอบคำถามตรงประเด็น ไม่ต้องทักทายซ้ำ
+2. ให้ข้อมูลที่เป็นประโยชน์และน่าสนใจ
+3. แนะนำจุดเด่นของสถานที่และกิจกรรมที่ทำได้
+4. ใช้ emoji เล็กน้อยเพื่อความน่าสนใจ
+5. **ตอบสั้นๆ กระชับ 1-2 ประโยค ไม่ต้องยาว**
+6. ไม่ใช้คำภาษาถิ่นอีสาน ใช้ภาษาไทยกลางที่สุภาพ
+
+ตอบด้วยน้ำเสียงเป็นมิตรและให้ความรู้สึกว่าคุณเป็นไกด์ท้องถิ่นที่รู้จักสถานที่ดี แต่ไม่ต้องทักทายซ้ำในทุกคำตอบ และตอบสั้นๆ กระชับ
       `;
 
       const response = await fetch(
@@ -57,26 +66,44 @@ export default function LocationChatBot({ locationName, locationDescription, loc
           body: JSON.stringify({
             contents: [{ role: "user", parts: [{ text: prompt }] }],
             generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 800,
+              temperature: 0.8,
+              maxOutputTokens: 300,
+              topP: 0.9,
+              topK: 40,
             }
           }),
         }
       );
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
-      const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+      
+      if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+        throw new Error('Invalid response format from API');
+      }
+
+      const botResponse = data.candidates[0].content.parts[0].text || 
         "ขออภัยค่ะ ไม่สามารถให้คำตอบได้ในขณะนี้ กรุณาลองใหม่อีกครั้งนะคะ";
 
       setMessages(prev => [...prev, { text: botResponse, sender: "bot" }]);
     } catch (error) {
       console.error("Error:", error);
       setMessages(prev => [...prev, { 
-        text: "ขออภัยค่ะ เกิดข้อผิดพลาดในการติดต่อ AI กรุณาลองใหม่อีกครั้งนะคะ", 
+        text: "ขออภัยค่ะ เกิดข้อผิดพลาดในการติดต่อระบบ กรุณาลองใหม่อีกครั้งนะคะ 🙏", 
         sender: "bot" 
       }]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
     }
   };
 
@@ -110,13 +137,17 @@ export default function LocationChatBot({ locationName, locationDescription, loc
                   src="/images/avatars/default-avatar.png"
                   alt="บอทบุรีรัมย์"
                   className="w-full h-full object-cover object-center"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234F46E5'%3E%3Cpath d='M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H19C20.11 23 21 22.11 21 21V9M19 9H14V4H19V9Z'/%3E%3C/svg%3E";
+                  }}
                 />
               </div>
               <div>
                 <h1 className="text-lg font-bold text-white">
                   น้องบุรี
                 </h1>
-                <p className="text-blue-100 text-xs">ผู้ให้คำแนะนำด้านการท่องเที่ยว</p>
+                <p className="text-blue-100 text-xs">ผู้ช่วยด้านการท่องเที่ยวบุรีรัมย์</p>
               </div>
             </div>
             <button
@@ -141,8 +172,16 @@ export default function LocationChatBot({ locationName, locationDescription, loc
                       : "bg-white text-gray-800 rounded-bl-none border border-gray-100"
                   }`}
                 >
-                  <div className="prose dark:prose-invert max-w-none">
-                    <ReactMarkdown>{message.text}</ReactMarkdown>
+                  <div className="prose dark:prose-invert max-w-none text-sm">
+                    <ReactMarkdown
+                      components={{
+                        p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                        strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                        em: ({ children }) => <em className="italic">{children}</em>,
+                      }}
+                    >
+                      {message.text}
+                    </ReactMarkdown>
                   </div>
                 </div>
               </div>
@@ -153,10 +192,10 @@ export default function LocationChatBot({ locationName, locationDescription, loc
                   <div className="flex items-center">
                     <div className="animate-bounce flex space-x-1">
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animation-delay-200"></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animation-delay-400"></div>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full" style={{ animationDelay: '0.2s' }}></div>
                     </div>
-                    <span className="ml-2">กำลังคิดคำตอบ...</span>
+                    <span className="ml-2 text-sm">กำลังคิดคำตอบ...</span>
                   </div>
                 </div>
               </div>
@@ -170,10 +209,11 @@ export default function LocationChatBot({ locationName, locationDescription, loc
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                onKeyPress={handleKeyPress}
                 placeholder="ถามเกี่ยวกับสถานที่นี้..."
-                className="flex-1 px-4 py-3 rounded-l-lg focus:outline-none focus:ring-2 bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-500 placeholder-gray-500 border"
+                className="flex-1 px-4 py-3 rounded-l-lg focus:outline-none focus:ring-2 bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-500 placeholder-gray-500 border text-sm"
                 disabled={isLoading}
+                maxLength={500}
               />
               <button
                 onClick={handleSend}
@@ -183,6 +223,7 @@ export default function LocationChatBot({ locationName, locationDescription, loc
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                     : "bg-blue-500 hover:bg-blue-600 text-white"
                 }`}
+                aria-label="ส่งข้อความ"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -198,9 +239,12 @@ export default function LocationChatBot({ locationName, locationDescription, loc
                 </svg>
               </button>
             </div>
+            <div className="text-xs text-gray-500 mt-1">
+              กด Enter เพื่อส่งข้อความ
+            </div>
           </div>
         </div>
       )}
     </div>
   );
-} 
+}

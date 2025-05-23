@@ -180,12 +180,12 @@ const MapLocation = ({ location }: { location?: { lat: number, lng: number } }) 
 
     return (
         <div>
-            <div className="flex items-center gap-3 mb-4">
+            {/* <div className="flex items-center gap-3 mb-4">
                 <Map className="h-6 w-6 text-blue-500" />
                 <h2 className="text-2xl font-bold text-gray-800">
-                    แผนที่ตำแหน่งสถานที่
+                   แผนที่จังหวัดบุรีรัมย์
                 </h2>
-            </div>
+            </div> */}
 
             
             <input type='hidden' name='lat' value={position ? position[0] : ''} />

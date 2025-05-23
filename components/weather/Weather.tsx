@@ -6,6 +6,7 @@ import { WiDaySunny, WiCloud, WiRain, WiSnow, WiThunderstorm, WiHumidity, WiStro
 import Bot from "../GeminiBot/Bot";
 import { WeatherIcons, WeatherResponse, SysData, WindData, MainWeatherData, WeatherCondition } from "@/utils/types";
 import LocationContainer from "../home/LocationContainer";
+import TouristMap from "../map/TouristMap";
 
 export default function Weatherapi() {
   // บุรีรัมย์และอำเภอสำคัญ
@@ -227,49 +228,9 @@ export default function Weatherapi() {
             <h2 className="text-3xl font-semibold text-center mb-6">
               แผนที่ท่องเที่ยว <span className="text-blue-500">บุรีรัมย์</span>
             </h2>
-            {/* <div className="mt-4 flex flex-wrap gap-2 justify-center">
-              {['ทั้งหมด', 'ปราสาทหิน', 'แหล่งธรรมชาติ', 'แหล่งวัฒนธรรม', 'ที่พัก', 'ร้านอาหาร'].map((type) => (
-                <button
-                  key={type}
-                  className="px-4 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 rounded-full text-sm transition-colors"
-                  onClick={() => setSearchQuery(type)}
-                >
-                  {type}
-                </button>
-              ))}
-            </div> */}
-            <div className="overflow-hidden rounded-lg shadow-lg mt-6">
-              <iframe
-                title="สถานที่ท่องเที่ยวบุรีรัมย์"
-                src={`https://www.google.com/maps/embed/v1/search?key=${googleMapsApiKey}&q=
-        ปราสาทหินพนมรุ้ง,
-        ปราสาทเมืองต่ำ,
-        ปราสาทหนองหงส์,
-        อนุสาวรีย์เราสู้,
-        สนามฟุตบอลช้างอารีนา,
-        หมู่บ้านจักสานบ้านเต่า,
-        อ่างเก็บน้ำห้วยตลาด,
-        อุทยานประวัติศาสตร์พนมรุ้ง,
-        วัดเขาพระอังคาร,
-        วนอุทยานภูเขาไฟกระโดง,
-        สวนน้ำบุรีรัมย์วอเตอร์ปาร์ค,
-        ตลาดโบราณบุรีรัมย์,
-        ศาลหลักเมืองบุรีรัมย์,
-        พิพิธภัณฑ์บ้านบุรีรัมย์,
-        ฟาร์มโคนมบุรีรัมย์,
-        สวนสัตว์บุรีรัมย์,
-        ไร่องุ่นบุรีรัมย์,
-        โรงแรมและรีสอร์ทในบุรีรัมย์,
-        ร้านอาหารพื้นเมืองบุรีรัมย์
-      &zoom=11&language=th`}
-                width="100%"
-                height="500"
-                style={{ border: 0 }}
-                allowFullScreen={true}
-                loading="lazy"
-              ></iframe>
-            </div>
+            <TouristMap />
           </div>
+
         </div>
 
         {/* ส่วนขวา - คำแนะนำจากบอท */}

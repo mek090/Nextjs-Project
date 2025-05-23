@@ -4,6 +4,7 @@ import BuriramChatBotOverlay from "./chat/page"
 import { Suspense } from "react"
 import LoadingCard from "@/components/card/LoadingCard"
 import Bot from "@/components/ChatYimm/bot"
+import MapLocation from "@/components/map/MapLocation"
 
 
 
@@ -28,10 +29,10 @@ const page = async ({
           สถานที่ท่องเที่ยวแนะนำ
           <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-blue-500 rounded-full"></div>
         </h2>
+      </div>
         <p className="mt-4  max-w-2xl mx-auto">
           ค้นพบสถานที่ท่องเที่ยวยอดนิยมที่คุณไม่ควรพลาด พร้อมข้อมูลครบถ้วนสำหรับการวางแผนทริปของคุณ
         </p>
-      </div>
 
       <div>
         {/* <BuriramChatBotOverlay /> */}

@@ -10,7 +10,7 @@ const Navbar = () => {
             <div className="container flex justify-between sm:flex-row sm:items-center sm:py-4 sm:px-6 mx-auto">
 
                 <Logo />
-                <Search />
+                {/* <Search /> */}
 
                 <div className="flex gap-4">
                     <Darkmode />

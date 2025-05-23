@@ -5,6 +5,7 @@ import { Suspense } from "react"
 import LoadingCard from "@/components/card/LoadingCard"
 import Bot from "@/components/ChatYimm/bot"
 import MapLocation from "@/components/map/MapLocation"
+import Search from "@/components/Navbar/Search"
 
 
 
@@ -22,7 +23,9 @@ const page = async ({
 
   return (
     <>
-
+      <div className="mb-8">
+        <Search />
+      </div>
 
       <div className="mb-8 text-center">
         <h2 className="text-4xl font-bold relative inline-block">
@@ -30,9 +33,9 @@ const page = async ({
           <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-blue-500 rounded-full"></div>
         </h2>
       </div>
-        <p className="mt-4  max-w-2xl mx-auto">
-          ค้นพบสถานที่ท่องเที่ยวยอดนิยมที่คุณไม่ควรพลาด พร้อมข้อมูลครบถ้วนสำหรับการวางแผนทริปของคุณ
-        </p>
+      <p className="mt-4  max-w-2xl mx-auto">
+        ค้นพบสถานที่ท่องเที่ยวยอดนิยมที่คุณไม่ควรพลาด พร้อมข้อมูลครบถ้วนสำหรับการวางแผนทริปของคุณ
+      </p>
 
       <div>
         {/* <BuriramChatBotOverlay /> */}

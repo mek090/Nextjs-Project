@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, Search } from 'lucide-react';
 import { User2, BellRing, UsersRound, UserRoundCog, LayoutDashboard, House, Heart, MapPin, Settings, Github, LifeBuoy, LogOut } from 'lucide-react';
 
 export type NavbarLink = {
@@ -29,6 +29,6 @@ export const links3: NavbarLink[] = [
 export const links4: NavbarLink[] = [
   { href: '/dashboard/managelocation', label: 'Manage Location', icon: MapPin, hidden: false, },
   { href: '/dashboard/manageuser', label: 'Manage User', icon: UserRoundCog, hidden: false, },
-
+{ href: '/dashboard/search-stats', label: 'Search Stats', icon: Search, hidden: false, },
 ];
 

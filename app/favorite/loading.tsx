@@ -5,14 +5,9 @@ const loading = () => {
     <>
       <div className="flex flex-col items-center justify-center space-y-4">
         <Skeleton className="h-12 w-1/4 rounded-md" />
-        <Skeleton className="h-7 w-3/4 rounded-md mt-3" />
-        <div className="flex justify-center gap-4">
-          <Skeleton className="h-20 w-20 mt-6 rounded-md" />
-          <Skeleton className="h-20 w-20 mt-6 rounded-md" />
-          <Skeleton className="h-20 w-20 mt-6 rounded-md" />
-          <Skeleton className="h-20 w-20 mt-6 rounded-md" />
-          <Skeleton className="h-20 w-20 mt-6 rounded-md" />
-        </div>
+        <Skeleton className="h-3 w-28 rounded-md" />
+        <Skeleton className="h-7 w-1/4 rounded-md" />
+       
 
       </div>
 

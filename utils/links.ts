@@ -13,7 +13,6 @@ export type NavbarLink = {
 export const links: NavbarLink[] = [
   { href: '/', label: 'Home', icon: House, hidden: false, },
   { href: '/locations', label: 'Locations', icon: MapPin, hidden: false, },
-
   { href: '/favorite', label: 'Favorite', icon: Heart, hidden: false, },
   // { href: '/notification', label: 'Notification', icon: BellRing, hidden: false, },
 ];

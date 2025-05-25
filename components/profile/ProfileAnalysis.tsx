@@ -1,204 +1,3 @@
-// "use client";
-
-// import { useEffect, useState } from 'react';
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Star, MapPin, Heart, BarChart2 } from "lucide-react";
-// import Image from 'next/image';
-// import Link from 'next/link';
-
-// interface ProfileAnalysisProps {
-//     userId: string;
-// }
-
-// interface AnalysisData {
-//     totalReviews: number;
-//     totalFavorites: number;
-//     averageRating: string;
-//     favoriteCategory: string;
-//     favoriteDistrict: string;
-//     categoryBreakdown: Record<string, number>;
-//     districtBreakdown: Record<string, number>;
-//     recentReviews: Array<{
-//         id: string;
-//         content: string;
-//         rating: number;
-//         createdAt: string;
-//         location: {
-//             id: string;
-//             name: string;
-//             image: string;
-//         };
-//     }>;
-//     favoriteLocations: Array<{
-//         id: string;
-//         name: string;
-//         image: string;
-//     }>;
-// }
-
-// export default function ProfileAnalysis({ userId }: ProfileAnalysisProps) {
-//     const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
-//     const [loading, setLoading] = useState(true);
-
-//     useEffect(() => {
-//         const fetchAnalysis = async () => {
-//             try {
-//                 const response = await fetch(`/api/profile/analysis?userId=${userId}`);
-//                 const data = await response.json();
-//                 setAnalysis(data);
-//             } catch (error) {
-//                 console.error('Error fetching profile analysis:', error);
-//             } finally {
-//                 setLoading(false);
-//             }
-//         };
-
-//         fetchAnalysis();
-//     }, [userId]);
-
-//     if (loading) {
-//         return <div>กำลังวิเคราะห์ข้อมูล...</div>;
-//     }
-
-//     if (!analysis) {
-//         return <div>ไม่พบข้อมูลการวิเคราะห์</div>;
-//     }
-
-//     return (
-//         <div className="space-y-6">
-//             {/* สรุปภาพรวม */}
-//             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-//                 <Card>
-//                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//                         <CardTitle className="text-sm font-medium">รีวิวทั้งหมด</CardTitle>
-//                         <Star className="h-4 w-4 text-muted-foreground" />
-//                     </CardHeader>
-//                     <CardContent>
-//                         <div className="text-2xl font-bold">{analysis.totalReviews}</div>
-//                         <p className="text-xs text-muted-foreground">คะแนนเฉลี่ย {analysis.averageRating}</p>
-//                     </CardContent>
-//                 </Card>
-
-//                 <Card>
-//                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//                         <CardTitle className="text-sm font-medium">สถานที่โปรด</CardTitle>
-//                         <Heart className="h-4 w-4 text-muted-foreground" />
-//                     </CardHeader>
-//                     <CardContent>
-//                         <div className="text-2xl font-bold">{analysis.totalFavorites}</div>
-//                         <p className="text-xs text-muted-foreground">สถานที่ที่บันทึก</p>
-//                     </CardContent>
-//                 </Card>
-
-//                 <Card>
-//                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//                         <CardTitle className="text-sm font-medium">ประเภทที่ชอบ</CardTitle>
-//                         <BarChart2 className="h-4 w-4 text-muted-foreground" />
-//                     </CardHeader>
-//                     <CardContent>
-//                         <div className="text-2xl font-bold">{analysis.favoriteCategory}</div>
-//                         <p className="text-xs text-muted-foreground">ประเภทสถานที่ที่รีวิวบ่อยที่สุด</p>
-//                     </CardContent>
-//                 </Card>
-
-//                 <Card>
-//                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//                         <CardTitle className="text-sm font-medium">อำเภอที่รีวิวบ่อย</CardTitle>
-//                         <MapPin className="h-4 w-4 text-muted-foreground" />
-//                     </CardHeader>
-//                     <CardContent>
-//                         <div className="text-2xl font-bold">{analysis.favoriteDistrict}</div>
-//                         <p className="text-xs text-muted-foreground">อำเภอที่รีวิวบ่อยที่สุด</p>
-//                     </CardContent>
-//                 </Card>
-//             </div>
-
-//             {/* รีวิวล่าสุด */}
-//             <Card>
-//                 <CardHeader>
-//                     <CardTitle>รีวิวล่าสุด</CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                     <div className="space-y-4">
-//                         {analysis.recentReviews.map((review) => (
-//                             <div key={review.id} className="flex items-start space-x-4">
-//                                 <Link href={`/locations/${review.location.id}`} className="flex-shrink-0">
-//                                     <Image
-//                                         src={review.location.image}
-//                                         alt={review.location.name}
-//                                         width={80}
-//                                         height={80}
-//                                         className="rounded-lg object-cover"
-//                                     />
-//                                 </Link>
-//                                 <div className="flex-1">
-//                                     <Link
-//                                         href={`/locations/${review.location.id}`}
-//                                         className="font-medium hover:text-blue-600"
-//                                     >
-//                                         {review.location.name}
-//                                     </Link>
-//                                     <div className="flex items-center mt-1">
-//                                         {[...Array(5)].map((_, i) => (
-//                                             <Star
-//                                                 key={i}
-//                                                 className={`w-4 h-4 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-//                                                     }`}
-//                                             />
-//                                         ))}
-//                                     </div>
-//                                     <p className="text-sm text-gray-600 mt-1">{review.content}</p>
-//                                     <p className="text-xs text-gray-500 mt-1">
-//                                         {new Date(review.createdAt).toLocaleDateString("th-TH", {
-//                                             year: "numeric",
-//                                             month: "long",
-//                                             day: "numeric",
-//                                         })}
-//                                     </p>
-//                                 </div>
-//                             </div>
-//                         ))}
-//                     </div>
-//                 </CardContent>
-//             </Card>
-
-//             {/* สถานที่โปรด */}
-//             <Card>
-//                 <CardHeader>
-//                     <CardTitle>สถานที่โปรด</CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-//                         {analysis.favoriteLocations.map((location) => (
-//                             <Link
-//                                 key={location.id}
-//                                 href={`/locations/${location.id}`}
-//                                 className="group"
-//                             >
-//                                 <div className="relative aspect-video rounded-lg overflow-hidden">
-//                                     <Image
-//                                         src={location.image}
-//                                         alt={location.name}
-//                                         fill
-//                                         className="object-cover group-hover:scale-105 transition-transform duration-200"
-//                                     />
-//                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-//                                     <div className="absolute bottom-0 left-0 p-4">
-//                                         <h3 className="text-white font-medium group-hover:text-blue-200">
-//                                             {location.name}
-//                                         </h3>
-//                                     </div>
-//                                 </div>
-//                             </Link>
-//                         ))}
-//                     </div>
-//                 </CardContent>
-//             </Card>
-//         </div>
-//     );
-// } 
-
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -206,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, MapPin, Heart, BarChart2, Loader2, Clock, Award } from "lucide-react";
 import Image from 'next/image';
 import Link from 'next/link';
+import useSWR from 'swr';
 
 interface ProfileAnalysisProps {
     userId: string;
@@ -237,27 +37,20 @@ interface AnalysisData {
     }>;
 }
 
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
 export default function ProfileAnalysis({ userId }: ProfileAnalysisProps) {
-    const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { data: analysis, error, isLoading } = useSWR<AnalysisData>(
+        `/api/profile/analysis?userId=${userId}`,
+        fetcher,
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+            dedupingInterval: 60000, // Cache for 1 minute
+        }
+    );
 
-    useEffect(() => {
-        const fetchAnalysis = async () => {
-            try {
-                const response = await fetch(`/api/profile/analysis?userId=${userId}`);
-                const data = await response.json();
-                setAnalysis(data);
-            } catch (error) {
-                console.error('Error fetching profile analysis:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchAnalysis();
-    }, [userId]);
-
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center h-64 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                 <Loader2 className="h-10 w-10 text-blue-500 animate-spin mb-4" />
@@ -266,7 +59,7 @@ export default function ProfileAnalysis({ userId }: ProfileAnalysisProps) {
         );
     }
 
-    if (!analysis) {
+    if (error || !analysis) {
         return (
             <div className="flex items-center justify-center h-64 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                 <p className="text-lg text-gray-600 dark:text-gray-300">ไม่พบข้อมูลการวิเคราะห์</p>

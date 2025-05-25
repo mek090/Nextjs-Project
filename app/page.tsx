@@ -38,8 +38,8 @@ const page = async ({
       </p>
 
       <div>
-        {/* <BuriramChatBotOverlay /> */}
-        <Bot />
+        <BuriramChatBotOverlay />
+        {/* <Bot /> */}
       </div>
 
       <div className="bg-gradient-to-br from-blue-50 to-teal-100 dark:from-gray-900 dark:to-gray-800 rounded-lg p-4">

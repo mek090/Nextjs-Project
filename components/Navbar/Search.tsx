@@ -42,19 +42,19 @@ const Search = () => {
       const data = await response.json();
       setAnalysis(data);
 
-      // ถ้าไม่ใช่คำค้นหาที่เกี่ยวข้องกับบุรีรัมย์
-      if (!data.isValid) {
-        toast.warning('คำค้นหานี้อาจไม่เกี่ยวข้องกับบุรีรัมย์', {
-          description: data.reason,
-        });
-      }
+      // // ถ้าไม่ใช่คำค้นหาที่เกี่ยวข้องกับบุรีรัมย์
+      // if (!data.isValid) {
+      //   toast.warning('คำค้นหานี้อาจไม่เกี่ยวข้องกับบุรีรัมย์', {
+      //     description: data.reason,
+      //   });
+      // }
 
-      // ถ้ามีคำแนะนำ
-      if (data.suggestions && data.suggestions.length > 0) {
-        toast.info('คำค้นหาที่แนะนำ', {
-          description: data.suggestions.join(', '),
-        });
-      }
+      // // ถ้ามีคำแนะนำ
+      // if (data.suggestions && data.suggestions.length > 0) {
+      //   toast.info('คำค้นหาที่แนะนำ', {
+      //     description: data.suggestions.join(', '),
+      //   });
+      // }
 
       return data;
     } catch (error) {
@@ -84,10 +84,16 @@ const Search = () => {
       setIsSearching(true);
       
       // วิเคราะห์คำค้นหา
-      const analysis = await analyzeSearch(value);
+      let analysis = null;
+      try {
+        analysis = await analyzeSearch(value);
+      } catch (error) {
+        console.error('Error analyzing search:', error);
+        // Continue with direct search if analysis fails
+      }
       
       // ถ้าไม่ใช่คำค้นหาที่เกี่ยวข้องกับบุรีรัมย์ และมีคำแนะนำ
-      if (analysis && !analysis.isValid && analysis.suggestions.length > 0) {
+      if (analysis && !analysis.isValid && analysis.suggestions && analysis.suggestions.length > 0) {
         // ใช้คำแนะนำแรกในการค้นหา
         value = analysis.suggestions[0];
       }
@@ -96,7 +102,12 @@ const Search = () => {
       if (value) {
         params.set('search', value);
         // Save search history when performing a search
-        saveSearchHistory(value);
+        try {
+          await saveSearchHistory(value);
+        } catch (error) {
+          console.error('Error saving search history:', error);
+          // Continue even if saving history fails
+        }
       } else {
         params.delete('search');
       }

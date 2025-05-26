@@ -72,8 +72,9 @@ export async function uploadFile(image: File): Promise<string> {
 
         // 4. สร้างชื่อไฟล์ที่ไม่ซ้ำ
         const timeStamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 15);
         const fileExt = image.name.split('.').pop();
-        const newName = `upload-${timeStamp}.${fileExt}`;
+        const newName = `upload-${timeStamp}-${randomString}.${fileExt}`;
 
         // 5. อัพโหลดไฟล์
         const { data, error } = await supabase.storage

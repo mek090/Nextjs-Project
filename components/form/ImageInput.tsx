@@ -14,16 +14,31 @@ const ImageInput = ({ defaultValue }: { defaultValue?: string | string[] }) => {
 
     // ส่งค่า previewImages กลับไปยัง form
     useEffect(() => {
-        const input = document.querySelector('input[name="image"]') as HTMLInputElement
-        if (input) {
-            input.value = JSON.stringify(previewImages)
+        // แยกรูปภาพเป็น 2 ประเภท: รูปเดิม (URL) และรูปใหม่ (base64)
+        const existingImages = previewImages.filter(url => url.startsWith('https'))
+        const newImages = previewImages.filter(url => url.startsWith('data:'))
+
+        // อัพเดทค่า imagesToKeep สำหรับรูปเดิม
+        const hiddenKeepInput = document.querySelector('input[name="imagesToKeep"]') as HTMLInputElement
+        if (hiddenKeepInput) {
+            hiddenKeepInput.value = JSON.stringify(existingImages)
         }
+
+        // สร้าง input สำหรับรูปใหม่
+        let newImagesInput = document.querySelector('input[name="newImages"]') as HTMLInputElement
+        if (!newImagesInput) {
+            newImagesInput = document.createElement('input')
+            newImagesInput.type = 'hidden'
+            newImagesInput.name = 'newImages'
+            document.querySelector('form')?.appendChild(newImagesInput)
+        }
+        newImagesInput.value = JSON.stringify(newImages)
     }, [previewImages])
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         if (files) {
-            const maxSize = 2 * 1024 * 1024 // 2MB
+            const maxSize = 10 * 1024 * 1024 // 10MB
             const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
             const newPreviews: string[] = []
             
@@ -74,7 +89,7 @@ const ImageInput = ({ defaultValue }: { defaultValue?: string | string[] }) => {
                 <p className="text-sm text-red-500 mt-1">{error}</p>
             )}
             <p className="text-sm text-gray-500 mt-1">
-                รองรับไฟล์ JPG, PNG, WEBP, GIF ขนาดไม่เกิน 2MB
+                รองรับไฟล์ JPG, PNG, WEBP, GIF ขนาดไม่เกิน 10MB
             </p>
 
             {/* Preview Images */}

@@ -30,12 +30,25 @@
 import { createClient } from '@supabase/supabase-js'
 
 const bucket = 'location-bucket'
-const url = process.env.SUPABASE_URL as string
-const key = process.env.SUPABASE_KEY as string
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
 
+if (!url || !key) {
+  throw new Error('Missing Supabase environment variables')
+}
 
-// Create Supabase client
-export const supabase = createClient(url, key)
+// Create Supabase client with realtime enabled
+export const supabase = createClient(url, key, {
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
+  },
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  }
+})
 
 // Upload file with improved error handling
 export async function uploadFile(image: File): Promise<string> {

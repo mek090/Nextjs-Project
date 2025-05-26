@@ -5,7 +5,7 @@ import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { z, ZodSchema } from "zod";
-import { uploadFile } from "@/utils/supabase";
+import { uploadFile, supabase } from "@/utils/supabase";
 import { auth } from "@clerk/nextjs/server";
 import path from "path";
 import fs from "fs/promises";
@@ -133,52 +133,72 @@ export const fetchLocation = async (params?: { search?: string, category?: strin
     const search = params?.search || '';
     const category = params?.category || '';
 
-    const locations = await prisma.location.findMany({
-        where: {
-            AND: [
-                category ? { category } : {},
-                {
-                    OR: [
-                        { name: { contains: search, mode: 'insensitive' } },
-                        { description: { contains: search, mode: 'insensitive' } },
-                        { districts: { contains: search, mode: 'insensitive' } }
-                    ]
-                }
-            ]
-        },
-        select: {
-            id: true,
-            name: true,
-            image: true,
-            description: true,
-            category: true,
-            districts: true,
-            price: true,
-            lat: true,
-            lng: true,
-            rating: true,
-            openTime: true,
-            closeTime: true,
-            _count: {
-                select: {
-                    favorites: true,
-                    reviews: true
-                }
-            }
-        },
-        orderBy: [
-            {
-                favorites: {
-                    _count: 'desc'
-                }
-            },
-            {
-                rating: 'desc'
-            }
-        ]
-    });
+    const maxRetries = 3;
+    let retryCount = 0;
 
-    return locations;
+    while (retryCount < maxRetries) {
+        try {
+            const locations = await prisma.location.findMany({
+                where: {
+                    AND: [
+                        category ? { category } : {},
+                        {
+                            OR: [
+                                { name: { contains: search, mode: 'insensitive' } },
+                                { description: { contains: search, mode: 'insensitive' } },
+                                { districts: { contains: search, mode: 'insensitive' } }
+                            ]
+                        }
+                    ]
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    description: true,
+                    category: true,
+                    districts: true,
+                    price: true,
+                    lat: true,
+                    lng: true,
+                    rating: true,
+                    openTime: true,
+                    closeTime: true,
+                    _count: {
+                        select: {
+                            favorites: true,
+                            reviews: true
+                        }
+                    }
+                },
+                orderBy: [
+                    {
+                        favorites: {
+                            _count: 'desc'
+                        }
+                    },
+                    {
+                        rating: 'desc'
+                    }
+                ]
+            });
+
+            return locations;
+        } catch (error) {
+            console.error(`Attempt ${retryCount + 1} failed:`, error);
+            retryCount++;
+
+            if (retryCount === maxRetries) {
+                console.error('Max retries reached, throwing error');
+                throw error;
+            }
+
+            // Wait before retrying (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+        }
+    }
+
+    throw new Error('Failed to fetch locations after multiple attempts');
 };
 
 
@@ -372,7 +392,12 @@ export async function updateProfileAction(formData: FormData) {
                 profileImageUrl = await uploadFile(profileImage)
             } catch (error) {
                 console.error("Error uploading profile image:", error)
-                throw new Error(error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ")
+                // ถ้าเกิด error ในการอัพโหลดรูป ให้อัพเดทข้อมูลอื่นๆ ไปก่อน
+                if (error instanceof Error && error.message.includes('row-level security policy')) {
+                    console.warn("Storage policy error, continuing without image update")
+                } else {
+                    throw new Error(error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ")
+                }
             }
         }
 
@@ -775,28 +800,28 @@ export const updateLocationAction = async (
 ) => {
     const user = await getAuthUser();
     const locationId = formData.get('id') as string;
-    const currentImages = JSON.parse(formData.get('currentImages') as string) || [];
-
-    // ตรวจสอบว่ามีการอัพโหลดรูปภาพใหม่หรือไม่
-    const newImages = formData.getAll('image') as string[];
-    const imageUrls = newImages.length > 0 ? newImages : currentImages;
-
-    const rawData = {
-        name: formData.get('name'),
-        description: formData.get('description'),
-        category: formData.get('category'),
-        districts: formData.get('districts'),
-        price: formData.get('price'),
-        lat: formData.get('lat'),
-        lng: formData.get('lng'),
-        openTime: formData.get('openTime'),
-        closeTime: formData.get('closeTime'),
-    };
-
+    
+    // รับข้อมูลรูปภาพที่ต้องการเก็บไว้ (URL ที่ส่งมาจาก frontend)
+    const imagesToKeep = JSON.parse(formData.get('imagesToKeep') as string) || [];
+    
+    // รับข้อมูลรูปภาพใหม่ (base64)
+    const newImages = JSON.parse(formData.get('newImages') as string) || [];
+    
     try {
-        const validateField = validateWithZod(locationSchema, rawData);
+        // ดึงข้อมูลสถานที่ปัจจุบัน
+        const existingLocation = await prisma.location.findUnique({
+            where: { id: locationId },
+            select: { image: true }
+        });
 
-        // ตรวจสอบว่า user เป็น admin หรือไม่
+        if (!existingLocation) {
+            return {
+                success: false,
+                message: 'ไม่พบสถานที่'
+            };
+        }
+
+        // ตรวจสอบสิทธิ์การแก้ไข
         const userProfile = await prisma.profile.findUnique({
             where: { clerkId: user.id }
         });
@@ -808,20 +833,94 @@ export const updateLocationAction = async (
             };
         }
 
-        // ตรวจสอบว่าสถานที่นี้มีอยู่จริง
-        const existingLocation = await prisma.location.findFirst({
+        const location = await prisma.location.findFirst({
             where: {
                 id: locationId,
                 ...(userProfile.role !== 'admin' ? { profileId: user.id } : {})
             }
         });
 
-        if (!existingLocation) {
+        if (!location) {
             return {
                 success: false,
-                message: 'ไม่พบสถานที่หรือคุณไม่มีสิทธิ์แก้ไข'
+                message: 'คุณไม่มีสิทธิ์แก้ไขสถานที่นี้'
             };
         }
+
+        // อัพโหลดรูปภาพใหม่ (ถ้ามี)
+        let newImageUrls: string[] = [];
+        if (newImages.length > 0) {
+            try {
+                console.log('Processing new images:', newImages.length);
+                // แปลง base64 เป็น File objects
+                const imageFiles = await Promise.all(
+                    newImages.map(async (base64: string) => {
+                        try {
+                            // แยก mime type และ data จาก base64
+                            const matches = base64.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+                            if (!matches || matches.length !== 3) {
+                                throw new Error('Invalid base64 string');
+                            }
+
+                            const mimeType = matches[1];
+                            const base64Data = matches[2];
+                            const buffer = Buffer.from(base64Data, 'base64');
+
+                            // สร้าง File object
+                            const filename = `image-${Date.now()}-${Math.random().toString(36).substring(7)}.${mimeType.split('/')[1]}`;
+                            const file = new File([buffer], filename, { type: mimeType });
+                            
+                            console.log('Created file:', filename, 'size:', file.size);
+                            return file;
+                        } catch (error) {
+                            console.error('Error processing base64 image:', error);
+                            throw error;
+                        }
+                    })
+                );
+
+                console.log('Uploading files to storage...');
+                // อัพโหลดรูปภาพใหม่ทั้งหมด
+                newImageUrls = await Promise.all(
+                    imageFiles.map(async (image) => {
+                        try {
+                            const url = await uploadFile(image);
+                            console.log('Successfully uploaded:', url);
+                            return url;
+                        } catch (error) {
+                            console.error('Error uploading file:', error);
+                            throw error;
+                        }
+                    })
+                );
+                console.log('All files uploaded successfully');
+            } catch (error) {
+                console.error('Error processing new images:', error);
+                if (error instanceof Error && error.message.includes('row-level security policy')) {
+                    console.warn("Storage policy error, continuing with existing images");
+                } else {
+                    throw error;
+                }
+            }
+        }
+
+        // รวมรูปภาพที่ต้องการเก็บไว้กับรูปภาพใหม่
+        const updatedImages = [...imagesToKeep, ...newImageUrls];
+
+        // ตรวจสอบข้อมูลอื่นๆ
+        const rawData = {
+            name: formData.get('name'),
+            description: formData.get('description'),
+            category: formData.get('category'),
+            districts: formData.get('districts'),
+            price: formData.get('price'),
+            lat: formData.get('lat'),
+            lng: formData.get('lng'),
+            openTime: formData.get('openTime'),
+            closeTime: formData.get('closeTime'),
+        };
+
+        const validateField = validateWithZod(locationSchema, rawData);
 
         // อัพเดทข้อมูลสถานที่
         await prisma.location.update({
@@ -830,10 +929,52 @@ export const updateLocationAction = async (
             },
             data: {
                 ...validateField,
-                image: imageUrls
+                image: updatedImages
             }
         });
 
+        // ลบรูปภาพที่ไม่ต้องการออกจาก storage (ถ้าต้องการ)
+        const imagesToDelete = existingLocation.image.filter(
+            (url: string) => !imagesToKeep.includes(url)
+        );
+
+        if (imagesToDelete.length > 0) {
+            console.log('Images to delete:', imagesToDelete);
+            try {
+                await Promise.all(
+                    imagesToDelete.map(async (url: string) => {
+                        try {
+                            // แยก path จาก URL
+                            const urlObj = new URL(url);
+                            const pathParts = urlObj.pathname.split('/');
+                            // หา path ที่ถูกต้องใน storage (ปกติจะเป็นส่วนสุดท้ายของ URL)
+                            const storagePath = pathParts[pathParts.length - 1];
+                            
+                            if (storagePath) {
+                                console.log('Attempting to delete image:', storagePath);
+                                const { error } = await supabase.storage
+                                    .from('location-bucket')
+                                    .remove([storagePath]);
+                                
+                                if (error) {
+                                    console.error('Error deleting specific image:', error);
+                                } else {
+                                    console.log('Successfully deleted image:', storagePath);
+                                }
+                            } else {
+                                console.warn('Could not extract storage path from URL:', url);
+                            }
+                        } catch (urlError) {
+                            console.error('Error processing URL:', url, urlError);
+                        }
+                    })
+                );
+            } catch (error) {
+                console.error('Error in bulk image deletion:', error);
+            }
+        }
+
+        revalidatePath(`/locations/${locationId}`);
         return {
             success: true,
             message: 'อัพเดทสถานที่สำเร็จ!',

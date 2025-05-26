@@ -58,7 +58,7 @@ const EditLocationForm = ({ location }: EditLocationFormProps) => {
                     <br />
                     <span className="text-yellow-600">* หากไม่ต้องการเปลี่ยนแปลงรูปภาพ ให้ปล่อยว่างไว้</span>
                 </p>
-                <input type="hidden" name="currentImages" value={JSON.stringify(location.image)} />
+                <input type="hidden" name="imagesToKeep" value={JSON.stringify(location.image)} />
                 <ImageInput defaultValue={location.image} />
             </div>
 

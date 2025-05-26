@@ -15,14 +15,23 @@ import { TopLocations } from "@/components/dashboard/TopLocations"
 export const dynamic = 'force-dynamic'
 
 const Dashboard = async () => {
+  try {
   const stats = await getEnhancedDashboardStats()
   const user = await currentUser();
+    
+    if (!user) {
+      redirect('/sign-in')
+    }
+
   const profile = await prisma.profile.findUnique({
     where: {
       clerkId: user.id
     }
   })
-  if (!profile || profile.role !== 'admin') redirect('/')
+
+    if (!profile || profile.role !== 'admin') {
+      redirect('/')
+    }
 
   return (
     <div className="p-6 space-y-6">
@@ -37,7 +46,7 @@ const Dashboard = async () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="flex items-center space-x-4">
-          {/* <span className="text-sm text-muted-foreground">Welcome back, Admin</span> */}
+            <span className="text-sm text-muted-foreground">Welcome back, {profile.firstname}</span>
         </div>
       </div>
 
@@ -84,6 +93,7 @@ const Dashboard = async () => {
           </CardContent>
         </Card>
       </div>
+
       {/* Quick Actions */}
       <Card>
         <CardHeader>
@@ -119,10 +129,19 @@ const Dashboard = async () => {
 
       {/* Recent Reviews Section */}
       <RecentReviewsList reviews={stats.recentReviews} />
-
-
+      </div>
+    )
+  } catch (error) {
+    console.error('Dashboard error:', error)
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-red-600">Error Loading Dashboard</h1>
+        <p className="mt-2 text-gray-600">
+          {error instanceof Error ? error.message : 'An unexpected error occurred'}
+        </p>
     </div>
   )
+  }
 }
 
 export default Dashboard

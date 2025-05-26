@@ -15,7 +15,7 @@ interface TopLocationsProps {
       reviews: number
       favorites: number
     }
-    image: string
+    image: string | string[]
   }[]
   mostFavorited?: {
     id: string
@@ -26,8 +26,14 @@ interface TopLocationsProps {
       reviews: number
       favorites: number
     }
-    image: string
+    image: string | string[]
   }[]
+}
+
+const getImageUrl = (image: string | string[] | undefined | null): string | null => {
+  if (!image) return null;
+  if (Array.isArray(image)) return image[0] || null;
+  return image;
 }
 
 export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocationsProps) {
@@ -45,16 +51,18 @@ export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocations
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {topRated?.map((location) => (
+            {topRated?.map((location) => {
+              const imageUrl = getImageUrl(location.image);
+              return (
               <Link 
                 key={location.id} 
                 href={`/locations/${location.id}`}
                 className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-accent/50 transition-colors"
               >
                 <div className="relative h-16 w-16 rounded-lg overflow-hidden">
-                  {location.image ? (
+                    {imageUrl ? (
                     <Image
-                      src={Array.isArray(location.image) ? location.image[0] : location.image}
+                        src={imageUrl}
                       alt={location.name}
                       fill
                       className="object-cover"
@@ -77,7 +85,8 @@ export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocations
                   <p className="text-sm text-muted-foreground truncate">{location.address}</p>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -94,16 +103,18 @@ export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocations
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {mostFavorited?.map((location) => (
+            {mostFavorited?.map((location) => {
+              const imageUrl = getImageUrl(location.image);
+              return (
               <Link 
                 key={location.id} 
                 href={`/locations/${location.id}`}
                 className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-accent/50 transition-colors"
               >
                 <div className="relative h-16 w-16 rounded-lg overflow-hidden">
-                  {location.image ? (
+                    {imageUrl ? (
                     <Image
-                      src={Array.isArray(location.image) ? location.image[0] : location.image}
+                        src={imageUrl}
                       alt={location.name}
                       fill
                       className="object-cover"
@@ -126,7 +137,8 @@ export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocations
                   <p className="text-sm text-muted-foreground truncate">{location.address}</p>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>

@@ -35,6 +35,11 @@ interface UserActivityItemProps {
   }
 }
 
+const getImageUrl = (image: string | null | undefined): string | null => {
+  if (!image) return null;
+  return image;
+}
+
 export function UserActivityItem({ user }: UserActivityItemProps) {
   const getLastActivityTime = () => {
     const reviewTime = user.last_review?.createdAt ? new Date(user.last_review.createdAt).getTime() : 0
@@ -59,12 +64,14 @@ export function UserActivityItem({ user }: UserActivityItemProps) {
     }
   }
 
+  const imageUrl = getImageUrl(user.profileImage);
+
   return (
     <div className="flex items-start space-x-4 p-4 rounded-lg border hover:bg-accent/50 transition-colors">
       <div className="relative h-12 w-12 rounded-full overflow-hidden border">
-        {user.profileImage ? (
+        {imageUrl ? (
           <Image
-            src={user.profileImage}
+            src={imageUrl}
             alt={`${user.firstname} ${user.lastname}`}
             fill
             className="object-cover"

@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
 import { SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
+import { supabase } from "@/utils/supabase";
 
 interface Notification {
   id: string;
@@ -40,8 +41,6 @@ export default function NotificationDropdown() {
   const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
   const { user, isLoaded } = useUser();
-  // const [isLoaded, setIsLoaded] = useState(false);
-
 
   const fetchNotifications = async () => {
     try {
@@ -53,21 +52,16 @@ export default function NotificationDropdown() {
         console.error("Invalid notifications data:", data);
         setNotifications([]);
         setUnreadCount(0);
-        // setIsLoaded(true);
         return;
       }
 
       setNotifications(data.notifications);
       const unread = data.notifications.filter((n: Notification) => !n.isRead).length;
       setUnreadCount(unread);
-      // setIsLoaded(true);
-      // console.log('Unread notifications:', unread);
-      // setUnreadCount(unread);
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setNotifications([]);
       setUnreadCount(0);
-      // setIsLoaded(true);
     }
   };
 
@@ -96,11 +90,41 @@ export default function NotificationDropdown() {
   };
 
   useEffect(() => {
+    if (!user) return;
+
+    // Initial fetch
     fetchNotifications();
-    // Poll for new notifications every 30 seconds
+
+    try {
+      // Subscribe to realtime changes
+      const channel = supabase
+        .channel('notifications')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'Notification',
+            filter: `recipientId=eq.${user.id}`
+          },
+          (payload) => {
+            console.log('New notification received:', payload);
+            fetchNotifications(); // Fetch updated notifications
+          }
+        )
+        .subscribe();
+
+      // Cleanup subscription on unmount
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    } catch (error) {
+      console.error('Error setting up Supabase realtime:', error);
+      // Fallback to polling if realtime fails
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
-  }, []);
+    }
+  }, [user]);
 
   if (!notifications.length === null) {
     return (
@@ -117,7 +141,6 @@ export default function NotificationDropdown() {
   if (!user) {
     return null;
   }
-
 
   return (
     <DropdownMenu>
@@ -140,8 +163,7 @@ export default function NotificationDropdown() {
           notifications.map((notification) => (
             <DropdownMenuItem
               key={notification.id}
-              className={`p-4 cursor-pointer ${!notification.isRead ? "bg-gray-200" : ""
-                }`}
+              className={`p-4 cursor-pointer ${!notification.isRead ? "bg-gray-200" : ""}`}
               onClick={() => handleNotificationClick(notification)}
             >
               <div className="flex flex-col gap-1">

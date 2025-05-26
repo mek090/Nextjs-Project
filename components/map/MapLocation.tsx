@@ -62,7 +62,7 @@ function LocationMarker({ position, setPosition }: LocationMarkerProps) {
 const MapLocation = ({ location }: { location?: { lat: number, lng: number } }) => {
     // ใช้พิกัดบุรีรัมย์เป็นค่าเริ่มต้น
     const defaultLocation: LatLng = location ? [location.lat, location.lng] : BURIRAM_COORDINATES
-    const [position, setPosition] = useState<LatLng | null>(null)
+    const [position, setPosition] = useState<LatLng | null>(location ? [location.lat, location.lng] : null)
     const [activeBaseMap, setActiveBaseMap] = useState<string>("OpenStreetMap")
     
     // เพิ่ม CSS สำหรับแผนที่
@@ -188,8 +188,8 @@ const MapLocation = ({ location }: { location?: { lat: number, lng: number } }) 
             </div> */}
 
             
-            <input type='hidden' name='lat' value={position ? position[0] : ''} />
-            <input type='hidden' name='lng' value={position ? position[1] : ''} />
+            <input type='hidden' name='lat' value={position ? position[0] : (location ? location.lat : '')} />
+            <input type='hidden' name='lng' value={position ? position[1] : (location ? location.lng : '')} />
             
             <MapContainer
                 className='custom-map-container h-[60vh] w-full z-0 relative'

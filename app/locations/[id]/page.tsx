@@ -156,6 +156,8 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                                         locationDescription={location.description}
                                         locationDistrict={location.districts}
                                         locationCategory={location.category}
+                                        locationLat={location.lat}
+                                        locationLng={location.lng}
                                         type="ai-description"
                                     />
                                 </div>

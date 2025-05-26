@@ -14,6 +14,8 @@ interface CollapsibleSectionProps {
     locationDescription?: string  // For AI description  
     locationDistrict?: string  // For AI description
     locationCategory?: string  // For AI description
+    locationLat?: number  // For AI description
+    locationLng?: number  // For AI description
 }
 
 const CollapsibleSection = ({
@@ -23,7 +25,9 @@ const CollapsibleSection = ({
     locationName,
     locationDescription,
     locationDistrict,
-    locationCategory
+    locationCategory,
+    locationLat,
+    locationLng,
 }: CollapsibleSectionProps) => {
     // State to track if the section is expanded or collapsed
     const [isExpanded, setIsExpanded] = useState(false)
@@ -62,6 +66,8 @@ const CollapsibleSection = ({
                             locationDescription={locationDescription}
                             locationDistrict={locationDistrict || ''}
                             locationCategory={locationCategory || ''}
+                            locationLat={locationLat}
+                            locationLng={locationLng}
                         />
                     )}
                 </div>

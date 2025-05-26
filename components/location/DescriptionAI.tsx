@@ -24,29 +24,55 @@ import {
 } from "lucide-react";
 import { getWeatherData } from '@/lib/fetchWeather';
 import { WeatherResponse } from '@/utils/types';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
 interface DescriptionAIProps {
   locationName: string;
   locationDescription: string;
   locationDistrict: string;
   locationCategory?: string;
+  locationLat?: number;
+  locationLng?: number;
 }
+
+interface NearbyLocation {
+  id: string;
+  name: string;
+  distance: number;
+  category: string;
+  image: string[];
+  districts: string;
+  lat: number;
+  lng: number;
+}
+
+// สร้างไอคอนที่สวยงาม
+const customIcon = L.icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
 export default function DescriptionAI({
   locationName,
   locationDescription,
   locationDistrict,
   locationCategory,
+  locationLat,
+  locationLng,
 }: DescriptionAIProps) {
   const [aiDescription, setAiDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherResponse | null>(null);
-  const [nearbyLocations, setNearbyLocations] = useState<string[]>([]);
+  const [nearbyLocations, setNearbyLocations] = useState<NearbyLocation[]>([]);
   const [activeTab, setActiveTab] = useState<string>("description");
-
-
-
+  const [selectedLocation, setSelectedLocation] = useState<NearbyLocation | null>(null);
 
   useEffect(() => {
     const generateDescription = async () => {
@@ -61,6 +87,26 @@ export default function DescriptionAI({
         } catch (weatherError) {
           console.error("Error fetching weather data:", weatherError);
           setWeatherData(null);
+        }
+
+        // ดึงข้อมูลสถานที่ใกล้เคียง
+        if (locationLat && locationLng) {
+          try {
+            const response = await fetch(
+              `/api/nearby?lat=${locationLat}&lng=${locationLng}&radius=10&limit=5`
+            );
+            if (response.ok) {
+              const data = await response.json();
+              // กรองสถานที่ปัจจุบันออกจากรายการ
+              const filteredLocations = data.filter((loc: NearbyLocation) =>
+                loc.lat !== locationLat || loc.lng !== locationLng
+              );
+              setNearbyLocations(filteredLocations);
+            }
+          } catch (error) {
+            console.error("Error fetching nearby locations:", error);
+            setNearbyLocations([]);
+          }
         }
 
         const prompt = `
@@ -114,7 +160,6 @@ export default function DescriptionAI({
           - เว็บไซต์หรือโซเชียลมีเดีย (ถ้ามี)
           - ค่าธรรมเนียมการเข้าชม (ถ้ามี)
           
-          ใช้ภาษาที่เข้าใจง่าย สนุกสนาน และกระตุ้นให้อยากไปเที่ยว
           ใส่เกร็ดความรู้และข้อมูลที่น่าสนใจที่ไม่ค่อยมีคนรู้เกี่ยวกับสถานที่นี้
           ใส่ emoji ประกอบแต่ละย่อหน้าเพื่อความน่าสนใจ แต่ไม่มากเกินไป
           พยายามให้ข้อมูลเฉพาะเจาะจงเกี่ยวกับสถานที่นี้ในจังหวัดบุรีรัมย์ ไม่ใช่ข้อมูลทั่วไป
@@ -149,41 +194,6 @@ export default function DescriptionAI({
           throw new Error("ไม่พบเนื้อหาในการตอบกลับ");
         }
 
-        // สร้างสถานที่ใกล้เคียงจำลอง (ในโปรดักชันควรใช้ข้อมูลจริง)
-        const nearbyPrompt = `
-          ให้แนะนำสถานที่ท่องเที่ยวที่น่าสนใจอื่นๆ ในบุรีรัมย์ที่ใกล้เคียงกับ ${locationName} อำเภอ${locationDistrict} 
-          แนะนำมา 5 ที่พร้อมระยะทางโดยประมาณจาก ${locationName} 
-          ตอบเป็นรายการแบบ JSON array เท่านั้น ในรูปแบบ: ["ชื่อสถานที่ 1 (ระยะทาง)", "ชื่อสถานที่ 2 (ระยะทาง)", ...]
-        `;
-
-        const nearbyResponse = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.NEXT_PUBLIC_GEMINI_API_KEY}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ role: "user", parts: [{ text: nearbyPrompt }] }],
-              generationConfig: {
-                temperature: 0.3,
-                maxOutputTokens: 500
-              }
-            }),
-          }
-        );
-
-        if (nearbyResponse.ok) {
-          const nearbyData = await nearbyResponse.json();
-          const nearbyText = nearbyData.candidates?.[0]?.content?.parts?.[0]?.text;
-          try {
-            // แปลงข้อความ JSON เป็นอาร์เรย์
-            const nearbyArray = JSON.parse(nearbyText.replace(/```json|```/g, '').trim());
-            setNearbyLocations(nearbyArray);
-          } catch (e) {
-            console.error("Error parsing nearby locations:", e);
-            setNearbyLocations([]);
-          }
-        }
-
         setAiDescription(generatedText);
       } catch (error) {
         console.error("Error generating description:", error);
@@ -195,7 +205,7 @@ export default function DescriptionAI({
     };
 
     generateDescription();
-  }, [locationName, locationDescription, locationDistrict, locationCategory]);
+  }, [locationName, locationDescription, locationDistrict, locationCategory, locationLat, locationLng]);
 
   // สร้างไอคอนตามสภาพอากาศ
   const getWeatherIcon = (condition: string) => {
@@ -206,8 +216,6 @@ export default function DescriptionAI({
       default: return <Sun className="h-5 w-5 text-yellow-500" />;
     }
   };
-
-
 
   const renderTabs = () => {
     return (
@@ -244,7 +252,6 @@ export default function DescriptionAI({
   };
 
   const renderNearbyLocations = () => {
-    console.log('nearbyLocations:', nearbyLocations);
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-4">
@@ -254,10 +261,62 @@ export default function DescriptionAI({
 
         {nearbyLocations.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {nearbyLocations.map((location, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <MapPin className="h-5 w-5 text-blue-500 flex-shrink-0" />
-                <span className="text-gray-800 dark:text-white">{location}</span>
+            {nearbyLocations.map((location) => (
+              <div key={location.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="relative h-32">
+                  <img
+                    src={location.image[0]}
+                    alt={location.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-bold text-lg text-gray-900 dark:text-white leading-tight">
+                      {location.name}
+                    </h4>
+                    <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full ml-2 flex-shrink-0">
+                      {location.category}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      📍 {location.districts}
+                    </span>
+                    {location.price && (
+                      <>
+                        <span className="text-gray-400">•</span>
+                        <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+                          💰 {location.price}
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                        🚗 {location.distance.toFixed(1)} กม.
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <a
+                        href={`/locations/${location.id}`}
+                        className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm"
+                      >
+                        ดูรายละเอียด
+                      </a>
+                      <button
+                        onClick={() => setSelectedLocation(location)}
+                        className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm"
+                      >
+                        📍 แผนที่
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -270,19 +329,54 @@ export default function DescriptionAI({
         <div className="mt-6">
           <div className="flex items-center gap-2 mb-2">
             <Map className="h-5 w-5 text-green-500" />
-            <h3 className="text-lg font-bold">แผนที่การเดินทาง</h3>
+            <h3 className="text-lg font-bold">แผนที่</h3>
           </div>
 
-          <div className="bg-gray-100 dark:bg-gray-700 rounded-lg h-64 flex items-center justify-center">
-            <div className="text-center p-4">
-              <Map className="h-10 w-10 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500 dark:text-gray-400">
-                ดูแผนที่การเดินทางไปยัง {locationName} จากตำแหน่งของคุณ
-              </p>
-              <button className="mt-3 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full text-sm font-medium transition">
-                นำทางด้วย Google Maps
-              </button>
-            </div>
+          <div className="bg-gray-100 dark:bg-gray-700 rounded-lg h-64">
+            {selectedLocation ? (
+              <MapContainer
+                center={[selectedLocation.lat, selectedLocation.lng]}
+                zoom={13}
+                style={{ height: '100%', width: '100%' }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker
+                  position={[selectedLocation.lat, selectedLocation.lng]}
+                  icon={customIcon}
+                >
+                  <Popup>
+                    {selectedLocation.name}
+                  </Popup>
+                </Marker>
+              </MapContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center p-4">
+                  <Map className="h-10 w-10 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500 dark:text-gray-400">
+                    ดูแผนที่การเดินทางไปยัง {locationName} จากตำแหน่งของคุณ
+                  </p>
+                  <button
+                    onClick={() => setSelectedLocation({
+                      id: 'current',
+                      name: locationName,
+                      distance: 0,
+                      category: locationCategory || '',
+                      image: [],
+                      districts: locationDistrict,
+                      lat: locationLat || 0,
+                      lng: locationLng || 0
+                    })}
+                    className="mt-3 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full text-sm font-medium transition inline-block"
+                  >
+                    นำทางด้วยแผนที่
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

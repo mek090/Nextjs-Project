@@ -48,11 +48,13 @@ export async function POST(request: Request) {
    - Culture: พิพิธภัณฑ์, แหล่งเรียนรู้, วัฒนธรรม
    - Nature: สวนสาธารณะ, ธรรมชาติ, น้ำตก
    - Spots: สถานที่ท่องเที่ยวอื่นๆ
-3. ระดับราคา: ประเมินใหม่ตามความเป็นจริง
-   - 0: ฟรี (วัด, สวนสาธารณะ)
-   - 1: ถูก (10-50 บาท)
-   - 2: ปานกลาง (51-200 บาท)  
-   - 3: แพง (มากกว่า 200 บาท)
+3. ระดับราคา: ประเมินตามความเป็นจริงและข้อมูลจาก Google
+   - หากมีข้อมูลราคาจาก Google ให้ใช้ค่านั้น
+   - หากไม่มี ให้ประเมินตามประเภทสถานที่:
+     * "ฟรี" สำหรับ วัด, สวนสาธารณะ, อนุสาวรีย์
+     * "10-100 บาท" สำหรับ พิพิธภัณฑ์เล็ก, ตลาดท้องถิ่น
+     * "101-300 บาท" สำหรับ สวนสนุก, ร้านอาหารทั่วไป  
+     * "300+ บาท" สำหรับ รีสอร์ท, ร้านอาหารหรู
 4. คำอธิบาย: เขียนให้น่าสนใจ ครอบคลุมจุดเด่น ประวัติความเป็นมา
 5. เลือกรูปภาพ: เลือก 3 รูปแรก หรือตามจำนวนที่มี
 
@@ -62,8 +64,8 @@ export async function POST(request: Request) {
   "description": "คำอธิบายโดยละเอียด 2-3 ประโยค",
   "category": "หมวดหมู่ที่เหมาะสม",
   "district": "${district}",
-  "price": "ตัวเลข 0-3",
-  "selectedPhotos": [0, 1, 2]
+  "price": "ช่วงราคาหรือคำอธิบายราคา เช่น 'ฟรี', '50-100 บาท', '200+ บาท'",
+  "selectedPhotos": [0, 1, 2, 3, 4]
 }
 
 ห้ามใส่ markdown หรือ code block ตอบเฉพาะ JSON
@@ -130,11 +132,62 @@ export async function POST(request: Request) {
       analyzedData.category = "Spots";
     }
     
-    // ตรวจสอบ price level
-    const priceNum = parseInt(analyzedData.price);
-    if (isNaN(priceNum) || priceNum < 0 || priceNum > 3) {
-      analyzedData.price = price_level || 1;
+    // ตรวจสอบ price level - ให้ AI ส่งช่วงราคาจริง
+    let finalPrice = analyzedData.price;
+    
+    // ถ้า AI ส่งมาเป็นตัวเลข ให้แปลงเป็นช่วงราคา
+    if (typeof finalPrice === 'number' || (typeof finalPrice === 'string' && /^\d+$/.test(finalPrice.trim()))) {
+      const priceLevel = parseInt(finalPrice);
+      switch (priceLevel) {
+        case 0:
+          finalPrice = "ฟรี";
+          break;
+        case 1:
+          finalPrice = "10-100 บาท";
+          break;
+        case 2:
+          finalPrice = "101-300 บาท";
+          break;
+        case 3:
+          finalPrice = "300+ บาท";
+          break;
+        default:
+          finalPrice = "ไม่ระบุราคา";
+      }
     }
+    
+    // ถ้า AI ไม่ส่งราคามา หรือส่งมาผิดรูปแบบ ให้ประเมินจากข้อมูลอื่น
+    if (!finalPrice || finalPrice === "ไม่ระบุราคา") {
+      if (price_level !== undefined && price_level >= 0 && price_level <= 3) {
+        switch (price_level) {
+          case 0:
+            finalPrice = "ฟรี";
+            break;
+          case 1:
+            finalPrice = "10-100 บาท";
+            break;
+          case 2:
+            finalPrice = "101-300 บาท";
+            break;
+          case 3:
+            finalPrice = "300+ บาท";
+            break;
+        }
+      } else {
+        // ประเมินตามชื่อและประเภท
+        const nameAndAddress = (name + ' ' + address).toLowerCase();
+        if (nameAndAddress.includes('วัด') || nameAndAddress.includes('temple') || 
+            nameAndAddress.includes('สวนสาธารณะ') || nameAndAddress.includes('park')) {
+          finalPrice = "ฟรี";
+        } else if (nameAndAddress.includes('ตลาด') || nameAndAddress.includes('market')) {
+          finalPrice = "10-100 บาท";
+        } else {
+          finalPrice = "101-300 บาท"; // ปานกลาง (default)
+        }
+      }
+    }
+    
+    analyzedData.price = finalPrice;
 
     // เพิ่ม district เข้าไปในข้อมูลที่จะส่งกลับ
     analyzedData.district = district;

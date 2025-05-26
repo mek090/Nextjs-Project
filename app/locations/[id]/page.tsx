@@ -127,7 +127,7 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                             <HandCoins className="text-blue-500 mr-2" size={20} />
                             <p className="mr-2">ค่าใช้จ่าย</p>
                             <span className="font-medium">{location.price || 'ไม่ได้ระบุข้อมูล'}</span>
-                            <p className="mx-2">บาท</p>
+                            {/* <p className="mx-2">บาท</p> */}
                         </div>
                     </div>
 

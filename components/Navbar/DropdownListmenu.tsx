@@ -33,7 +33,7 @@ export function DropdownListmenu() {
           console.log('Profile:', mek);
 
           if (mek) {
-            setRole(mek.role);
+            setRole(mek.role as any);
           }
         } catch (error) {
           console.error("Error fetching profile via server action:", error);

@@ -39,18 +39,30 @@ const ImageModal = ({ image, onClose }: { image: string; onClose: () => void }) 
 };
 
 // เพิ่ม generateMetadata function
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata(
+    parent: any
+) {
+    const { params } = await parent;
+    const id = await params.id;
+    const location = await fetchLocationDetail({ id });
     return {
-        title: 'Location Detail',
+        title: location ? `${location.name} - Location Detail` : 'Location Detail',
     }
 }
 
-const LocationDetail = async ({ params }: { params: { id: string } }) => {
+// เพิ่ม generateStaticParams function
+export async function generateStaticParams() {
+    return [];
+}
+
+export default async function LocationDetail({ params }: { params: { id: string } }) {
     try {
+        const id = await params.id;
+        
         // ใช้ Promise.all เพื่อรอให้ params พร้อมใช้งาน
         const [location, reviews] = await Promise.all([
-            fetchLocationDetail({ id: params.id }),
-            fetchLocationReviews(params.id)
+            fetchLocationDetail({ id }),
+            fetchLocationReviews(id)
         ]);
 
         console.log('Location data:', location);
@@ -66,6 +78,16 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
         const avgRating = reviews.length > 0
             ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
             : "0.0";
+
+        // Convert dates to strings
+        const formattedReviews = reviews.map(review => ({
+            ...review,
+            createdAt: review.createdAt.toISOString(),
+            replies: review.replies.map(reply => ({
+                ...reply,
+                createAt: reply.createAt.toISOString()
+            }))
+        }));
 
         return (
             <section className="max-w-7xl mx-auto px-4 py-6 min-h-screen">
@@ -181,7 +203,7 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                                         <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
                                             รูปภาพเพิ่มเติม
                                         </h2>
-                                        <ImageGrid 
+                                        <ImageGrid
                                             images={typeof location.image === 'string' ? [] : location.image.slice(1)}
                                             locationName={location.name}
                                         />
@@ -189,18 +211,18 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
                                 </div>
                             </div>
 
-                            {/* Reviews Tab Content */}
+                            {/* Reviews Tab */}
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
                                 <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
                                     รีวิวจากผู้ใช้
                                 </h2>
                                 <ReviewSection
                                     locationId={location.id}
-                                    reviews={reviews}
+                                    reviews={formattedReviews}
                                 />
                             </div>
 
-                            
+
 
                             <LocationChatBot
                                 locationName={location.name}
@@ -220,4 +242,4 @@ const LocationDetail = async ({ params }: { params: { id: string } }) => {
     }
 }
 
-export default LocationDetail
+

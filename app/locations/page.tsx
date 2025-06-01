@@ -10,11 +10,10 @@ export default async function LocationsPage({
 }: {
   searchParams: { search?: string, category?: string }
 }) {
-  const { search, category } = searchParams
+  const params = await searchParams;
+  const search = await params.search;
+  const category = await params.category;
   const locations = await fetchLocation({ search, category })
-
-
-
 
   return (
     <div className="container mx-auto px-4 py-8">

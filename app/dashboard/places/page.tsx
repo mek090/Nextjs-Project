@@ -13,6 +13,7 @@ interface Place {
   photos?: Array<{
     photo_reference: string;
   }>;
+  isSaved?: boolean;
   // rating?: number;
 }
 
@@ -39,7 +40,14 @@ export default function PlacesPage() {
     try {
       const response = await fetch(`/api/places?category=${selectedCategory}`);
       const data = await response.json();
-      setPlaces(data.results || []);
+      const placesWithSavedStatus = await Promise.all(
+        (data.results || []).map(async (place: Place) => {
+          const savedResponse = await fetch(`/api/places/saved?place_id=${place.place_id}`);
+          const savedData = await savedResponse.json();
+          return { ...place, isSaved: savedData.isSaved };
+        })
+      );
+      setPlaces(placesWithSavedStatus);
     } catch (error) {
       console.error('Error fetching places:', error);
     }
@@ -57,7 +65,14 @@ export default function PlacesPage() {
     try {
       const response = await fetch(`/api/places/search?query=${encodeURIComponent(query)}`);
       const data = await response.json();
-      setSearchResults(data.results || []);
+      const placesWithSavedStatus = await Promise.all(
+        (data.results || []).map(async (place: Place) => {
+          const savedResponse = await fetch(`/api/places/saved?place_id=${place.place_id}`);
+          const savedData = await savedResponse.json();
+          return { ...place, isSaved: savedData.isSaved };
+        })
+      );
+      setSearchResults(placesWithSavedStatus);
     } catch (error) {
       console.error('Error searching places:', error);
       toast.error('เกิดข้อผิดพลาดในการค้นหาสถานที่');
@@ -164,13 +179,15 @@ export default function PlacesPage() {
       const district = analyzedData.district;
       const thaiName = analyzedData.thaiName || place.name; // ใช้ชื่อภาษาไทยที่ Gemini แนะนำ หรือใช้ชื่อเดิมถ้าไม่มี
 
+
+
       // รวบรวมรูปภาพที่ Gemini คัดเลือกแล้ว
-      const images = analyzedData.selectedPhotos.map(photo => 
+      const images = analyzedData.selectedPhotos.map((photo: { photo_reference: any }) =>
         `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photo.photo_reference}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
       );
 
       const requestBody = {
-        name: thaiName, // ใช้ชื่อภาษาไทย
+        name: thaiName,
         description,
         category: selectedCategory,
         districts: district,
@@ -180,6 +197,7 @@ export default function PlacesPage() {
         image: images,
         openTime,
         closeTime,
+        googlePlaceId: place.place_id,
       };
 
       console.log('Request body:', requestBody);
@@ -197,6 +215,17 @@ export default function PlacesPage() {
         throw new Error(errorData.error || 'Failed to save place');
       }
 
+      // อัพเดทสถานะการบันทึก
+      const updatedPlaces = places.map(p =>
+        p.place_id === place.place_id ? { ...p, isSaved: true } : p
+      );
+      setPlaces(updatedPlaces);
+
+      const updatedSearchResults = searchResults.map(p =>
+        p.place_id === place.place_id ? { ...p, isSaved: true } : p
+      );
+      setSearchResults(updatedSearchResults);
+
       toast.success('บันทึกสถานที่เรียบร้อยแล้ว');
     } catch (error) {
       console.error('Error saving place:', error);
@@ -212,7 +241,7 @@ export default function PlacesPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 text-center">ข้อมูลสถานที่ท่องเที่ยวในบุรีรัมย์</h1>
       <h3 className="text-3xl font-bold mb-8 text-center">With Google Places</h3>
-      
+
       {/* Search Bar */}
       <div className="max-w-2xl mx-auto mb-8">
         <div className="relative">
@@ -237,11 +266,10 @@ export default function PlacesPage() {
           <button
             key={cat.id}
             onClick={() => setCategory(cat.id)}
-            className={`px-4 py-2 rounded-full ${
-              category === cat.id
+            className={`px-4 py-2 rounded-full ${category === cat.id
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 hover:bg-gray-300'
-            }`}
+              }`}
           >
             {cat.label}
           </button>
@@ -279,7 +307,7 @@ export default function PlacesPage() {
                 </div>
               )} */}
               <div className="flex justify-between items-center">
-                <Link 
+                <Link
                   href={`/dashboard/places/${place.place_id}`}
                   className="text-blue-600 hover:text-blue-800"
                 >
@@ -287,9 +315,13 @@ export default function PlacesPage() {
                 </Link>
                 <button
                   onClick={() => savePlaceToDatabase(place)}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  disabled={place.isSaved}
+                  className={`px-4 py-2 rounded-lg transition-colors ${place.isSaved
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-green-600 hover:bg-green-700 text-white'
+                    }`}
                 >
-                  เพิ่มสถานที่
+                  {place.isSaved ? 'บันทึกแล้ว' : 'เพิ่มสถานที่'}
                 </button>
               </div>
             </div>

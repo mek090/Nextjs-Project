@@ -46,7 +46,7 @@ const Dashboard = async () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">Welcome back, {profile.firstname}</span>
+            <span className="text-sm text-muted-foreground">สวัสดี Admin {profile.firstname}</span>
         </div>
       </div>
 
@@ -54,42 +54,42 @@ const Dashboard = async () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <CardTitle className="text-sm font-medium">ผู้ใช้ทั้งหมด</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalUsers}</div>
-            <p className="text-xs text-muted-foreground">Registered users</p>
+            <p className="text-xs text-muted-foreground">จำนวนผู้ใช้</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Places</CardTitle>
+            <CardTitle className="text-sm font-medium">สถานที่ในระบบ</CardTitle>
             <MapPin className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.activePlaces}</div>
-            <p className="text-xs text-muted-foreground">Total locations</p>
+            <p className="text-xs text-muted-foreground">จำนวนสถานที่</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Favorites</CardTitle>
+            <CardTitle className="text-sm font-medium">รายการโปรด</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalFavorites}</div>
-            <p className="text-xs text-muted-foreground">Total favorites</p>
+            <p className="text-xs text-muted-foreground">จำนวนรายการโปรด</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
+            <CardTitle className="text-sm font-medium">กิจกรรมล่าสุด</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalActivities}</div>
-            <p className="text-xs text-muted-foreground">Total reviews</p>
+            <p className="text-xs text-muted-foreground">จำนวนรีวิว</p>
           </CardContent>
         </Card>
       </div>
@@ -97,7 +97,7 @@ const Dashboard = async () => {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
+          <CardTitle>การจัดการ</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">

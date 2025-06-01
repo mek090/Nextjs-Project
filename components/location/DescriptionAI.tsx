@@ -43,6 +43,7 @@ interface NearbyLocation {
   distance: number;
   category: string;
   image: string[];
+  price: string;
   districts: string;
   lat: number;
   lng: number;
@@ -366,6 +367,7 @@ export default function DescriptionAI({
                       distance: 0,
                       category: locationCategory || '',
                       image: [],
+                      price: '',
                       districts: locationDistrict,
                       lat: locationLat || 0,
                       lng: locationLng || 0

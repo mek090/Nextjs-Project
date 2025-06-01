@@ -24,7 +24,42 @@ export async function POST(request: Request) {
 
     // แปลงที่อยู่เป็นอำเภอในจังหวัดบุรีรัมย์
     const districtMatch = districts.find(d => address.includes(d.DISTRICT_NAME));
-    const district = districtMatch ? districtMatch.DISTRICT_NAME : "บุรีรัมย์";
+    let district = "บุรีรัมย์"; // default value
+    
+    // แปลงชื่ออำเภอจากอังกฤษเป็นไทย
+    const districtMap: { [key: string]: string } = {
+      'Krasang': 'กระสัง',
+      'Lam Plai Mat': 'ลำปลายมาศ',
+      'Nang Rong': 'นางรอง',
+      'Phutthaisong': 'พุทไธสง',
+      'Prakhon Chai': 'ประโคนชัย',
+      'Satuek': 'สตึก',
+      'Ban Kruat': 'บ้านกรวด',
+      'Ban Mai Chaiyaphot': 'บ้านใหม่ไชยพจน์',
+      'Chaloem Phra Kiat': 'เฉลิมพระเกียรติ',
+      'Huai Rat': 'ห้วยราช',
+      'Khu Mueang': 'คูเมือง',
+      'Lahan Sai': 'ละหานทราย',
+      'Non Din Daeng': 'โนนดินแดง',
+      'Non Suwan': 'โนนสุวรรณ',
+      'Nong Hong': 'หนองหงส์',
+      'Nong Ki': 'หนองกี่',
+      'Pakham': 'ปะคำ',
+      'Phlapphla Chai': 'พลับพลาชัย'
+    };
+    
+    // ดึงชื่ออำเภอจาก Google Places
+    const googleDistrictMatch = address.match(/([^,]+) District/);
+    if (googleDistrictMatch) {
+      const engDistrict = googleDistrictMatch[1].trim();
+      district = districtMap[engDistrict] || engDistrict;
+    } else if (districtMatch) {
+      district = districtMatch.DISTRICT_NAME
+        .replace('อำเภอ', '')
+        .replace('จังหวัดบุรีรัมย์', '')
+        .replace('บุรีรัมย์', '')
+        .trim();
+    }
 
     // ใช้ model ที่ถูกต้อง
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -39,6 +74,7 @@ export async function POST(request: Request) {
 - เวลาทำการ: ${opening_hours ? JSON.stringify(opening_hours) : 'ไม่ระบุ'}
 - ระดับราคาจาก Google: ${price_level || 'ไม่ระบุ'}
 - จำนวนรูปภาพ: ${photos.length} รูป
+- อำเภอ: ${district}
 
 คำแนะนำในการวิเคราะห์:
 1. ชื่อภาษาไทย: แปลชื่อให้เป็นภาษาไทยที่เข้าใจง่าย หากเป็นชื่อวัดให้ใส่คำว่า "วัด" นำหน้า
@@ -74,19 +110,19 @@ export async function POST(request: Request) {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-    
+
     // ทำความสะอาดข้อความก่อนแปลง JSON
     let cleanText = text.trim();
-    
+
     // ลบ markdown code block ถ้ามี
     cleanText = cleanText.replace(/```json\s*/, '').replace(/```\s*$/, '');
-    
+
     // แยก JSON ออกจากข้อความ
     const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error('No valid JSON found in response: ' + text);
     }
-    
+
     // แปลงข้อความ JSON เป็น object
     let analyzedData;
     try {
@@ -102,11 +138,11 @@ export async function POST(request: Request) {
     if (Array.isArray(analyzedData.selectedPhotos) && photos.length > 0) {
       // แปลง string indices เป็น numbers และกรองเฉพาะ indices ที่ถูกต้อง
       selectedPhotos = analyzedData.selectedPhotos
-        .map((index) => {
+        .map((index: string | number) => {
           const numIndex = typeof index === 'string' ? parseInt(index) : index;
           return numIndex;
         })
-        .filter((index) => !isNaN(index) && index >= 0 && index < photos.length);
+        .filter((index: number) => !isNaN(index) && index >= 0 && index < photos.length);
     }
 
     // ถ้าไม่มีรูปภาพที่เลือก หรือเลือกไม่ถูกต้อง ให้ใช้รูปภาพที่มี
@@ -117,27 +153,27 @@ export async function POST(request: Request) {
     }
 
     // แปลง indices เป็น photo_reference
-    analyzedData.selectedPhotos = selectedPhotos.map((index) => photos[index]);
+    analyzedData.selectedPhotos = selectedPhotos.map((index: number) => photos[index]);
 
     // ตรวจสอบข้อมูลที่จำเป็น
     if (!analyzedData.thaiName) {
       analyzedData.thaiName = name;
     }
-    
+
     if (!analyzedData.description) {
       analyzedData.description = `สถานที่ท่องเที่ยวในอำเภอ${district} จังหวัดบุรีรัมย์`;
     }
-    
+
     if (!analyzedData.category) {
       analyzedData.category = "Spots";
     }
-    
+
     // ตรวจสอบ price level - ให้ AI ส่งช่วงราคาจริง
     let finalPrice = analyzedData.price;
-    
+
     // ถ้า AI ส่งมาเป็นตัวเลข ให้แปลงเป็นช่วงราคา
     if (typeof finalPrice === 'number' || (typeof finalPrice === 'string' && /^\d+$/.test(finalPrice.trim()))) {
-      const priceLevel = parseInt(finalPrice);
+      const priceLevel = parseInt(String(finalPrice));
       switch (priceLevel) {
         case 0:
           finalPrice = "ฟรี";
@@ -155,7 +191,7 @@ export async function POST(request: Request) {
           finalPrice = "ไม่ระบุราคา";
       }
     }
-    
+
     // ถ้า AI ไม่ส่งราคามา หรือส่งมาผิดรูปแบบ ให้ประเมินจากข้อมูลอื่น
     if (!finalPrice || finalPrice === "ไม่ระบุราคา") {
       if (price_level !== undefined && price_level >= 0 && price_level <= 3) {
@@ -176,8 +212,8 @@ export async function POST(request: Request) {
       } else {
         // ประเมินตามชื่อและประเภท
         const nameAndAddress = (name + ' ' + address).toLowerCase();
-        if (nameAndAddress.includes('วัด') || nameAndAddress.includes('temple') || 
-            nameAndAddress.includes('สวนสาธารณะ') || nameAndAddress.includes('park')) {
+        if (nameAndAddress.includes('วัด') || nameAndAddress.includes('temple') ||
+          nameAndAddress.includes('สวนสาธารณะ') || nameAndAddress.includes('park')) {
           finalPrice = "ฟรี";
         } else if (nameAndAddress.includes('ตลาด') || nameAndAddress.includes('market')) {
           finalPrice = "10-100 บาท";
@@ -186,7 +222,7 @@ export async function POST(request: Request) {
         }
       }
     }
-    
+
     analyzedData.price = finalPrice;
 
     // เพิ่ม district เข้าไปในข้อมูลที่จะส่งกลับ
@@ -196,9 +232,9 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error analyzing place:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to analyze place', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Failed to analyze place',
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );

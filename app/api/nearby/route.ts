@@ -35,6 +35,7 @@ export async function GET(request: Request) {
                 lng: true,
                 category: true,
                 image: true,
+                price: true,
                 districts: true
             }
         });

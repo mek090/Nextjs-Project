@@ -8,11 +8,13 @@ import ReviewSection from "@/components/location/ReviewSection"
 import MapLocation from "@/components/map/MapLocation"
 import LocationChatBot from "@/components/location/LocationChatBot"
 import { notFound } from 'next/navigation'
-import { MapPin, Star, Clock, Phone, Globe, HandCoins, X } from 'lucide-react'
+import { MapPin, Star, Clock, Phone, Globe, HandCoins, X, Pin } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from "next/image"
 import { useState } from "react"
 import ImageGrid from '@/components/location/ImageGrid'
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 // ImageModal Component
 const ImageModal = ({ image, onClose }: { image: string; onClose: () => void }) => {
@@ -59,7 +61,7 @@ export default async function LocationDetail({ params }: { params: Promise<{ id:
     try {
         const resolvedParams = await params;
         const id = resolvedParams.id;
-        
+
         // ใช้ Promise.all เพื่อรอให้ params พร้อมใช้งาน
         const [location, reviews] = await Promise.all([
             fetchLocationDetail({ id }),
@@ -197,6 +199,20 @@ export default async function LocationDetail({ params }: { params: Promise<{ id:
                                                 lng: location.lng
                                             }} />
                                         </div>
+                                        {/* go to map */}
+                                        <Button variant="default" className="mt-4 w-full" size="lg">
+                                            <Link
+                                                href={`https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <Pin className="mr-1"/>
+                                                    ดูใน Google Maps
+                                                </div>
+
+                                            </Link>
+                                        </Button>
                                     </div>
 
                                     {/* Location Images Grid */}

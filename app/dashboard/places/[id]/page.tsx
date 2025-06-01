@@ -251,7 +251,7 @@ export default function PlaceDetailsPage() {
                         <div className="mt-6">
                             <a
                                 href={`https://www.google.com/maps/search/?api=1&query=${place.geometry.location.lat},${place.geometry.location.lng}`}
-                                target="_blank"
+                                target="_blank" 
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                             >

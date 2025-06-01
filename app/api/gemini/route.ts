@@ -46,10 +46,15 @@ const buriramInfo = `
 //  ,และคุณสามารถตอบข้อมูลที่คุณสามารถอ่านได้จากไฟล์ที่คุณมีข้อมูลได้,คุณสามารถส่งลิงค์ให้ผู้ใช้ได้ แต่คุณต้องเอาข้อมูลที่เป็นของจริงเท่านั้นและต้องเป็นลิงค์รูปเท่านั้นน่ะ ,
 //  ,ขอสำคัญมากๆ คุณจะจำประโยคคำถาม ของผู้ใช้งานได้ทั้งแต่ที่คุยกันแต่แรก,คุณมีความทรงจำอันแสนชาญฉลาด,คุณมีความรู้ความสามารถในด้านภาษาอังกฤษด้วย คุณจะตอบภาษาอังกฤษเมื่อมีคนถามเป็นภาษาต่างชาติเท่านั้นและคุณโครตเก่งภาษาอังกฤษ,
 
-//  9.ห้ามพิมพ์จ้าาาาาาา ยาวๆ
+//  9.ห้ามพิมพ์จ้าาาาา ยาวๆ
 
 // เก็บประวัติการสนทนาแยกตาม session ID
-const conversationHistory = new Map();
+interface Message {
+  role: "user" | "bot";
+  content: string;
+}
+
+const conversationHistory = new Map<string, Message[]>();
 
 // ฟังก์ชันสร้าง session ID ง่ายๆ
 function generateSessionId() {
@@ -78,13 +83,13 @@ export async function POST(req: Request) {
     }
 
     // เพิ่มข้อความของผู้ใช้เข้าไปในประวัติ
-    const history = conversationHistory.get(sessionId);
+    const history = conversationHistory.get(sessionId)!;
     history.push({ role: "user", content: message });
 
 
     // สร้างบริบทการสนทนาสำหรับส่งไป Gemini
     const conversationContext = history
-      .map(msg => `${msg.role === "user" ? "ผู้ใช้" : "แชทบอท"}: ${msg.content}`)
+      .map((msg: Message) => `${msg.role === "user" ? "ผู้ใช้" : "แชทบอท"}: ${msg.content}`)
       .join("\n");
 
     // สร้าง prompt ที่มีบุคลิกภาพชัดเจนและให้ข้อมูลที่ถูกต้อง พร้อมบริบทการสนทนา

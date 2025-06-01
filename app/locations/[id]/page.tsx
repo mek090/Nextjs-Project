@@ -55,9 +55,10 @@ export async function generateStaticParams() {
     return [];
 }
 
-export default async function LocationDetail({ params }: { params: { id: string } }) {
+export default async function LocationDetail({ params }: { params: Promise<{ id: string }> }) {
     try {
-        const id = await params.id;
+        const resolvedParams = await params;
+        const id = resolvedParams.id;
         
         // ใช้ Promise.all เพื่อรอให้ params พร้อมใช้งาน
         const [location, reviews] = await Promise.all([
@@ -238,7 +239,7 @@ export default async function LocationDetail({ params }: { params: { id: string 
         )
     } catch (error) {
         console.error('Error in LocationDetail:', error)
-        throw error
+        notFound()
     }
 }
 

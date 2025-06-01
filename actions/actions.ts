@@ -38,7 +38,6 @@ export const createProfileAction = async (prevState: any, formData: FormData) =>
 
         const rawData = Object.fromEntries(formData)
         const validateField = validateWithZod(profileSchema, rawData);
-        // console.log('validated ', validateField)
 
         await prisma.profile.create({
             data: {
@@ -55,14 +54,17 @@ export const createProfileAction = async (prevState: any, formData: FormData) =>
                 hasProfile: true
             }
         })
+        return {
+            success: true,
+            message: 'Create Profile success!!'
 
-        // return {
-        //     message: 'Create Profile success!!'
-        // }
+        }
     } catch (error) {
-        return renderError(error)
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการสร้างโปรไฟล์'
+        }
     }
-    redirect('/')
 }
 
 
@@ -383,7 +385,7 @@ export async function updateProfileAction(formData: FormData) {
                 }
 
                 // ตรวจสอบประเภทไฟล์
-                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp','image/gif'];
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
                 if (!allowedTypes.includes(profileImage.type)) {
                     throw new Error('รองรับเฉพาะไฟล์ภาพประเภท JPEG, PNG และ WebP');
                 }
@@ -415,9 +417,9 @@ export async function updateProfileAction(formData: FormData) {
         return { success: true, profile }
     } catch (error) {
         console.error("Error updating profile:", error)
-        return { 
-            success: false, 
-            error: error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการอัพเดทโปรไฟล์" 
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการอัพเดทโปรไฟล์"
         }
     }
 }
@@ -709,89 +711,89 @@ export async function getNotifications() {
 }
 
 export const createReplyAction = async (reviewId: string, content: string) => {
-  try {
-    const user = await getAuthUser();
-    console.log('Creating reply for user:', user.id);
-    
-    // ดึงข้อมูล review เพื่อหาเจ้าของรีวิว
-    const review = await prisma.review.findUnique({
-      where: { id: reviewId },
-      include: {
-        profile: true
-      }
-    });
+    try {
+        const user = await getAuthUser();
+        console.log('Creating reply for user:', user.id);
 
-    if (!review) {
-      throw new Error("Review not found");
-    }
+        // ดึงข้อมูล review เพื่อหาเจ้าของรีวิว
+        const review = await prisma.review.findUnique({
+            where: { id: reviewId },
+            include: {
+                profile: true
+            }
+        });
 
-    console.log('Review owner:', review.profileId);
-    console.log('Current user:', user.id);
-
-    // สร้าง reply
-    const reply = await prisma.reply.create({
-      data: {
-        contain: content,
-        profile: {
-          connect: {
-            clerkId: user.id
-          }
-        },
-        review: {
-          connect: {
-            id: reviewId
-          }
+        if (!review) {
+            throw new Error("Review not found");
         }
-      },
-      include: {
-        profile: {
-          select: {
-            firstname: true,
-            lastname: true,
-            username: true,
-            profileImage: true,
-          },
-        },
-      },
-    });
 
-    console.log('Reply created:', reply);
+        console.log('Review owner:', review.profileId);
+        console.log('Current user:', user.id);
 
-    // สร้าง notification ถ้าไม่ใช่การ reply ของตัวเอง
-    if (review.profileId !== user.id) {
-      console.log('Creating notification for review owner');
-      const notification = await prisma.notification.create({
-        data: {
-          type: "REPLY",
-          message: `${reply.profile.firstname} ${reply.profile.lastname} ตอบกลับรีวิวของคุณ`,
-          recipient: {
-            connect: {
-              clerkId: review.profileId
-            }
-          },
-          review: {
-            connect: {
-              id: reviewId
-            }
-          },
-          reply: {
-            connect: {
-              id: reply.id
-            }
-          }
+        // สร้าง reply
+        const reply = await prisma.reply.create({
+            data: {
+                contain: content,
+                profile: {
+                    connect: {
+                        clerkId: user.id
+                    }
+                },
+                review: {
+                    connect: {
+                        id: reviewId
+                    }
+                }
+            },
+            include: {
+                profile: {
+                    select: {
+                        firstname: true,
+                        lastname: true,
+                        username: true,
+                        profileImage: true,
+                    },
+                },
+            },
+        });
+
+        console.log('Reply created:', reply);
+
+        // สร้าง notification ถ้าไม่ใช่การ reply ของตัวเอง
+        if (review.profileId !== user.id) {
+            console.log('Creating notification for review owner');
+            const notification = await prisma.notification.create({
+                data: {
+                    type: "REPLY",
+                    message: `${reply.profile.firstname} ${reply.profile.lastname} ตอบกลับรีวิวของคุณ`,
+                    recipient: {
+                        connect: {
+                            clerkId: review.profileId
+                        }
+                    },
+                    review: {
+                        connect: {
+                            id: reviewId
+                        }
+                    },
+                    reply: {
+                        connect: {
+                            id: reply.id
+                        }
+                    }
+                }
+            });
+            console.log('Notification created:', notification);
+        } else {
+            console.log('Skipping notification - self reply');
         }
-      });
-      console.log('Notification created:', notification);
-    } else {
-      console.log('Skipping notification - self reply');
-    }
 
-    revalidatePath(`/locations/${reviewId}`);
-    return reply;
-  } catch (error) {
-    console.error("Error creating reply:", error);
-    throw error;
-  }
+        revalidatePath(`/locations/${reviewId}`);
+        return reply;
+    } catch (error) {
+        console.error("Error creating reply:", error);
+        throw error;
+    }
 };
 
 export const updateLocationAction = async (
@@ -800,13 +802,13 @@ export const updateLocationAction = async (
 ) => {
     const user = await getAuthUser();
     const locationId = formData.get('id') as string;
-    
+
     // รับข้อมูลรูปภาพที่ต้องการเก็บไว้ (URL ที่ส่งมาจาก frontend)
     const imagesToKeep = JSON.parse(formData.get('imagesToKeep') as string) || [];
-    
+
     // รับข้อมูลรูปภาพใหม่ (base64)
     const newImages = JSON.parse(formData.get('newImages') as string) || [];
-    
+
     try {
         // ดึงข้อมูลสถานที่ปัจจุบัน
         const existingLocation = await prisma.location.findUnique({
@@ -869,7 +871,7 @@ export const updateLocationAction = async (
                             // สร้าง File object
                             const filename = `image-${Date.now()}-${Math.random().toString(36).substring(7)}.${mimeType.split('/')[1]}`;
                             const file = new File([buffer], filename, { type: mimeType });
-                            
+
                             console.log('Created file:', filename, 'size:', file.size);
                             return file;
                         } catch (error) {
@@ -949,13 +951,13 @@ export const updateLocationAction = async (
                             const pathParts = urlObj.pathname.split('/');
                             // หา path ที่ถูกต้องใน storage (ปกติจะเป็นส่วนสุดท้ายของ URL)
                             const storagePath = pathParts[pathParts.length - 1];
-                            
+
                             if (storagePath) {
                                 console.log('Attempting to delete image:', storagePath);
                                 const { error } = await supabase.storage
                                     .from('location-bucket')
                                     .remove([storagePath]);
-                                
+
                                 if (error) {
                                     console.error('Error deleting specific image:', error);
                                 } else {
@@ -1052,7 +1054,7 @@ export const analyzeUserProfile = async (userId: string) => {
             .sort((a, b) => b[1] - a[1])[0]?.[0] || 'ไม่พบข้อมูล';
 
         // คำนวณคะแนนเฉลี่ยที่ผู้ใช้ให้
-        const averageRating = profile.reviews.reduce((acc, review) => acc + review.rating, 0) / 
+        const averageRating = profile.reviews.reduce((acc, review) => acc + review.rating, 0) /
             (profile.reviews.length || 1);
 
         // วิเคราะห์อำเภอที่ผู้ใช้ไปบ่อยที่สุดจาก favorites
@@ -1229,268 +1231,268 @@ export const analyzeUserProfile = async (userId: string) => {
 
 // Enhanced dashboard stats with better error handling and caching
 export async function getEnhancedDashboardStats() {
-  try {
-    const [
-      totalUsers,
-      activePlaces,
-      totalFavorites,
-      totalActivities,
-      recentActivities,
-      categoryStats,
-      districtStats,
-      userActivityStats,
-      popularLocations,
-      recentReviews,
-      userGrowthStats,
-      userActivities,
-      newUsersThisWeek,
-      topRatedLocations,
-      mostFavoritedLocations,
-      engagementStats
-    ] = await Promise.all([
-      prisma.profile.count(),
-      prisma.location.count(),
-      prisma.favorite.count(),
-      prisma.review.count(),
-      prisma.review.findMany({
-        take: 5,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          profile: true,
-          location: true
-        }
-      }),
-      prisma.location.groupBy({
-        by: ['category'],
-        _count: true,
-        orderBy: { _count: { category: 'desc' } }
-      }),
-      prisma.location.groupBy({
-        by: ['districts'],
-        _count: true,
-        orderBy: { _count: { districts: 'desc' } }
-      }),
-      prisma.review.groupBy({
-        by: ['profileId'],
-        _count: true,
-        orderBy: { _count: { profileId: 'desc' } },
-        take: 5
-      }),
-      prisma.location.findMany({
-        take: 5,
-        orderBy: { rating: 'desc' },
-        include: {
-          _count: {
-            select: {
-              reviews: true,
-              favorites: true
-            }
-          }
-        }
-      }),
-      prisma.review.findMany({
-        take: 5,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          profile: true,
-          location: true
-        }
-      }),
-      prisma.profile.groupBy({
-        by: ['createdAt'],
-        _count: true,
-        orderBy: { createdAt: 'desc' },
-        take: 30
-      }),
-      prisma.profile.findMany({
-        take: 10,
-        select: {
-          id: true,
-          firstname: true,
-          lastname: true,
-          username: true,
-          profileImage: true,
-          reviews: {
-            select: {
-              id: true,
-              content: true,
-              createdAt: true,
-              location: {
+    try {
+        const [
+            totalUsers,
+            activePlaces,
+            totalFavorites,
+            totalActivities,
+            recentActivities,
+            categoryStats,
+            districtStats,
+            userActivityStats,
+            popularLocations,
+            recentReviews,
+            userGrowthStats,
+            userActivities,
+            newUsersThisWeek,
+            topRatedLocations,
+            mostFavoritedLocations,
+            engagementStats
+        ] = await Promise.all([
+            prisma.profile.count(),
+            prisma.location.count(),
+            prisma.favorite.count(),
+            prisma.review.count(),
+            prisma.review.findMany({
+                take: 5,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    profile: true,
+                    location: true
+                }
+            }),
+            prisma.location.groupBy({
+                by: ['category'],
+                _count: true,
+                orderBy: { _count: { category: 'desc' } }
+            }),
+            prisma.location.groupBy({
+                by: ['districts'],
+                _count: true,
+                orderBy: { _count: { districts: 'desc' } }
+            }),
+            prisma.review.groupBy({
+                by: ['profileId'],
+                _count: true,
+                orderBy: { _count: { profileId: 'desc' } },
+                take: 5
+            }),
+            prisma.location.findMany({
+                take: 5,
+                orderBy: { rating: 'desc' },
+                include: {
+                    _count: {
+                        select: {
+                            reviews: true,
+                            favorites: true
+                        }
+                    }
+                }
+            }),
+            prisma.review.findMany({
+                take: 5,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    profile: true,
+                    location: true
+                }
+            }),
+            prisma.profile.groupBy({
+                by: ['createdAt'],
+                _count: true,
+                orderBy: { createdAt: 'desc' },
+                take: 30
+            }),
+            prisma.profile.findMany({
+                take: 10,
                 select: {
-                  id: true,
-                  name: true
+                    id: true,
+                    firstname: true,
+                    lastname: true,
+                    username: true,
+                    profileImage: true,
+                    reviews: {
+                        select: {
+                            id: true,
+                            content: true,
+                            createdAt: true,
+                            location: {
+                                select: {
+                                    id: true,
+                                    name: true
+                                }
+                            }
+                        },
+                        orderBy: {
+                            createdAt: 'desc'
+                        },
+                        take: 1
+                    },
+                    favorites: {
+                        select: {
+                            id: true,
+                            createdAt: true,
+                            location: {
+                                select: {
+                                    id: true,
+                                    name: true
+                                }
+                            }
+                        },
+                        orderBy: {
+                            createdAt: 'desc'
+                        },
+                        take: 1
+                    },
+                    locations: {
+                        select: {
+                            id: true
+                        }
+                    }
+                },
+                orderBy: {
+                    reviews: {
+                        _count: 'desc'
+                    }
                 }
-              }
-            },
-            orderBy: {
-              createdAt: 'desc'
-            },
-            take: 1
-          },
-          favorites: {
-            select: {
-              id: true,
-              createdAt: true,
-              location: {
+            }),
+            // New users this week
+            prisma.profile.count({
+                where: {
+                    createdAt: {
+                        gte: new Date(new Date().setDate(new Date().getDate() - 7))
+                    }
+                }
+            }),
+            // Top rated locations
+            prisma.location.findMany({
+                take: 3,
+                orderBy: { rating: 'desc' },
+                where: {
+                    reviews: {
+                        some: {}
+                    }
+                },
                 select: {
-                  id: true,
-                  name: true
+                    id: true,
+                    name: true,
+                    image: true,
+                    districts: true,
+                    rating: true,
+                    _count: {
+                        select: {
+                            reviews: true,
+                            favorites: true
+                        }
+                    }
                 }
-              }
-            },
-            orderBy: {
-              createdAt: 'desc'
-            },
-            take: 1
-          },
-          locations: {
-            select: {
-              id: true
-            }
-          }
-        },
-        orderBy: {
-          reviews: {
-            _count: 'desc'
-          }
-        }
-      }),
-      // New users this week
-      prisma.profile.count({
-        where: {
-          createdAt: {
-            gte: new Date(new Date().setDate(new Date().getDate() - 7))
-          }
-        }
-      }),
-      // Top rated locations
-      prisma.location.findMany({
-        take: 3,
-        orderBy: { rating: 'desc' },
-        where: {
-          reviews: {
-            some: {}
-          }
-        },
-        select: {
-          id: true,
-          name: true,
-          image: true,
-          districts: true,
-          rating: true,
-          _count: {
-            select: {
-              reviews: true,
-              favorites: true
-            }
-          }
-        }
-      }),
-      // Most favorited locations
-      prisma.location.findMany({
-        take: 3,
-        orderBy: {
-          favorites: {
-            _count: 'desc'
-          }
-        },
-        select: {
-          id: true,
-          name: true,
-          image: true,
-          districts: true,
-          rating: true,
-          _count: {
-            select: {
-              reviews: true,
-              favorites: true
-            }
-          }
-        }
-      }),
-      // Engagement stats
-      Promise.all([
-        prisma.review.count({
-          where: {
-            createdAt: {
-              gte: new Date(new Date().setDate(new Date().getDate() - 1))
-            }
-          }
-        }),
-        prisma.favorite.count({
-          where: {
-            createdAt: {
-              gte: new Date(new Date().setDate(new Date().getDate() - 1))
-            }
-          }
-        })
-      ])
-    ]);
-
-    // Transform user activities data
-    const transformedUserActivities = userActivities.map(user => ({
-      profile_id: user.id,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      username: user.username,
-      profileImage: user.profileImage,
-      review_count: user.reviews.length,
-      favorite_count: user.favorites.length,
-      location_views: user.locations.length,
-      last_review: user.reviews[0] || null,
-      last_favorite: user.favorites[0] || null
-    }));
-
-    // Calculate engagement stats
-    const [dailyReviews, dailyFavorites] = engagementStats;
-    const dailyActiveUsers = await prisma.profile.count({
-      where: {
-        OR: [
-          {
-            reviews: {
-              some: {
-                createdAt: {
-                  gte: new Date(new Date().setDate(new Date().getDate() - 1))
+            }),
+            // Most favorited locations
+            prisma.location.findMany({
+                take: 3,
+                orderBy: {
+                    favorites: {
+                        _count: 'desc'
+                    }
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    districts: true,
+                    rating: true,
+                    _count: {
+                        select: {
+                            reviews: true,
+                            favorites: true
+                        }
+                    }
                 }
-              }
-            }
-          },
-          {
-            favorites: {
-              some: {
-                createdAt: {
-                  gte: new Date(new Date().setDate(new Date().getDate() - 1))
-                }
-              }
-            }
-          }
-        ]
-      }
-    });
+            }),
+            // Engagement stats
+            Promise.all([
+                prisma.review.count({
+                    where: {
+                        createdAt: {
+                            gte: new Date(new Date().setDate(new Date().getDate() - 1))
+                        }
+                    }
+                }),
+                prisma.favorite.count({
+                    where: {
+                        createdAt: {
+                            gte: new Date(new Date().setDate(new Date().getDate() - 1))
+                        }
+                    }
+                })
+            ])
+        ]);
 
-    return {
-      totalUsers,
-      activePlaces,
-      totalFavorites,
-      totalActivities,
-      recentActivities,
-      categoryStats,
-      districtStats,
-      userActivityStats,
-      popularLocations,
-      recentReviews,
-      userGrowthStats,
-      userActivities: transformedUserActivities,
-      newUsersThisWeek,
-      topRatedLocations,
-      mostFavoritedLocations,
-      engagementStats: {
-        daily_active_users: dailyActiveUsers,
-        daily_actions: dailyReviews + dailyFavorites
-      }
-    };
-  } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
-    throw new Error('Failed to fetch dashboard statistics');
-  }
+        // Transform user activities data
+        const transformedUserActivities = userActivities.map(user => ({
+            profile_id: user.id,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            username: user.username,
+            profileImage: user.profileImage,
+            review_count: user.reviews.length,
+            favorite_count: user.favorites.length,
+            location_views: user.locations.length,
+            last_review: user.reviews[0] || null,
+            last_favorite: user.favorites[0] || null
+        }));
+
+        // Calculate engagement stats
+        const [dailyReviews, dailyFavorites] = engagementStats;
+        const dailyActiveUsers = await prisma.profile.count({
+            where: {
+                OR: [
+                    {
+                        reviews: {
+                            some: {
+                                createdAt: {
+                                    gte: new Date(new Date().setDate(new Date().getDate() - 1))
+                                }
+                            }
+                        }
+                    },
+                    {
+                        favorites: {
+                            some: {
+                                createdAt: {
+                                    gte: new Date(new Date().setDate(new Date().getDate() - 1))
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        });
+
+        return {
+            totalUsers,
+            activePlaces,
+            totalFavorites,
+            totalActivities,
+            recentActivities,
+            categoryStats,
+            districtStats,
+            userActivityStats,
+            popularLocations,
+            recentReviews,
+            userGrowthStats,
+            userActivities: transformedUserActivities,
+            newUsersThisWeek,
+            topRatedLocations,
+            mostFavoritedLocations,
+            engagementStats: {
+                daily_active_users: dailyActiveUsers,
+                daily_actions: dailyReviews + dailyFavorites
+            }
+        };
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        throw new Error('Failed to fetch dashboard statistics');
+    }
 }

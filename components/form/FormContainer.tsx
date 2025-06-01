@@ -6,8 +6,9 @@ import { useEffect } from "react"
 import { actionFunction } from "@/utils/types"
 
 interface FormState {
-    message?: string;
-    success?: boolean;
+    message: string;
+    success: boolean;
+    shouldRedirect?: boolean;
     [key: string]: any;
 }
 
@@ -22,7 +23,7 @@ const initialState: FormState = {
     success: false
 }
 
-const FormContainer = ({ action, children }: { action: actionFunction, children: React.ReactNode }) => {
+const FormContainer = ({ action, children }: { action: (state: FormState, formData: FormData) => Promise<FormState>, children: React.ReactNode }) => {
     const { toast } = useToast()
     const [state, formAction] = useActionState(action, initialState)
 

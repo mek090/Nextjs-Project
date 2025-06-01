@@ -48,7 +48,7 @@ export default function NotificationDropdown() {
       const data = await response.json();
       console.log('Fetched notifications data:', data);
 
-      if (!data || !Array.isArray(data.notifications)) {
+      if (!data || !data.notifications) {
         console.error("Invalid notifications data:", data);
         setNotifications([]);
         setUnreadCount(0);

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { string } from "zod";
 
 // ตรวจสอบ API key
 if (!process.env.GOOGLE_AI_API_KEY) {
@@ -10,8 +11,11 @@ if (!process.env.GOOGLE_AI_API_KEY) {
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
 export async function POST(request: Request) {
+  let query: string = "";
   try {
-    const { query } = await request.json();
+    // const { query } = await request.json();
+    const body = await request.json();
+    query = body.query;
 
     if (!query) {
       return NextResponse.json(

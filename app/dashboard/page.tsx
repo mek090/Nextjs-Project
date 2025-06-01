@@ -16,119 +16,125 @@ export const dynamic = 'force-dynamic'
 
 const Dashboard = async () => {
   try {
-  const stats = await getEnhancedDashboardStats()
-  const user = await currentUser();
-    
+    const stats = await getEnhancedDashboardStats()
+    const user = await currentUser();
+
     if (!user) {
       redirect('/sign-in')
     }
 
-  const profile = await prisma.profile.findUnique({
-    where: {
-      clerkId: user.id
-    }
-  })
+    const profile = await prisma.profile.findUnique({
+      where: {
+        clerkId: user.id
+      }
+    })
 
     if (!profile || profile.role !== 'admin') {
       redirect('/')
     }
 
-  return (
-    <div className="p-6 space-y-6">
-      <Breadcrumbs
-        items={[
-          { label: 'Home', href: '/' },
-          { label: 'Dashboard' },
-        ]}
-      />
+    return (
+      <div className="p-6 space-y-6">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Dashboard' },
+          ]}
+        />
 
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <div className="flex items-center space-x-4">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <div className="flex items-center space-x-4">
             <span className="text-sm text-muted-foreground">สวัสดี Admin {profile.firstname}</span>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">ผู้ใช้ทั้งหมด</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers}</div>
-            <p className="text-xs text-muted-foreground">จำนวนผู้ใช้</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">สถานที่ในระบบ</CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.activePlaces}</div>
-            <p className="text-xs text-muted-foreground">จำนวนสถานที่</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">รายการโปรด</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalFavorites}</div>
-            <p className="text-xs text-muted-foreground">จำนวนรายการโปรด</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">กิจกรรมล่าสุด</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalActivities}</div>
-            <p className="text-xs text-muted-foreground">จำนวนรีวิว</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>การจัดการ</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            {links4.map((link) => {
-              const Icon = link.icon;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="flex items-center gap-2 justify-center rounded-lg border p-4 hover:bg-accent disabled:opacity-50"
-                >
-                  <Icon className="h-5 w-5" />
-                  <span className="text-sm font-medium">{link.label}</span>
-                </Link>
-              );
-            })}
           </div>
-        </CardContent>
-      </Card>
-      
-      {/* Top Locations */}
-      <TopLocations
-        topRated={stats.topRatedLocations}
-        mostFavorited={stats.mostFavoritedLocations}
-      />
+        </div>
 
-      {/* User Activities Section */}
-      <UserActivitiesList activities={stats.userActivities} />
+        {/* Stats Grid */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">ผู้ใช้ทั้งหมด</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalUsers}</div>
+              <p className="text-xs text-muted-foreground">จำนวนผู้ใช้</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">สถานที่ในระบบ</CardTitle>
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.activePlaces}</div>
+              <p className="text-xs text-muted-foreground">จำนวนสถานที่</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">รายการโปรด</CardTitle>
+              <Star className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalFavorites}</div>
+              <p className="text-xs text-muted-foreground">จำนวนรายการโปรด</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">กิจกรรมล่าสุด</CardTitle>
+              <Activity className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalActivities}</div>
+              <p className="text-xs text-muted-foreground">จำนวนรีวิว</p>
+            </CardContent>
+          </Card>
+        </div>
 
-      {/* Recent Reviews Section */}
-      <RecentReviewsList reviews={stats.recentReviews} />
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>การจัดการ</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4">
+              {links4.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="flex items-center gap-2 justify-center rounded-lg border p-4 hover:bg-accent disabled:opacity-50"
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span className="text-sm font-medium">{link.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Top Locations */}
+        <TopLocations
+          topRated={stats.topRatedLocations.map(loc => ({
+            ...loc,
+            rating: loc.rating || 0
+          }))}
+          mostFavorited={stats.mostFavoritedLocations.map(loc => ({
+            ...loc,
+            rating: loc.rating || 0
+          }))}
+        />
+
+        {/* User Activities Section */}
+        <UserActivitiesList activities={stats.userActivities} />
+
+        {/* Recent Reviews Section */}
+        <RecentReviewsList reviews={stats.recentReviews} />
       </div>
     )
   } catch (error) {
@@ -139,8 +145,8 @@ const Dashboard = async () => {
         <p className="mt-2 text-gray-600">
           {error instanceof Error ? error.message : 'An unexpected error occurred'}
         </p>
-    </div>
-  )
+      </div>
+    )
   }
 }
 

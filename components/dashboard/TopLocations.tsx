@@ -9,7 +9,7 @@ interface TopLocationsProps {
   topRated?: {
     id: string
     name: string
-    address: string
+    districts: string
     rating: number
     _count: {
       reviews: number
@@ -20,7 +20,7 @@ interface TopLocationsProps {
   mostFavorited?: {
     id: string
     name: string
-    address: string
+    districts: string
     rating: number
     _count: {
       reviews: number
@@ -82,7 +82,7 @@ export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocations
                       ({location._count.reviews} รีวิว)
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">{location.address}</p>
+                  <p className="text-sm text-muted-foreground truncate">{location.districts}</p>
                 </div>
               </Link>
               );
@@ -134,7 +134,7 @@ export function TopLocations({ topRated = [], mostFavorited = [] }: TopLocations
                       ถูกเพิ่มในรายการโปรด
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">{location.address}</p>
+                  <p className="text-sm text-muted-foreground truncate">{location.districts}</p>
                 </div>
               </Link>
               );

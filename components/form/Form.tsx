@@ -6,7 +6,7 @@ export type FormInputProps = {
     name: string;
     type: string;
     label?: string;
-    defaultValue?: string;
+    defaultValue?: string | null;
     placeholder?: string;
   };
 
@@ -21,7 +21,7 @@ const FormInput = (props: FormInputProps) => {
             name={name}
             type={type}
             placeholder={placeholder}
-            defaultValue={defaultValue}
+                defaultValue={defaultValue || undefined}
             className="mb-4" 
             />
         </div>

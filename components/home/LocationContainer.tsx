@@ -11,13 +11,21 @@ import LoadingCard from "../card/LoadingCard"
 import Hero from "../hero/Hero";
 import CategoryList from "./CategoryList";
 import EmptyList from "./EmptyList";
+import { Search } from "lucide-react";
 
-const LocationContainer = () => {
+
+interface LocationContainerProps {
+    search?: string;
+    category?: string;
+}
+
+
+const LocationContainer = ({ search = '', category = '' }: LocationContainerProps) => {
     const [locations, setLocations] = useState<LocationCardProps[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const searchParams = useSearchParams();
-    const search = searchParams.get('search') || '';
-    const category = searchParams.get('category') || '';
+    // const searchParams = useSearchParams();
+    // const search = searchParams.get('search') || '';
+    // const category = searchParams.get('category') || '';
 
     useEffect(() => {
         const loadLocations = async () => {
@@ -50,7 +58,7 @@ const LocationContainer = () => {
                     </div>
                 </section>
             ) : locations.length === 0 ? (
-                <EmptyList heading="ไม่พบสถานที่ที่คุณค้นหา"/>
+                <EmptyList heading="ไม่พบสถานที่ที่คุณค้นหา" />
             ) : (
                 <LocationList Locations={locations} />
             )}

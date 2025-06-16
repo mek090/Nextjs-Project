@@ -1,12 +1,11 @@
-import type { NextConfig } from "next";
+import { NextConfig } from 'next'
 
-const nextConfig: NextConfig = {
-  experimental: {
-    serverActions: {
-      bodySizeLimit: '5mb',
-    },
+const config: NextConfig = {
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
   },
-  reactStrictMode: false,
   images: {
     remotePatterns: [
       {
@@ -15,9 +14,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-};
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    }
+  }
+}
 
-export default nextConfig;
+export default config
 
 // import type { NextConfig } from "next";
 

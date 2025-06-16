@@ -49,6 +49,10 @@ interface NearbyLocation {
   lng: number;
 }
 
+
+const isNight = new Date().getHours() >= 18 || new Date().getHours() < 6;
+
+
 // สร้างไอคอนที่สวยงาม
 const customIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
@@ -411,18 +415,18 @@ export default function DescriptionAI({
 
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm text-center">
-            <p className="font-medium mb-2">อุณหภูมิสูงสุด</p>
+            <p className="font-medium mb-2">รู้สึกเหมือน</p>
             <div className="flex justify-center mb-1">
               <Sun className="h-5 w-5 text-red-500" />
             </div>
-            <p className="text-lg font-bold">{Math.round(weatherData.main.temp_max)}°C</p>
+            <p className="text-lg font-bold">{Math.round(weatherData.main.feels_like)}°C</p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm text-center">
-            <p className="font-medium mb-2">อุณหภูมิต่ำสุด</p>
+            <p className="font-medium mb-2">ทัศนวิสัย</p>
             <div className="flex justify-center mb-1">
               <Cloud className="h-5 w-5 text-blue-500" />
             </div>
-            <p className="text-lg font-bold">{Math.round(weatherData.main.temp_min)}°C</p>
+            <p className="text-lg font-bold">{Math.round(weatherData.visibility /1000)} km</p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm text-center">
             <p className="font-medium mb-2">ความชื้น</p>

@@ -240,7 +240,7 @@ export default function LocationChatBot({ locationName, locationDescription, loc
               </button>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              กด Enter เพื่อส่งข้อความ
+              {/* กด Enter เพื่อส่งข้อความ */}
             </div>
           </div>
         </div>

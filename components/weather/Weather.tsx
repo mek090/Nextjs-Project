@@ -200,24 +200,25 @@ export default function Weatherapi() {
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center">
                   <div className="mr-3 text-red-500">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">อุณหภูมิสูงสุด</p>
-                    <p className="text-xl font-semibold">{Math.round(weather.main.temp_max)}°C</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">รู้สึกเหมือน</p>
+                    <p className="text-xl font-semibold">{Math.round(weather.main.feels_like)}°C</p>
                   </div>
                 </div>
 
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center">
                   <div className="mr-3 text-blue-500">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">อุณหภูมิต่ำสุด</p>
-                    <p className="text-xl font-semibold">{Math.round(weather.main.temp_min)}°C</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">ทัศนวิสัย</p>
+                    <p className="text-xl font-semibold">{weather.visibility / 1000} km</p>
                   </div>
                 </div>
               </div>

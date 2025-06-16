@@ -6,6 +6,26 @@ import { LocationCardProps } from "@/utils/types";
 import LocationRating from "./LocationRating";
 import FavoriteToggleButton from "./FavoriteToggleButton";
 import LoadingCard from "./LoadingCard";
+import { fetchLocationDetail } from "@/actions/actions";
+import ShareButton from "../location/ShareButton";
+import { MapPin, Pin } from "lucide-react";
+
+
+
+// export async function generateMetadata(
+//     parent: any
+// ) {
+//     const { params } = await parent;
+//     const id = await params.id;
+//     const location = await fetchLocationDetail({ id });
+//     return {
+//         title: location ? `${location.name} - Location Detail` : 'Location Detail',
+//     }
+// }
+
+
+
+
 
 // คอมโพเนนต์การ์ดแสดงสถานที่
 const LocationCard = ({
@@ -34,7 +54,7 @@ const LocationCard = ({
         price,
         rating,
         openTime,
-        closeTime
+        closeTime,
     } = Location;
 
     // Format price display for better readability
@@ -47,6 +67,9 @@ const LocationCard = ({
         if (num < 1000) return `${num} บาท`;
         return `${(num / 1000).toFixed(1)}K บาท`;
     };
+
+
+
 
     return (
         <article className="bg-gray-50 dark:bg-gray-700 group relative h-full rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
@@ -139,26 +162,23 @@ const LocationCard = ({
                     </button>
 
                     {/* Share Button */}
-                    <button
-                        onClick={() => onShare?.(id)}
-                        className="flex items-center justify-center bg-white dark:bg-gray-600 border border-gray-200 hover:bg-gray-50 text-gray-700 py-1.5 px-2 rounded-lg transition-colors duration-200 text-sm"
-                        aria-label="แชร์"
-                    >
-                        <svg className="w-4 h-4 dark:text-white" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                        </svg>
-                    </button>
+                    
+                        <ShareButton locationId={Location.id} name={Location.name} />
+                    
 
                     {/* Map/Navigate Button */}
                     <Link
-                        href={`/map?id=${id}`}
+                        href={`https://www.google.com/maps/search/?api=1&query=${Location.lat},${Location.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="flex items-center justify-center bg-white dark:bg-gray-600 border border-gray-200 hover:bg-gray-50 text-gray-700 py-1.5 px-2 rounded-lg transition-colors duration-200 text-sm"
                         aria-label="แผนที่"
                     >
-                        <svg className="w-4 h-4 dark:text-white" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                        </svg>
+                        <MapPin className="w-4 h-4 dark:text-white" />
                     </Link>
+
+
+
                 </div>
             </div>
         </article>

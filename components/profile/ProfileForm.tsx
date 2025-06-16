@@ -24,9 +24,9 @@ export default function ProfileForm({ profile, userId }: ProfileFormProps) {
     const file = e.target.files?.[0];
     if (file) {
       // ตรวจสอบขนาดไฟล์
-      const maxSize = 2 * 1024 * 1024; // 2MB
+      const maxSize = 10 * 1024 * 1024; // 2MB
       if (file.size > maxSize) {
-        toast.error(`ขนาดไฟล์ต้องไม่เกิน ${maxSize / (1024 * 1024)}MB`);
+        toast.error(`ขนาดไฟล์ต้องไม่เกิน ${maxSize}MB`);
         e.target.value = '';
         return;
       }

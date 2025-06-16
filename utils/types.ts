@@ -21,8 +21,7 @@ export type WeatherCondition = {
 
 export type MainWeatherData = {
   temp: number;
-  temp_min: number;
-  temp_max: number;
+  feels_like: number;
   humidity: number;
 }
 
@@ -39,6 +38,7 @@ export type WeatherResponse = {
   weather: WeatherCondition[];
   main: MainWeatherData;
   wind: WindData;
+  visibility: number;
   sys: SysData;
 }
 

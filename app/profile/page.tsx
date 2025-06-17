@@ -136,6 +136,7 @@ export default async function ProfilePage() {
 
             <TabsContent value="analysis" className="mt-0">
               <div className="bg-white dark:bg-gray-800 p-6 rounded-b-lg shadow-md">
+              
                 <ProfileAnalysis userId={user.id} />
               </div>
             </TabsContent>
@@ -143,6 +144,7 @@ export default async function ProfilePage() {
             <TabsContent value="settings" className="mt-0">
               <div className="bg-white dark:bg-gray-800 p-6 rounded-b-lg shadow-md">
                 <div className="max-w-2xl mx-auto">
+                  
                   <ProfileForm profile={profile} userId={user.id} />
                 </div>
               </div>

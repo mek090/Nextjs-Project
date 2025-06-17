@@ -9,8 +9,9 @@ interface Location {
   description: string
   image: string[]
   districts: string
-  openTime?: string
-  closeTime?: string
+  openTime?: string | null
+  closeTime?: string | null
+  locations?: string[]
 }
 
 interface LocationCardProps {

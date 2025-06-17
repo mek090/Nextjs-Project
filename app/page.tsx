@@ -59,7 +59,6 @@ const page = async ({
       {/* weather */}
       <Weatherapi />
 
-
       {/* Footer */}
       <footer className="bg-gradient-to-r from-blue-900 to-teal-800 text-white py-8">
         <div className="container mx-auto px-4">

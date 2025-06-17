@@ -12,6 +12,7 @@ import Hero from "../hero/Hero";
 import CategoryList from "./CategoryList";
 import EmptyList from "./EmptyList";
 import { Search } from "lucide-react";
+import RecommendedLocations from "./RecommendedLocations";
 
 
 interface LocationContainerProps {
@@ -44,6 +45,25 @@ const LocationContainer = ({ search = '', category = '' }: LocationContainerProp
     }, [search, category])
 
     return (
+        // <div>
+        //     <Hero locations={locations} />
+        //     <CategoryList />
+        //     {isLoading ? (
+        //         <section className="py-10">
+        //             <div className="container mx-auto px-4">
+        //                 <div className="grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-4 gap-6">
+        //                     {[...Array(4)].map((_, index) => (
+        //                         <LoadingCard key={index} />
+        //                     ))}
+        //                 </div>
+        //             </div>
+        //         </section>
+        //     ) : locations.length === 0 ? (
+        //         <EmptyList heading="ไม่พบสถานที่ที่คุณค้นหา" />
+        //     ) : (
+        //         <LocationList Locations={locations} />
+        //     )}
+        // </div>
         <div>
             <Hero locations={locations} />
             <CategoryList />
@@ -62,6 +82,7 @@ const LocationContainer = ({ search = '', category = '' }: LocationContainerProp
             ) : (
                 <LocationList Locations={locations} />
             )}
+            <RecommendedLocations />
         </div>
     )
 }

@@ -88,7 +88,7 @@ export async function POST(request: Request) {
 3. ระดับราคา: ประเมินตามความเป็นจริงและข้อมูลจาก Google
    - หากมีข้อมูลราคาจาก Google ให้ใช้ค่านั้น
    - หากไม่มี ให้ประเมินตามประเภทสถานที่:
-     * "ฟรี" สำหรับ วัด, สวนสาธารณะ, อนุสาวรีย์
+     * "ไม่มีค่าใช้จ่าย" สำหรับ วัด, สวนสาธารณะ, อนุสาวรีย์
      * "10-100 บาท" สำหรับ พิพิธภัณฑ์เล็ก, ตลาดท้องถิ่น
      * "101-300 บาท" สำหรับ สวนสนุก, ร้านอาหารทั่วไป  
      * "300+ บาท" สำหรับ รีสอร์ท, ร้านอาหารหรู
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
   "description": "คำอธิบายโดยละเอียด 2-3 ประโยค",
   "category": "หมวดหมู่ที่เหมาะสม",
   "district": "${district}",
-  "price": "ช่วงราคาหรือคำอธิบายราคา เช่น 'ฟรี', '50-100 บาท', '200+ บาท'",
+  "price": "ช่วงราคาหรือคำอธิบายราคา เช่น 'ไม่มีค่าใช้จ่าย', '50-100 บาท', '200+ บาท'",
   "selectedPhotos": [0, 1, 2, 3, 4]
 }
 
@@ -177,7 +177,7 @@ export async function POST(request: Request) {
       const priceLevel = parseInt(String(finalPrice));
       switch (priceLevel) {
         case 0:
-          finalPrice = "ฟรี";
+          finalPrice = "ไม่มีค่าใช้จ่าย";
           break;
         case 1:
           finalPrice = "10-100 บาท";
@@ -198,7 +198,7 @@ export async function POST(request: Request) {
       if (price_level !== undefined && price_level >= 0 && price_level <= 3) {
         switch (price_level) {
           case 0:
-            finalPrice = "ฟรี";
+            finalPrice = "ไม่มีค่าใช้จ่าย";
             break;
           case 1:
             finalPrice = "10-100 บาท";
@@ -215,7 +215,7 @@ export async function POST(request: Request) {
         const nameAndAddress = (name + ' ' + address).toLowerCase();
         if (nameAndAddress.includes('วัด') || nameAndAddress.includes('temple') ||
           nameAndAddress.includes('สวนสาธารณะ') || nameAndAddress.includes('park')) {
-          finalPrice = "ฟรี";
+          finalPrice = "ไม่มีค่าใช้จ่าย";
         } else if (nameAndAddress.includes('ตลาด') || nameAndAddress.includes('market')) {
           finalPrice = "10-100 บาท";
         } else {

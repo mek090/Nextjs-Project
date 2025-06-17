@@ -116,12 +116,12 @@ export default function ProfileAnalysis({ userId }: ProfileAnalysisProps) {
 
                 <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 dark:from-green-900/30 dark:to-green-800/30 dark:border-green-700 hover:shadow-lg transition-shadow duration-200">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300">อำเภอที่รีวิวบ่อย</CardTitle>
+                        <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300">อำเภอที่ชอบ</CardTitle>
                         <MapPin className="h-5 w-5 text-green-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold text-green-700 dark:text-green-300">{analysis.favoriteDistrict}</div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">อำเภอที่เข้าชมบ่อยที่สุด</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">อำเภอที่เพิ่มเป็นสถานที่โปรดมากที่สุด</p>
                     </CardContent>
                 </Card>
             </div>
@@ -196,7 +196,7 @@ export default function ProfileAnalysis({ userId }: ProfileAnalysisProps) {
                             >
                                 <div className="relative aspect-video rounded-lg overflow-hidden shadow-md">
                                     <Image
-                                        src={location.image[0]} 
+                                        src={location.image[0]}
                                         alt={location.name}
                                         fill
                                         className="object-cover transition-transform duration-500 group-hover:scale-110"

@@ -63,7 +63,7 @@ const LocationCard = ({
 
         if (isNaN(num)) return `${price}`;
 
-        if (num === 0) return 'ฟรี';
+        if (num === 0) return 'ไม่มีค่าใช้จ่าย';
         if (num < 1000) return `${num} บาท`;
         return `${(num / 1000).toFixed(1)}K บาท`;
     };

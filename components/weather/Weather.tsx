@@ -6,7 +6,18 @@ import { WiDaySunny, WiCloud, WiRain, WiSnow, WiThunderstorm, WiHumidity, WiStro
 import Bot from "../GeminiBot/Bot";
 import { WeatherIcons, WeatherResponse, SysData, WindData, MainWeatherData, WeatherCondition } from "@/utils/types";
 import LocationContainer from "../home/LocationContainer";
-import TouristMap from "../map/TouristMap";
+// import TouristMap from "../map/TouristMap";
+import dynamic from "next/dynamic";
+
+
+// Dynamic import with no SSR
+const TouristMap = dynamic(
+  () => import('../map/TouristMap'),
+  { ssr: false }
+)
+
+
+
 
 export default function Weatherapi() {
   // บุรีรัมย์และอำเภอสำคัญ
@@ -224,6 +235,13 @@ export default function Weatherapi() {
               </div>
             </div>
           )}
+
+          {/* <div className="bg-white/90 dark:bg-gray-800/90 p-6 rounded-xl shadow-lg">
+            <h2 className="text-3xl font-semibold text-center mb-6">
+              แผนที่ท่องเที่ยว <span className="text-blue-500">บุรีรัมย์</span>
+            </h2>
+            <TouristMap />
+          </div> */}
 
           <div className="bg-white/90 dark:bg-gray-800/90 p-6 rounded-xl shadow-lg">
             <h2 className="text-3xl font-semibold text-center mb-6">

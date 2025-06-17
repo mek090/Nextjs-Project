@@ -49,7 +49,7 @@ export default function NotificationDropdown() {
       console.log('Fetched notifications data:', data);
 
       if (!data || !data.notifications) {
-        console.error("Invalid notifications data:", data);
+        // console.error("Invalid notifications data:", data);
         setNotifications([]);
         setUnreadCount(0);
         return;

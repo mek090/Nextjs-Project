@@ -45,7 +45,8 @@ export async function POST(request: Request) {
       'Nong Hong': 'หนองหงส์',
       'Nong Ki': 'หนองกี่',
       'Pakham': 'ปะคำ',
-      'Phlapphla Chai': 'พลับพลาชัย'
+      'Phlapphla Chai': 'พลับพลาชัย',
+      'Mueang Buri Ram': 'บุรีรัมย์'
     };
     
     // ดึงชื่ออำเภอจาก Google Places

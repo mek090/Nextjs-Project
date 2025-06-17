@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
         openTime: openTime || null,
         closeTime: closeTime || null,
         profileId: userId,
+        googlePlaceId: body.googlePlaceId || null, // Optional field for Google Place ID
       },
     });
 

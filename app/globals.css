@@ -476,3 +476,10 @@ body.show-chatbot .chatbot-toggler {
     height: 50px;
   }
 }
+
+
+/* style Sparkles animation */
+ /* @keyframes fadeInOut {
+    0%, 100% { opacity: 0; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1); }
+  } */

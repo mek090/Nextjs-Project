@@ -7,7 +7,6 @@ const isPublicRoute = createRouteMatcher([
     '/settings(.*)',
     '/github(.*)',
     '/locations(.*)',
-
 ])
 
 

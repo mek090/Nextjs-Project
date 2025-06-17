@@ -2,7 +2,9 @@
 
 import { imageSchema, locationSchema, profileSchema, validateWithZod } from "@/utils/schemas"
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
+
 import { prisma } from "@/lib/prisma";
+
 import { redirect } from "next/navigation";
 import { z, ZodSchema } from "zod";
 import { uploadFile, supabase } from "@/utils/supabase";
@@ -21,11 +23,11 @@ export const getAuthUser = async () => {
     return user
 }
 
-const renderError = (error: unknown): { message: string } => {
-    return {
-        message: error instanceof Error ? error.message : 'An error server'
-    }
-};
+// const renderError = (error: unknown): { message: string } => {
+//     return {
+//         message: error instanceof Error ? error.message : 'An error server'
+//     }
+// };
 
 
 
@@ -54,18 +56,19 @@ export const createProfileAction = async (prevState: any, formData: FormData) =>
                 hasProfile: true
             }
         })
-        return {
-            success: true,
-            message: 'Create Profile success!!'
+        // return {
+        //     success: true,
+        //     message: 'Create Profile success!!'
 
-        }
+        // }
     } catch (error) {
         return {
             success: false,
             message: error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการสร้างโปรไฟล์'
         }
     }
-}
+    redirect('/')
+};
 
 
 export const createLocationAction = async (
@@ -657,10 +660,40 @@ export async function updateUser(formData: FormData) {
 
 
 // ลบผู้ใช้
+// export async function deleteUser(id: string) {
+//     try {
+//         const user = await currentUser()
+//         if (!user) throw new Error('Unauthorized')
+
+//         await prisma.profile.delete({
+//             where: { id }
+//         })
+
+//         revalidatePath('/dashboard/manageuser')
+//         return { success: true }
+//     } catch (error) {
+//         return { error: 'Failed to delete user' }
+//     }
+// }
+
 export async function deleteUser(id: string) {
     try {
-        const user = await currentUser()
-        if (!user) throw new Error('Unauthorized')
+        const profile = await prisma.profile.findUnique({
+            where: { id }
+        })
+
+        if (!profile) {
+            return { error: 'User not found' }
+        }
+
+        try {
+            const client = await clerkClient()
+            await client.users.deleteUser(profile.clerkId)
+            // await clerkClient().users.deleteUser(profile.clerkId)
+        } catch (ClerkError) {
+            console.error('Error Deleting user from Clerk:', ClerkError)
+            return { error: 'Failed to delete user from Clerk' }
+        }
 
         await prisma.profile.delete({
             where: { id }
@@ -669,7 +702,8 @@ export async function deleteUser(id: string) {
         revalidatePath('/dashboard/manageuser')
         return { success: true }
     } catch (error) {
-        return { error: 'Failed to delete user' }
+        console.error('Error deleting user:', error);
+        return { error: 'Failed to delete user' };
     }
 }
 

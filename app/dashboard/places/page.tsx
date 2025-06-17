@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
 import { toast } from 'sonner';
+import { Check, Plus } from 'lucide-react';
+
 
 interface Place {
   place_id: string;
@@ -17,13 +19,75 @@ interface Place {
   // rating?: number;
 }
 
+// Modern Save Button Component
+function SavePlaceButton({ place, savingPlaceId, savePlaceToDatabase }: {
+  place: Place;
+  savingPlaceId: string | null;
+  savePlaceToDatabase: (place: Place) => void;
+}) {
+  return (
+    <button
+      onClick={() => savePlaceToDatabase(place)}
+      disabled={place.isSaved || savingPlaceId === place.place_id}
+      className={`
+        relative overflow-hidden px-6 py-3 rounded-xl font-semibold text-sm
+        transition-all duration-300 ease-out transform group
+        shadow-lg hover:shadow-xl active:scale-95
+        ${place.isSaved
+          ? 'bg-gradient-to-r from-emerald-400 to-green-500 text-white cursor-not-allowed'
+          : savingPlaceId === place.place_id
+            ? 'bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 text-white'
+            : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700 hover:scale-105'
+        }
+      `}
+    >
+      <span className="relative z-10 flex items-center justify-center gap-2">
+        {place.isSaved ? (
+          <>
+            <Check className="w-5 h-5" />
+            บันทึกแล้ว
+          </>
+        ) : savingPlaceId === place.place_id ? (
+          <>
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            กำลังวิเคราะห์...
+          </>
+        ) : (
+          <>
+            <Plus className="w-5 h-5 transition-transform group-hover:scale-110" />
+            เพิ่มสถานที่
+          </>
+        )}
+      </span>
+      
+      {/* Animated background effect */}
+      {!place.isSaved && savingPlaceId !== place.place_id && (
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+      )}
+      
+      {/* Sparkle effect for saving state */}
+      {savingPlaceId === place.place_id && (
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-1 -left-1 w-3 h-3 bg-white rounded-full opacity-70 animate-ping"></div>
+          <div className="absolute top-2 right-3 w-2 h-2 bg-white rounded-full opacity-50 animate-ping" style={{ animationDelay: '0.3s' }}></div>
+          <div className="absolute bottom-2 left-4 w-2 h-2 bg-white rounded-full opacity-60 animate-ping" style={{ animationDelay: '0.7s' }}></div>
+        </div>
+      )}
+    </button>
+  );
+}
+
 export default function PlacesPage() {
+  
   const [places, setPlaces] = useState<Place[]>([]);
   const [category, setCategory] = useState('');
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Place[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  const [savingPlaceId, setSavingPlaceId] = useState<string | null>(null);
+
   const { userId } = useAuth();
 
   const categories = [
@@ -94,6 +158,8 @@ export default function PlacesPage() {
   const savePlaceToDatabase = async (place: Place) => {
     try {
       // ดึงข้อมูลเพิ่มเติมจาก Place Details API
+      setSavingPlaceId(place.place_id);
+
       const detailsResponse = await fetch(`/api/places/details?place_id=${place.place_id}`);
       const detailsData = await detailsResponse.json();
       const placeDetails = detailsData.result;
@@ -179,8 +245,6 @@ export default function PlacesPage() {
       const district = analyzedData.district;
       const thaiName = analyzedData.thaiName || place.name; // ใช้ชื่อภาษาไทยที่ Gemini แนะนำ หรือใช้ชื่อเดิมถ้าไม่มี
 
-
-
       // รวบรวมรูปภาพที่ Gemini คัดเลือกแล้ว
       const images = analyzedData.selectedPhotos.map((photo: { photo_reference: any }) =>
         `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photo.photo_reference}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
@@ -230,6 +294,8 @@ export default function PlacesPage() {
     } catch (error) {
       console.error('Error saving place:', error);
       toast.error(error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการบันทึกสถานที่');
+    } finally {
+      setSavingPlaceId(null); // ✅ รีเซ็ตหลังเสร็จ
     }
   };
 
@@ -267,8 +333,8 @@ export default function PlacesPage() {
             key={cat.id}
             onClick={() => setCategory(cat.id)}
             className={`px-4 py-2 rounded-full ${category === cat.id
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 hover:bg-gray-300'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 hover:bg-gray-300'
               }`}
           >
             {cat.label}
@@ -300,12 +366,6 @@ export default function PlacesPage() {
             <div className="p-4">
               <h2 className="text-xl font-semibold mb-2">{place.name}</h2>
               <p className="text-gray-600 mb-2">{place.formatted_address}</p>
-              {/* {place.rating && (
-                <div className="flex items-center mb-4">
-                  <span className="text-yellow-400">★</span>
-                  <span className="ml-1">{place.rating.toFixed(1)}</span>
-                </div>
-              )} */}
               <div className="flex justify-between items-center">
                 <Link
                   href={`/dashboard/places/${place.place_id}`}
@@ -313,16 +373,12 @@ export default function PlacesPage() {
                 >
                   ดูรายละเอียด
                 </Link>
-                <button
-                  onClick={() => savePlaceToDatabase(place)}
-                  disabled={place.isSaved}
-                  className={`px-4 py-2 rounded-lg transition-colors ${place.isSaved
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-green-600 hover:bg-green-700 text-white'
-                    }`}
-                >
-                  {place.isSaved ? 'บันทึกแล้ว' : 'เพิ่มสถานที่'}
-                </button>
+                
+                <SavePlaceButton 
+                  place={place}
+                  savingPlaceId={savingPlaceId}
+                  savePlaceToDatabase={savePlaceToDatabase}
+                />
               </div>
             </div>
           </div>
@@ -337,4 +393,4 @@ export default function PlacesPage() {
       )}
     </div>
   );
-} 
+}

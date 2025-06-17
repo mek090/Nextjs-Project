@@ -10,45 +10,56 @@ const CategoryList = () => {
     const currentCategory = searchParams.get('category') || ''
 
     const createHref = (categoryLabel: string) => {
+        const label = categoryLabel.trim()
         const params = new URLSearchParams()
+
         if (currentSearch) {
             params.set('search', currentSearch)
         }
-        // Always set category parameter
-        params.set('category', categoryLabel)
-        return `/?${params.toString()}`
+
+        if (label !== "All") {
+            params.set('category', label)
+        }else {
+            // If "All" is selected, we should not set the category parameter
+            params.delete('category')
+        }
+
+        const queryString = params.toString()
+        return queryString ? `/locations?${queryString}` : `/locations`
+
     }
 
     return (
-        <div>
-            <div className="flex gap-4 my-6 flex-wrap justify-center">
-                {categories.map((item) => {
-                    const isActive = currentCategory === item.label
-                    
-                    return (
-                        <Link 
-                            href={createHref(item.label)}
-                            key={item.label}
-                            className={`group transition-all duration-300 hover:scale-110`}
+        <div className="flex gap-4 my-6 flex-wrap justify-center">
+            {categories.map((item) => {
+                const isActive =
+                    currentCategory === item.label ||
+                    (item.label === "All" && !currentCategory)
+
+                return (
+                    <Link
+                        href={createHref(item.label)}
+                        key={item.label}
+                        className="group transition-all duration-300 hover:scale-110"
+                    >
+                        <article className={`p-4 rounded-lg flex flex-col justify-center items-center gap-2
+              ${isActive
+                                ? 'bg-primary/10 text-primary'
+                                : 'hover:bg-primary/5 hover:text-primary'
+                            }`}
                         >
-                            <article className={`p-4 rounded-lg flex flex-col justify-center items-center gap-2
-                                ${isActive 
-                                    ? 'bg-primary/10 text-primary' 
-                                    : 'hover:bg-primary/5 hover:text-primary'
-                                }`}
-                            >
-                                <item.icon className={`w-6 h-6 ${isActive ? 'text-primary' : ''}`} />
-                                <p className="text-sm font-medium capitalize">{item.label}</p>
-                            </article>
-                        </Link>
-                    )
-                })}
-            </div>
+                            <item.icon className={`w-6 h-6 ${isActive ? 'text-primary' : ''}`} />
+                            <p className="text-sm font-medium capitalize">{item.label}</p>
+                        </article>
+                    </Link>
+                )
+            })}
         </div>
     )
 }
 
 export default CategoryList
+
 
 
 

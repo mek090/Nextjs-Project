@@ -14,8 +14,10 @@ const CategoryList = () => {
         if (currentSearch) {
             params.set('search', currentSearch)
         }
-        // Always set category parameter
-        params.set('category', categoryLabel)
+        // Only set category parameter if not "All"
+        if (categoryLabel !== "All") {
+            params.set('category', categoryLabel)
+        }
         return `/locations/?${params.toString()}`
     }
 
@@ -23,7 +25,7 @@ const CategoryList = () => {
         <div>
             <div className="flex gap-4 my-6 flex-wrap justify-center">
                 {categories.map((item) => {
-                    const isActive = currentCategory === item.label
+                    const isActive = currentCategory === item.label || (item.label === "All" && !currentCategory)
                     
                     return (
                         <Link 

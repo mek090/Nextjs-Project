@@ -1,3 +1,4 @@
+import { icon } from "leaflet";
 import {
     Tent,
     House,
@@ -10,10 +11,16 @@ import {
     Castle ,
     Leaf ,
     Church ,
-    MapPin ,
+    MapPin, 
+    Dot,
   } from "lucide-react";
   
   export const categories = [
+
+    {
+      label: "All",
+      icon: Dot,
+    },
     {
       label: "Culture",
       icon: Castle,

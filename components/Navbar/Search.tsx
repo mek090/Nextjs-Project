@@ -7,15 +7,7 @@ import { useAuth } from "@clerk/nextjs";
 import { Button } from "../ui/button";
 import { Search as SearchIcon } from "lucide-react";
 import { toast } from "sonner";
-
-interface SearchAnalysis {
-  category: string;
-  keywords: string[];
-  suggestions: string[];
-  district: string;
-  isValid: boolean;
-  reason: string;
-}
+import { useDebounce } from 'use-debounce';
 
 const Search = () => {
   const searchParams = useSearchParams();
@@ -23,45 +15,7 @@ const Search = () => {
   const { userId } = useAuth();
   const [search, setSearch] = useState(searchParams.get('search')?.toString() || '')
   const [isSearching, setIsSearching] = useState(false);
-  const [analysis, setAnalysis] = useState<SearchAnalysis | null>(null);
-
-  const analyzeSearch = async (query: string) => {
-    try {
-      const response = await fetch('/api/search/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to analyze search');
-      }
-
-      const data = await response.json();
-      setAnalysis(data);
-
-      // // ถ้าไม่ใช่คำค้นหาที่เกี่ยวข้องกับบุรีรัมย์
-      // if (!data.isValid) {
-      //   toast.warning('คำค้นหานี้อาจไม่เกี่ยวข้องกับบุรีรัมย์', {
-      //     description: data.reason,
-      //   });
-      // }
-
-      // // ถ้ามีคำแนะนำ
-      // if (data.suggestions && data.suggestions.length > 0) {
-      //   toast.info('คำค้นหาที่แนะนำ', {
-      //     description: data.suggestions.join(', '),
-      //   });
-      // }
-
-      return data;
-    } catch (error) {
-      console.error('Error analyzing search:', error);
-      return null;
-    }
-  };
+  const [debouncedValue] = useDebounce(search, 500);
 
   const saveSearchHistory = async (query: string) => {
     if (!userId || !query.trim()) return;
@@ -83,21 +37,6 @@ const Search = () => {
     try {
       setIsSearching(true);
       
-      // วิเคราะห์คำค้นหา
-      let analysis = null;
-      try {
-        analysis = await analyzeSearch(value);
-      } catch (error) {
-        console.error('Error analyzing search:', error);
-        // Continue with direct search if analysis fails
-      }
-      
-      // ถ้าไม่ใช่คำค้นหาที่เกี่ยวข้องกับบุรีรัมย์ และมีคำแนะนำ
-      if (analysis && !analysis.isValid && analysis.suggestions && analysis.suggestions.length > 0) {
-        // ใช้คำแนะนำแรกในการค้นหา
-        value = analysis.suggestions[0];
-      }
-
       const params = new URLSearchParams(searchParams.toString());
       if (value) {
         params.set('search', value);
@@ -106,7 +45,6 @@ const Search = () => {
           await saveSearchHistory(value);
         } catch (error) {
           console.error('Error saving search history:', error);
-          // Continue even if saving history fails
         }
       } else {
         params.delete('search');
@@ -120,21 +58,18 @@ const Search = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted with:', search);
-    performSearch(search);
-  };
+  useEffect(() => {
+    performSearch(debouncedValue);
+  }, [debouncedValue]);
 
   useEffect(() => {
     if (!searchParams.get('search')) {
       setSearch('');
-      setAnalysis(null);
     }
   }, [searchParams]);
 
   return (
-    <form onSubmit={handleSubmit} className="w-full flex justify-center gap-2">
+    <form onSubmit={(e) => e.preventDefault()} className="w-full flex justify-center gap-2">
       <Input
         type="text"
         placeholder="Search Location..."
@@ -144,12 +79,6 @@ const Search = () => {
           setSearch(value);
         }}
         value={search}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            performSearch(search);
-          }
-        }}
       />
       <Button type="submit" size="icon" className="shrink-0" disabled={isSearching}>
         <SearchIcon className={`h-4 w-4 ${isSearching ? 'animate-spin' : ''}`} />

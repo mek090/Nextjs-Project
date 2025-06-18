@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -81,12 +81,22 @@ export default function Bot({
     "12": ["เทศกาลท่องเที่ยวปราสาทหินและงานกาชาด", "เทศกาลส่งท้ายปีเก่าต้อนรับปีใหม่"]
   };
 
+  // เพิ่มรายการ prompt suggestion
+  const promptSuggestions = [
+    { label: "สถานที่ท่องเที่ยวแนะนำ", key: "attraction" },
+    { label: "อาหารท้องถิ่น", key: "food" },
+    { label: "เทศกาล/กิจกรรม", key: "festival" },
+    { label: "ประวัติศาสตร์/วัฒนธรรม", key: "culture" },
+    { label: "ที่พัก/ร้านอาหาร", key: "accommodation" },
+  ];
+  const [selectedPrompt, setSelectedPrompt] = useState<string>("");
+
   useEffect(() => {
     if (weather) {
       console.log("Weather object:", weather);
       generateSuggestion();
     }
-    
+
   }, [weather, selectedCity, timeOfDay]);
 
   // กำหนด mood ของ avatar ตามสภาพอากาศ
@@ -237,6 +247,65 @@ export default function Bot({
     setLoading(false);
   };
 
+  // ฟังก์ชันสร้าง prompt ตามหัวข้อที่เลือก
+  const generateCustomSuggestion = async (promptKey: string) => {
+    if (!weather) return;
+    setLoading(true);
+    setSelectedPrompt(promptKey);
+    try {
+      const { weather: weatherDetails, main: mainData, name } = weather;
+      const { description, main: weatherMain } = weatherDetails[0];
+      const { temp, humidity } = mainData;
+      const { localTime, currentMonth } = getBrowserTime();
+      const attractions = districtAttractions[selectedCity as keyof typeof districtAttractions] || districtAttractions["Buriram"];
+      const foods = localFood[selectedCity as keyof typeof localFood] || localFood["Buriram"];
+      const festivals = localFestivals[currentMonth.toString() as keyof typeof localFestivals] || [];
+
+      // กำหนด prompt เฉพาะตามหัวข้อ
+      let customPrompt = "";
+      switch (promptKey) {
+        case "attraction":
+          customPrompt = `แนะนำสถานที่ท่องเที่ยวที่น่าสนใจในอำเภอ ${selectedCity} จังหวัดบุรีรัมย์ พร้อมเหตุผลและเกร็ดความรู้ท้องถิ่น`; break;
+        case "food":
+          customPrompt = `แนะนำอาหารท้องถิ่นขึ้นชื่อในอำเภอ ${selectedCity} จังหวัดบุรีรัมย์ พร้อมบอกจุดเด่นและร้านแนะนำ`; break;
+        case "festival":
+          customPrompt = `มีเทศกาลหรือกิจกรรมอะไรน่าสนใจในเดือนนี้ที่บุรีรัมย์บ้าง ช่วยเล่าให้ฟังหน่อย`; break;
+        case "culture":
+          customPrompt = `เล่าเรื่องประวัติศาสตร์หรือวัฒนธรรมที่น่าสนใจของบุรีรัมย์ให้ฟังหน่อย`; break;
+        case "accommodation":
+          customPrompt = `แนะนำที่พักหรือร้านอาหารบรรยากาศดีในอำเภอ ${selectedCity} จังหวัดบุรีรัมย์`; break;
+        default:
+          customPrompt = `ช่วยแนะนำการท่องเที่ยวในบุรีรัมย์หน่อย`; break;
+      }
+
+      const prompt = `
+        คุณคือผู้ให้คำแนะนำด้านการท่องเที่ยวบุรีรัมย์ที่เป็นกันเอง มีความรู้เกี่ยวกับประวัติศาสตร์ วัฒนธรรม อาหาร และสถานที่ท่องเที่ยวในบุรีรัมย์เป็นอย่างดี\nชื่อของคุณคือ \"น้องบุรี\" ชอบแนะนำสถานที่ท่องเที่ยวในจังหวัดบุรีรัมย์และใช้ภาษาที่เป็นกันเอง สนิทสนม\nใส่สำนวนท้องถิ่นเล็กน้อยแต่ไม่มากเกินไป และใช้ภาษาที่เข้าใจง่ายสำหรับคนไทย\n\nข้อมูลปัจจุบัน:\n- สถานที่: ${name} (อำเภอ ${selectedCity})\n- สภาพอากาศ: ${description} (${weatherMain})\n- อุณหภูมิ: ${temp}°C\n- ความชื้น: ${humidity}%\n- เวลาปัจจุบัน: ${localTime} (เวลาท้องถิ่น)\n- ช่วงเวลา: ${timeOfDay}\n\nหัวข้อที่ผู้ใช้เลือก: ${customPrompt}\n\nตอบในรูปแบบสนทนา เป็นกันเอง ใส่ emoji เล็กน้อย ใช้ภาษาสั้นกระชับและมีสำนวนท้องถิ่น\nความยาว 2-3 ย่อหน้า`;
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.NEXT_PUBLIC_GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 800,
+            }
+          }),
+        }
+      );
+      const data: GeminiResponse = await response.json();
+      const generatedText =
+        data.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "ไม่สามารถดึงข้อมูลคำแนะนำได้ กรุณาลองใหม่";
+      setSuggestion(generatedText);
+    } catch (error) {
+      setSuggestion("เกิดข้อผิดพลาดในการติดต่อ AI");
+    }
+    setLoading(false);
+  };
+
   // เลือก avatar ตาม mood และเวลา
   const getAvatarImage = () => {
     const baseUrl = "/images/default-avatar2.png/";
@@ -266,6 +335,12 @@ export default function Bot({
 
     return () => clearInterval(interval);
   }, []);
+
+
+
+
+
+  
 
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl backdrop-blur-lg border border-gray-300 dark:border-gray-700 h-full">
@@ -334,6 +409,21 @@ export default function Bot({
           {/* ลูกศรชี้จาก avatar ไปยัง chat bubble */}
           <div className="absolute top-4 -left-2 w-0 h-0 border-t-8 border-r-8 border-b-8 border-white dark:border-gray-800 border-transparent border-r-white dark:border-r-gray-800"></div>
         </div>
+      </div>
+
+      {/* เพิ่มปุ่ม prompt suggestion ให้ผู้ใช้เลือกสอบถามเพิ่มเติม */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {promptSuggestions.map((item) => (
+          <Button
+            key={item.key}
+            variant={selectedPrompt === item.key ? "secondary" : "outline"}
+            size="sm"
+            onClick={() => generateCustomSuggestion(item.key)}
+            className={selectedPrompt === item.key ? "border-blue-500" : ""}
+          >
+            {item.label}
+          </Button>
+        ))}
       </div>
 
       {/* ส่วนแสดงข้อมูลเพิ่มเติม */}

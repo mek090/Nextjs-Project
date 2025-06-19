@@ -15,30 +15,35 @@ import { useState } from "react"
 import ImageGrid from '@/components/location/ImageGrid'
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import dynamic from "next/dynamic";
+import HeroImageSectionWrapper from "./HeroImageSectionWrapper"
+
+
+
 
 // ImageModal Component
-const ImageModal = ({ image, onClose }: { image: string; onClose: () => void }) => {
-    return (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="relative max-w-4xl w-full h-[80vh]">
-                <button
-                    onClick={onClose}
-                    className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
-                >
-                    <X size={32} />
-                </button>
-                <div className="relative w-full h-full">
-                    <Image
-                        src={image}
-                        alt="Location image"
-                        fill
-                        className="object-contain"
-                    />
-                </div>
-            </div>
-        </div>
-    );
-};
+// const ImageModal = ({ image, onClose }: { image: string; onClose: () => void }) => {
+//     return (
+//         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
+//             <div className="relative max-w-4xl w-full h-[80vh]">
+//                 <button
+//                     onClick={onClose}
+//                     className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+//                 >
+//                     <X size={32} />
+//                 </button>
+//                 <div className="relative w-full h-full">
+//                     <Image
+//                         src={image}
+//                         alt="Location image"
+//                         fill
+//                         className="object-contain"
+//                     />
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
 
 // เพิ่ม generateMetadata function
 export async function generateMetadata(
@@ -92,6 +97,9 @@ export default async function LocationDetail({ params }: { params: Promise<{ id:
             }))
         }));
 
+
+
+
         return (
             <section className="max-w-7xl mx-auto px-4 py-6 min-h-screen">
                 <Breadcrumbs
@@ -105,15 +113,10 @@ export default async function LocationDetail({ params }: { params: Promise<{ id:
 
                     {/* Hero Section */}
                     <div className="relative mb-8 rounded-2xl overflow-hidden shadow-lg">
-                        <div className="absolute w-full h-full bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-                        <div className="h-64 md:h-96">
-                            <div className="relative w-full h-[400px] mb-4">
-                                <Image
-                                    src={typeof location.image === 'string' ? location.image : location.image[0] || '/placeholder.jpg'}
-                                    alt={location.name}
-                                    fill
-                                    className="object-cover rounded-lg"
-                                />
+                        {/* <div className="absolute w-full h-full bg-gradient-to-t from-black/70 to-transparent z-10"></div> */}
+                        <div className="h-[500px] md:h-[550px]">
+                            <div className="relative w-full h-full mb-4">
+                                <HeroImageSectionWrapper images={Array.isArray(location.image) ? location.image : [location.image]} alt={location.name} />
                             </div>
                         </div>
 
@@ -172,6 +175,7 @@ export default async function LocationDetail({ params }: { params: Promise<{ id:
                                     <CollapsibleSection
                                         title="เกี่ยวกับสถานที่"
                                         content={location.description}
+
                                         type="description"
                                     />
 
@@ -207,7 +211,7 @@ export default async function LocationDetail({ params }: { params: Promise<{ id:
                                                 rel="noopener noreferrer"
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    <Pin className="mr-1"/>
+                                                    <Pin className="mr-1" />
                                                     ดูใน Google Maps
                                                 </div>
 
@@ -218,7 +222,7 @@ export default async function LocationDetail({ params }: { params: Promise<{ id:
                                     {/* Location Images Grid */}
                                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
                                         <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
-                                            รูปภาพเพิ่มเติม
+                                            รูปภาพสถานที่
                                         </h2>
                                         <ImageGrid
                                             images={typeof location.image === 'string' ? [] : location.image.slice(1)}

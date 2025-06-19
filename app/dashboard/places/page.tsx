@@ -186,7 +186,7 @@ export default function PlacesPage() {
           business_status: placeDetails.business_status,
           opening_hours: placeDetails.opening_hours,
           price_level: placeDetails.price_level,
-          photos: placeDetails.photos,
+          photos: placeDetails.photos?.slice(0, 10) || [],
         }),
       });
 

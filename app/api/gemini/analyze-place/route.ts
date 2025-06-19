@@ -93,7 +93,7 @@ export async function POST(request: Request) {
      * "101-300 บาท" สำหรับ สวนสนุก, ร้านอาหารทั่วไป  
      * "300+ บาท" สำหรับ รีสอร์ท, ร้านอาหารหรู
 4. คำอธิบาย: เขียนให้น่าสนใจ ครอบคลุมจุดเด่น ประวัติความเป็นมา
-5. เลือกรูปภาพ: เลือก 3 รูปแรก หรือตามจำนวนที่มี
+5. เลือกรูปภาพ: เลือก 10 รูปแรก หรือตามจำนวนที่มี (ถ้ามีไม่ถึง 10 ให้เลือกทั้งหมด)
 
 ตอบในรูปแบบ JSON เท่านั้น:
 {
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
   "category": "หมวดหมู่ที่เหมาะสม",
   "district": "${district}",
   "price": "ช่วงราคาหรือคำอธิบายราคา เช่น 'ไม่มีค่าใช้จ่าย', '50-100 บาท', '200+ บาท'",
-  "selectedPhotos": [0, 1, 2, 3, 4]
+  "selectedPhotos": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] // เลือกจาก photos ที่มี
 }
 
 ห้ามใส่ markdown หรือ code block ตอบเฉพาะ JSON
@@ -149,7 +149,7 @@ export async function POST(request: Request) {
     // ถ้าไม่มีรูปภาพที่เลือก หรือเลือกไม่ถูกต้อง ให้ใช้รูปภาพที่มี
     if (selectedPhotos.length === 0 && photos.length > 0) {
       // เลือกรูป 3 รูปแรก หรือทั้งหมดถ้าน้อยกว่า 3
-      const maxPhotos = Math.min(3, photos.length);
+      const maxPhotos = Math.min(10, photos.length);
       selectedPhotos = Array.from({ length: maxPhotos }, (_, i) => i);
     }
 

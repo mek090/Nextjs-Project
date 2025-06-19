@@ -78,6 +78,7 @@ export default function DescriptionAI({
   const [nearbyLocations, setNearbyLocations] = useState<NearbyLocation[]>([]);
   const [activeTab, setActiveTab] = useState<string>("description");
   const [selectedLocation, setSelectedLocation] = useState<NearbyLocation | null>(null);
+  const [activeSection, setActiveSection] = useState<string>("");
 
   useEffect(() => {
     const generateDescription = async () => {
@@ -463,43 +464,66 @@ export default function DescriptionAI({
     );
   };
 
+  const getDescriptionSections = () => {
+    if (!aiDescription) return [];
+    // แยกหัวข้อ (## )
+    const sections = aiDescription.split('## ').filter(section => section.trim());
+    return sections.map((section) => {
+      const [title, ...content] = section.split('\n');
+      return { title: title.trim(), content: content.join('\n').trim() };
+    });
+  };
+
   const renderDescriptionCards = () => {
     if (!aiDescription) return null;
 
-    // แยกหัวข้อต่างๆ จาก Markdown
-    const sections = aiDescription.split('## ').filter(section => section.trim());
+    // --- ใช้ sections array ---
+    const sections = getDescriptionSections();
+    if (sections.length === 0) return null;
 
-    return sections.map((section, index) => {
-      const [title, ...content] = section.split('\n');
-      const contentText = content.join('\n').trim();
+    // ถ้ายังไม่เลือกหัวข้อ ให้เลือกหัวข้อแรกเป็น default
+    const currentSection = activeSection || sections[0].title;
+    const sectionObj = sections.find(s => s.title === currentSection);
 
-      if (!contentText) return null;
-
-      // เลือกไอคอนตามหัวข้อ
-      const getSectionIcon = () => {
-        if (title.includes('ประวัติ')) return <Clock className="h-5 w-5 text-amber-500" />;
-        if (title.includes('จุดเด่น')) return <Camera className="h-5 w-5 text-blue-500" />;
-        if (title.includes('กิจกรรม')) return <Ticket className="h-5 w-5 text-green-500" />;
-        if (title.includes('ช่วงเวลา')) return <Calendar className="h-5 w-5 text-purple-500" />;
-        if (title.includes('ข้อแนะนำ')) return <AlertCircle className="h-5 w-5 text-red-500" />;
-        if (title.includes('อาหาร')) return <Utensils className="h-5 w-5 text-orange-500" />;
-        if (title.includes('การเดินทาง')) return <Car className="h-5 w-5 text-indigo-500" />;
-        if (title.includes('ข้อมูลติดต่อ')) return <Phone className="h-5 w-5 text-teal-500" />;
-        return <Sparkles className="h-5 w-5 text-yellow-500" />;
-      };
-
-      return (
-        <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-4">
-          <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            {getSectionIcon()}
-            <h3 className="font-bold text-gray-800 dark:text-white">{title.trim()}</h3>
-          </div>
-          <div className="p-4 prose dark:prose-invert max-w-none dark:text-white">
-            <ReactMarkdown>{contentText}</ReactMarkdown>
-          </div>
+    // --- ปุ่มเลือกหัวข้อย่อย ---
+    return (
+      <>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {sections.map((section, idx) => (
+            <button
+              key={section.title}
+              className={`px-3 py-1 rounded-full border text-sm font-medium transition-colors ${currentSection === section.title ? 'bg-blue-500 text-white border-blue-500' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-blue-100 dark:hover:bg-blue-800'}`}
+              onClick={() => setActiveSection(section.title)}
+            >
+              {section.title}
+            </button>
+          ))}
         </div>
-      );
-    });
+        {sectionObj && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-4">
+            <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              {/* ไอคอนหัวข้อ */}
+              {(() => {
+                const title = sectionObj.title;
+                if (title.includes('ประวัติ')) return <Clock className="h-5 w-5 text-amber-500" />;
+                if (title.includes('จุดเด่น')) return <Camera className="h-5 w-5 text-blue-500" />;
+                if (title.includes('กิจกรรม')) return <Ticket className="h-5 w-5 text-green-500" />;
+                if (title.includes('ช่วงเวลา')) return <Calendar className="h-5 w-5 text-purple-500" />;
+                if (title.includes('ข้อแนะนำ')) return <AlertCircle className="h-5 w-5 text-red-500" />;
+                if (title.includes('อาหาร')) return <Utensils className="h-5 w-5 text-orange-500" />;
+                if (title.includes('การเดินทาง')) return <Car className="h-5 w-5 text-indigo-500" />;
+                if (title.includes('ข้อมูลติดต่อ')) return <Phone className="h-5 w-5 text-teal-500" />;
+                return <Sparkles className="h-5 w-5 text-yellow-500" />;
+              })()}
+              <h3 className="font-bold text-gray-800 dark:text-white">{sectionObj.title}</h3>
+            </div>
+            <div className="p-4 prose dark:prose-invert max-w-none dark:text-white">
+              <ReactMarkdown>{sectionObj.content}</ReactMarkdown>
+            </div>
+          </div>
+        )}
+      </>
+    );
   };
 
   const renderContent = () => {
@@ -552,7 +576,12 @@ export default function DescriptionAI({
           </h2>
         </div>
 
-        {isLoading ? (
+        {/* --- แสดง header และ tabs ทันที --- */}
+        {renderLocationHeader()}
+        {renderTabs()}
+
+        {/* --- loading เฉพาะ tab รายละเอียด --- */}
+        {activeTab === 'description' && isLoading ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-4">
             <div className="relative h-20 w-20">
               <div className="absolute inset-0 rounded-full border-t-4 border-b-4 border-blue-500 animate-spin"></div>
@@ -581,11 +610,7 @@ export default function DescriptionAI({
             </button>
           </div>
         ) : (
-          <>
-            {renderLocationHeader()}
-            {renderTabs()}
-            {renderContent()}
-          </>
+          <>{renderContent()}</>
         )}
 
         {!isLoading && !error && (

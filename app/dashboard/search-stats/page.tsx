@@ -93,7 +93,7 @@ export default function SearchStatsPage() {
   }
 
   return (
-    <div>
+    <div  className="container bg-gray-50 dark:bg-gray-900">
 
       <Breadcrumbs
         items={[

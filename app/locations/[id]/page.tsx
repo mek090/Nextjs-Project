@@ -225,7 +225,7 @@ export default async function LocationDetail({ params }: { params: Promise<{ id:
                                             รูปภาพสถานที่
                                         </h2>
                                         <ImageGrid
-                                            images={typeof location.image === 'string' ? [] : location.image.slice(1)}
+                                            images={typeof location.image === 'string' ? [] : location.image.slice(0)}
                                             locationName={location.name}
                                         />
                                     </div>

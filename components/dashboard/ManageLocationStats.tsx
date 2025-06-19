@@ -6,7 +6,8 @@ interface ManageLocationStatsProps {
 
 export default function ManageLocationStats({ locationCount }: ManageLocationStatsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    // <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
@@ -18,8 +19,8 @@ export default function ManageLocationStats({ locationCount }: ManageLocationSta
           </div>
         </div>
       </div>
-{/*       
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+      
+      {/* <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
             <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />

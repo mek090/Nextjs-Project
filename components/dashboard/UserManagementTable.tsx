@@ -27,10 +27,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import {  updateUser, deleteUser } from '@/actions/actions'
+import { updateUser, deleteUser } from '@/actions/actions'
 import { format } from 'date-fns'
-
-
+import { Badge } from "@/components/ui/badge"
+import { Shield, User, Trash2, Edit } from 'lucide-react'
 
 interface User {
   id: string
@@ -49,23 +49,7 @@ interface UserManagementTableProps {
 export default function UserManagementTable({ users }: UserManagementTableProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
-  // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
-
-
-  // // สร้าง
-  // const handleCreate = async (formData: FormData) => {
-  //   const result = await createUser(formData)
-  //   if (result.error) {
-  //     toast.error(result.error)
-  //   } else {
-  //     toast.success('User created successfully')
-  //     setIsCreateDialogOpen(false)
-  //   }
-  // }
-
-
-  //อัพเดต
   const handleUpdate = async (formData: FormData) => {
     const result = await updateUser(formData)
     if (result.error) {
@@ -76,8 +60,6 @@ export default function UserManagementTable({ users }: UserManagementTableProps)
     }
   }
 
-
-  //ลบ
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       const result = await deleteUser(id)
@@ -89,142 +71,290 @@ export default function UserManagementTable({ users }: UserManagementTableProps)
     }
   }
 
-  return (
-    <div className="space-y-4">
-      {/* <div className="flex justify-end">
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>Add New User</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New User</DialogTitle>
-            </DialogHeader>
-            <form action={handleCreate} className="space-y-4">
-              <div>
-                <Label htmlFor="firstname">First Name</Label>
-                <Input id="firstname" name="firstname" required />
-              </div>
-              <div>
-                <Label htmlFor="lastname">Last Name</Label>
-                <Input id="lastname" name="lastname" required />
-              </div>
-              <div>
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" name="username" required />
-              </div>
-              <div>
-                <Label htmlFor="role">Role</Label>
-                <Select name="role" required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="submit">Create User</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div> */}
+  const admins = users.filter(u => u.role === 'admin')
+  const normalUsers = users.filter(u => u.role !== 'admin')
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Username</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Created At</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.firstname} {user.lastname}</TableCell>
-              <TableCell>{user.username}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.role}</TableCell>
-              <TableCell>{format(new Date(user.createdAt), 'dd/MM/yyyy')}</TableCell>
-              <TableCell>
-                <div className="flex space-x-2">
-                  <Dialog open={isEditDialogOpen && selectedUser?.id === user.id} onOpenChange={(open) => {
-                    setIsEditDialogOpen(open)
-                    if (!open) setSelectedUser(null)
-                  }}>
-                    <DialogTrigger asChild>
+  return (
+    <div className="space-y-8">
+      {/* Admin Table */}
+      <div>
+        <div className="flex items-center mb-4 p-4">
+          <Shield className="h-5 w-5 text-blue-600 mr-2" />
+          <h2 className="text-lg font-semibold text-blue-700">Administrators</h2>
+          <Badge variant="outline" className="ml-2 bg-blue-50 text-blue-700 border-blue-200">
+            {admins.length} users
+          </Badge>
+        </div>
+        <div className="rounded-lg border p-4 border-gray-200 dark:border-gray-700 overflow-hidden">
+          <Table>
+            <TableHeader className="bg-gray-100 dark:bg-gray-800">
+              <TableRow>
+                <TableHead className="w-[25%]">Name</TableHead>
+                <TableHead className="w-[15%]">Username</TableHead>
+                <TableHead className="w-[25%]">Email</TableHead>
+                <TableHead className="w-[15%]">Role</TableHead>
+                <TableHead className="w-[15%]">Created At</TableHead>
+                <TableHead className="w-[15%] text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {admins.map((user) => (
+                <TableRow key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                  <TableCell className="font-medium">
+                    {user.firstname} {user.lastname}
+                  </TableCell>
+                  <TableCell>{user.username}</TableCell>
+                  <TableCell className="text-gray-600 dark:text-gray-300">
+                    {user.email}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="destructive" className="flex items-center w-fit">
+                      <Shield className="h-3 w-3 mr-1" />
+                      {user.role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {format(new Date(user.createdAt), 'dd/MM/yyyy')}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end space-x-2">
+                      <Dialog open={isEditDialogOpen && selectedUser?.id === user.id} onOpenChange={(open) => {
+                        setIsEditDialogOpen(open)
+                        if (!open) setSelectedUser(null)
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 gap-1"
+                            onClick={() => setSelectedUser(user)}
+                          >
+                            <Edit className="h-3.5 w-3.5" />
+                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                              Edit
+                            </span>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center">
+                              <Edit className="h-5 w-5 mr-2" />
+                              Edit User
+                            </DialogTitle>
+                          </DialogHeader>
+                          <form action={handleUpdate} className="space-y-4">
+                            <input type="hidden" name="id" value={user.id} />
+                            <div className="grid gap-2">
+                              <Label htmlFor="firstname">First Name</Label>
+                              <Input
+                                id="firstname"
+                                name="firstname"
+                                defaultValue={user.firstname}
+                                required
+                              />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label htmlFor="lastname">Last Name</Label>
+                              <Input
+                                id="lastname"
+                                name="lastname"
+                                defaultValue={user.lastname}
+                                required
+                              />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label htmlFor="username">Username</Label>
+                              <Input
+                                id="username"
+                                name="username"
+                                defaultValue={user.username}
+                                required
+                              />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label htmlFor="role">Role</Label>
+                              <Select name="role" defaultValue={user.role} required>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="user">User</SelectItem>
+                                  <SelectItem value="admin">Admin</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="flex justify-end gap-2">
+                              <Button 
+                                type="button" 
+                                variant="outline"
+                                onClick={() => setIsEditDialogOpen(false)}
+                              >
+                                Cancel
+                              </Button>
+                              <Button type="submit">Save Changes</Button>
+                            </div>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
                       <Button
-                        variant="outline"
-                        onClick={() => setSelectedUser(user)}
+                        variant="destructive"
+                        size="sm"
+                        className="h-8 gap-1"
+                        onClick={() => handleDelete(user.id)}
                       >
-                        Edit
+                        <Trash2 className="h-3.5 w-3.5" />
+                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                          Delete
+                        </span>
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Edit User</DialogTitle>
-                      </DialogHeader>
-                      <form action={handleUpdate} className="space-y-4">
-                        <input type="hidden" name="id" value={user.id} />
-                        <div>
-                          <Label htmlFor="firstname">First Name</Label>
-                          <Input
-                            id="firstname"
-                            name="firstname"
-                            defaultValue={user.firstname}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="lastname">Last Name</Label>
-                          <Input
-                            id="lastname"
-                            name="lastname"
-                            defaultValue={user.lastname}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="username">Username</Label>
-                          <Input
-                            id="username"
-                            name="username"
-                            defaultValue={user.username}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="role">Role</Label>
-                          <Select name="role" defaultValue={user.role} required>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select role" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="user">User</SelectItem>
-                              <SelectItem value="admin">Admin</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <Button type="submit">Update User</Button>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Normal Users Table */}
+      <div>
+        <div className="flex items-center mb-4">
+          <User className="h-5 w-5 text-green-600 mr-2 p-4" />
+          <h2 className="text-lg font-semibold text-green-700">Regular Users</h2>
+          <Badge variant="outline" className="ml-2 bg-green-50 text-green-700 border-green-200">
+            {normalUsers.length} users
+          </Badge>
+        </div>
+        <div className="rounded-lg border p-4 border-gray-200 dark:border-gray-700 overflow-hidden">
+          <Table>
+            <TableHeader className="bg-gray-100 dark:bg-gray-800">
+              <TableRow>
+                <TableHead className="w-[25%]">Name</TableHead>
+                <TableHead className="w-[15%]">Username</TableHead>
+                <TableHead className="w-[25%]">Email</TableHead>
+                <TableHead className="w-[15%]">Role</TableHead>
+                <TableHead className="w-[15%]">Created At</TableHead>
+                <TableHead className="w-[15%] text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {normalUsers.map((user) => (
+                <TableRow key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                  <TableCell className="font-medium">
+                    {user.firstname} {user.lastname}
+                  </TableCell>
+                  <TableCell>{user.username}</TableCell>
+                  <TableCell className="text-gray-600 dark:text-gray-300">
+                    {user.email}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="flex items-center w-fit">
+                      <User className="h-3 w-3 mr-1" />
+                      {user.role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {format(new Date(user.createdAt), 'dd/MM/yyyy')}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end space-x-2">
+                      <Dialog open={isEditDialogOpen && selectedUser?.id === user.id} onOpenChange={(open) => {
+                        setIsEditDialogOpen(open)
+                        if (!open) setSelectedUser(null)
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 gap-1"
+                            onClick={() => setSelectedUser(user)}
+                          >
+                            <Edit className="h-3.5 w-3.5" />
+                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                              Edit
+                            </span>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center">
+                              <Edit className="h-5 w-5 mr-2" />
+                              Edit User
+                            </DialogTitle>
+                          </DialogHeader>
+                          <form action={handleUpdate} className="space-y-4">
+                            <input type="hidden" name="id" value={user.id} />
+                            <div className="grid gap-2">
+                              <Label htmlFor="firstname">First Name</Label>
+                              <Input
+                                id="firstname"
+                                name="firstname"
+                                defaultValue={user.firstname}
+                                required
+                              />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label htmlFor="lastname">Last Name</Label>
+                              <Input
+                                id="lastname"
+                                name="lastname"
+                                defaultValue={user.lastname}
+                                required
+                              />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label htmlFor="username">Username</Label>
+                              <Input
+                                id="username"
+                                name="username"
+                                defaultValue={user.username}
+                                required
+                              />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label htmlFor="role">Role</Label>
+                              <Select name="role" defaultValue={user.role} required>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="user">User</SelectItem>
+                                  <SelectItem value="admin">Admin</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="flex justify-end gap-2">
+                              <Button 
+                                type="button" 
+                                variant="outline"
+                                onClick={() => setIsEditDialogOpen(false)}
+                              >
+                                Cancel
+                              </Button>
+                              <Button type="submit">Save Changes</Button>
+                            </div>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="h-8 gap-1"
+                        onClick={() => handleDelete(user.id)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                          Delete
+                        </span>
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     </div>
   )
-} 
+}

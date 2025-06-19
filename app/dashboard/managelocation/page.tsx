@@ -46,7 +46,7 @@ export default async function ManageLocation({
   })
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+    <section className="container max-w-7xl mx-auto px-4 py-6 space-y-8">
       <header>
         <Breadcrumbs
           items={[

@@ -34,7 +34,7 @@ const Dashboard = async () => {
     }
 
     return (
-      <div className="p-6 space-y-6">
+      <div className="container p-6 space-y-6">
         <Breadcrumbs
           items={[
             { label: 'Home', href: '/' },

@@ -9,6 +9,7 @@ import LoadingCard from "./LoadingCard";
 import { fetchLocationDetail } from "@/actions/actions";
 import ShareButton from "../location/ShareButton";
 import { MapPin, Pin } from "lucide-react";
+import { Button } from "../ui/button";
 
 
 
@@ -132,7 +133,7 @@ const LocationCard = ({
                 )}
 
                 {/* Action Buttons */}
-                <div className="mt-3 grid grid-cols-4 gap-2">
+                <div className="mt-3 grid grid-cols-3 gap-2">
                     {/* Details Button (Primary) */}
                     <Link
                         href={`/locations/${id}`}
@@ -151,7 +152,7 @@ const LocationCard = ({
                     />
 
                     {/* Review Button */}
-                    <button
+                    {/* <button
                         onClick={() => onReview?.(id)}
                         className="flex items-center justify-center bg-white dark:bg-gray-600 border border-gray-200 hover:bg-gray-50 text-gray-700 py-1.5 px-2 rounded-lg transition-colors duration-200 text-sm"
                         aria-label="รีวิว"
@@ -159,12 +160,11 @@ const LocationCard = ({
                         <svg className="w-4 h-4 dark:text-white" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
                         </svg>
-                    </button>
+                    </button> */}
 
                     {/* Share Button */}
-                    
-                        <ShareButton locationId={Location.id} name={Location.name} />
-                    
+
+
 
                     {/* Map/Navigate Button */}
                     <Link
@@ -177,6 +177,9 @@ const LocationCard = ({
                         <MapPin className="w-4 h-4 dark:text-white" />
                     </Link>
 
+                    
+                        <ShareButton locationId={Location.id} name={Location.name} />
+                
 
 
                 </div>

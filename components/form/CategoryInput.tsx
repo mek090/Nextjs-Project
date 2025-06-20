@@ -34,7 +34,9 @@ const CategoryInput = ({ defaultValue }: { defaultValue?: string }) => {
                 <SelectContent>
                     <SelectGroup>
                         {
-                            categories.map((item) => {
+                            categories
+                            .filter(item => item.label !== "All") 
+                            .map((item) => {
                                 return (
 
                                     <SelectItem key={item.label} value={item.label}>

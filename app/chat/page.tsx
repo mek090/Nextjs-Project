@@ -53,38 +53,42 @@ export default function BuriramChatBotOverlay() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const savedSessionId = localStorage.getItem('buriramChatSessionId');
-    if (savedSessionId) {
-      setSessionId(savedSessionId);
-      fetchChatHistory(savedSessionId);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const savedSessionId = localStorage.getItem('buriramChatSessionId');
+  //   if (savedSessionId) {
+  //     setSessionId(savedSessionId);
+  //     fetchChatHistory(savedSessionId);
+  //   }
+  // }, []);
 
-  const fetchChatHistory = async (sid: string) => {
-    try {
-      const response = await fetch('/api/chatHistory', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId: sid }),
-      });
+  // const fetchChatHistory = async (sid: string) => {
+  //   try {
+  //     const response = await fetch('/api/chatHistory', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ sessionId: sid }),
+  //     });
 
-      const data = await response.json();
-      if (data.history && Array.isArray(data.history)) {
-        const formattedHistory: Message[] = data.history.map((msg: any) => ({
-          text: msg.content,
-          sender: msg.role,
-          timestamp: new Date()
-        }));
+  //     if (!response.ok) {
+  //       throw new Error('ไม่สามารถโหลดประวัติการสนทนาได้ (API 404 หรือ error)');
+  //     }
 
-        if (formattedHistory.length > 0) {
-          setMessages(formattedHistory);
-        }
-      }
-    } catch (error) {
-      console.error('ไม่สามารถโหลดประวัติการสนทนาได้:', error);
-    }
-  };
+  //     const data = await response.json();
+  //     if (data.history && Array.isArray(data.history)) {
+  //       const formattedHistory: Message[] = data.history.map((msg: any) => ({
+  //         text: msg.content,
+  //         sender: msg.role,
+  //         timestamp: new Date()
+  //       }));
+
+  //       if (formattedHistory.length > 0) {
+  //         setMessages(formattedHistory);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('ไม่สามารถโหลดประวัติการสนทนาได้:', error);
+  //   }
+  // };
 
   const suggestionCategories = [
     { text: "สถานที่ท่องเที่ยว", icon: <MapPin size={16} /> },

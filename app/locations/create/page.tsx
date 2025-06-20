@@ -11,7 +11,7 @@ import Breadcrumbs from "@/components/location/Breadcrumbs"
 
 const CreateLocation = () => {
     return (<>
-        <header className="m-4">
+        <header className="container m-4">
             <Breadcrumbs
                 items={[
                     { label: 'Home', href: '/' },

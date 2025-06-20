@@ -29,7 +29,7 @@ export default async function LocationsPage({
               <div className="p-3 bg-white/20 backdrop-blur-sm rounded-full">
                 <MapPin className="w-8 h-8 text-blue-600" />
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl pt-6 sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
                 สถานที่ท่องเที่ยวทั้งหมด
               </h1>
             </div>

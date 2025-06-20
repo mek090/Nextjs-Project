@@ -94,11 +94,11 @@ const page = async ({
   const { search, category } = await searchParams;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
       {/* Hero Section with Floating Elements */}
       <div className="relative overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-500/10 to-teal-500/10"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-500/10 to-teal-500/10 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-teal-900/20"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z%22 fill=%22%23007BFF%22 fill-opacity=%220.05%22/%3E%3C/svg%3E')] opacity-30"></div>
         
         {/* Floating Icons */}
@@ -132,7 +132,7 @@ const page = async ({
                 <div className="p-3 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
                   <Star className="w-8 h-8 text-yellow-500" />
                 </div>
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 bg-clip-text text-transparent">
+                <h2 className="text-4xl pt-6 md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 bg-clip-text text-transparent">
                   สถานที่ท่องเที่ยวแนะนำ
                 </h2>
                 <div className="p-3 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
@@ -165,11 +165,11 @@ const page = async ({
 
       {/* Main Content */}
       <div className="container mx-auto px-4 -mt-8 relative z-10">
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-800/60 overflow-hidden">
           <Suspense fallback={
             <div className="p-8">
               <div className="flex overflow-x-auto gap-6">
-                {[...Array(5)].map((_, index) => (
+                {[...Array(4)].map((_, index) => (
                   <div key={index} className="min-w-[300px]">
                     <LoadingCard />
                   </div>
@@ -184,13 +184,13 @@ const page = async ({
 
       {/* Weather Section */}
       <div className="container mx-auto px-4 py-12">
-        <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+        <div className="bg-white/60 dark:bg-gray-900/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-800/60 overflow-hidden">
           <Weatherapi />
         </div>
       </div>
 
       {/* Enhanced Footer */}
-      <footer className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
+      <footer className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 dark:from-gray-950 dark:via-blue-950 dark:to-indigo-950 text-white">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.05%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
         

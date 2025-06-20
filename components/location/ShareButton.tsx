@@ -33,7 +33,11 @@ const ShareButton = ({
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant="outline" size='lg'>
+                <Button
+                    variant="outline"
+                    size="lg"
+                    className="flex items-center justify-center bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-300 text-gray-700 dark:text-white py-1.5 px-2 rounded-lg transition-colors duration-200 text-sm"
+                >
                     <Share2 />
                 </Button>
             </PopoverTrigger>

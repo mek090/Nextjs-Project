@@ -32,7 +32,7 @@ const Hero = ({ locations }: { locations: LocationCardProps[] }) => {
     // เลือกสถานที่ที่มีรูปภาพสวยๆ มาแสดง
     const featuredLocations = locations
         .filter(location => location.image && location.image.length > 0)
-        .slice(0, 5);
+        .slice(0, 4);
 
     return (
         <div className="relative h-[600px] w-full">

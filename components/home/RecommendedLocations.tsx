@@ -29,7 +29,7 @@ export default function RecommendedLocations() {
     }, []);
 
     return (
-        <section className="py-10 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/50 dark:to-gray-900">
+        <section className="py-10 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/70 dark:to-gray-950">
             <div className="container mx-auto px-4">
                 {/* Header Section */}
                 <div className="flex items-center mb-8">
@@ -95,7 +95,7 @@ export default function RecommendedLocations() {
                 {!isLoading && recommendations.length > 0 && (
                     <div className="flex justify-center mt-12">
                         <Link href="/locations" className="inline-block">
-                            <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-full shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl">
+                            <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-full shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl dark:from-blue-900 dark:to-purple-900 dark:hover:from-blue-800 dark:hover:to-purple-800">
                                 ดูสถานที่แนะนำเพิ่มเติม
                             </button>
                         </Link>

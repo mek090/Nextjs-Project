@@ -11,7 +11,9 @@ import { prisma } from "@/lib/prisma"
 
 export const dynamic = 'force-dynamic'
 
-const DeleteLocation = async ({ params }: { params: { id: string } }) => {
+const DeleteLocation = async (props: any) => {
+    const resolvedProps = await Promise.resolve(props);
+    const params = resolvedProps.params as { id: string };
     try {
         const location = await fetchLocationDetail({ id: params.id });
 

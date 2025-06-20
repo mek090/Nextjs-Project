@@ -10,9 +10,11 @@ import LocationGrid from "@/components/dashboard/LocationGrid"
 
 export const dynamic = 'force-dynamic'
 
-export default async function ManageLocation(props: any) {
-  const resolvedProps = await Promise.resolve(props);
-  const searchParams = resolvedProps.searchParams as { search?: string } | undefined;
+export default async function ManageLocation({
+  searchParams,
+}: {
+  searchParams?: { search?: string }
+}) {
   const user = await currentUser()
 
   if (!user) {

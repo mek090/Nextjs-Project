@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic'
 export default async function ManageLocation({
   searchParams,
 }: {
-  searchParams: { search?: string }
+  searchParams?: { search?: string }
 }) {
   const user = await currentUser()
 
@@ -37,9 +37,9 @@ export default async function ManageLocation({
   const locations = await prisma.location.findMany({
     where: {
       OR: [
-        { name: { contains: searchParams.search || '', mode: 'insensitive' } },
-        { description: { contains: searchParams.search || '', mode: 'insensitive' } },
-        { districts: { contains: searchParams.search || '', mode: 'insensitive' } }
+        { name: { contains: searchParams?.search || '', mode: 'insensitive' } },
+        { description: { contains: searchParams?.search || '', mode: 'insensitive' } },
+        { districts: { contains: searchParams?.search || '', mode: 'insensitive' } }
       ]
     },
     orderBy: { createdAt: 'desc' }

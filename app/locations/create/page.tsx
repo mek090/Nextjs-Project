@@ -1,3 +1,5 @@
+'use client'
+
 import { createLocationAction } from "@/actions/actions"
 import SubmitButton from "@/components/form/Button"
 import CategoryInput from "@/components/form/CategoryInput"

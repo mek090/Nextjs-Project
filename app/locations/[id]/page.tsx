@@ -15,11 +15,16 @@ import { useState } from "react"
 import ImageGrid from '@/components/location/ImageGrid'
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import HeroImageSectionWrapper from "./HeroImageSectionWrapper"
 
 
+// app/locations/[id]/page.tsx
 
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
+// ...โค้ดเดิมทั้งหมด...
 
 // ImageModal Component
 // const ImageModal = ({ image, onClose }: { image: string; onClose: () => void }) => {
@@ -55,11 +60,6 @@ export async function generateMetadata(
     return {
         title: location ? `${location.name} - Location Detail` : 'Location Detail',
     }
-}
-
-// เพิ่ม generateStaticParams function
-export async function generateStaticParams() {
-    return [];
 }
 
 export default async function LocationDetail(props: any) {

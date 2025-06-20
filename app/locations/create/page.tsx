@@ -7,9 +7,12 @@ import FormInput from "@/components/form/Form"
 import FormContainer from "@/components/form/FormContainer"
 import ProvincesInput from "@/components/form/DistrictsInput"
 import TextareaInput from "@/components/form/TextareaInput"
-import MapLocation from "@/components/map/MapLocation"
+// import MapLocation from "@/components/map/MapLocation"
 import ImageInput from "@/components/form/ImageInput"
 import Breadcrumbs from "@/components/location/Breadcrumbs"
+import dynamic from "next/dynamic";
+const MapLocation = dynamic(() => import('@/components/map/MapLocation'), { ssr: false });
+
 
 const CreateLocation = () => {
     return (<>

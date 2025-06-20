@@ -62,10 +62,11 @@ export async function generateStaticParams() {
     return [];
 }
 
-export default async function LocationDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function LocationDetail(props: any) {
+    const resolvedProps = await Promise.resolve(props);
+    const params = resolvedProps.params as { id: string };
     try {
-        const resolvedParams = await params;
-        const id = resolvedParams.id;
+        const id = params.id;
 
         // ใช้ Promise.all เพื่อรอให้ params พร้อมใช้งาน
         const [location, reviews] = await Promise.all([

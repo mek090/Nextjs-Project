@@ -86,12 +86,11 @@ import LoadingCard from "@/components/card/LoadingCard"
 import Search from "@/components/Navbar/Search"
 import { Star, MapPin, Clock, Heart, Globe, Camera, Mountain, Compass } from "lucide-react"
 
-const page = async ({
-  searchParams
-}: {
-  searchParams: { search?: string, category?: string }
-}) => {
-  const { search, category } = await searchParams;
+const page = async (props: any) => {
+  const resolvedProps = await Promise.resolve(props);
+  const searchParams = resolvedProps.searchParams as { search?: string, category?: string } | undefined;
+  const search = searchParams?.search;
+  const category = searchParams?.category;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">

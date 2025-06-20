@@ -10,11 +10,13 @@ import LocationGrid from "@/components/dashboard/LocationGrid"
 
 export const dynamic = 'force-dynamic'
 
-export default async function ManageLocation({
-  searchParams,
-}: {
-  searchParams?: { search?: string }
-}) {
+export default async function ManageLocation(props: any) {
+  const resolvedProps = await Promise.resolve(props);
+  let searchParams = resolvedProps.searchParams;
+  if (searchParams && typeof searchParams.then === 'function') {
+    searchParams = await searchParams;
+  }
+  const search = searchParams?.search || '';
   const user = await currentUser()
 
   if (!user) {
@@ -37,9 +39,9 @@ export default async function ManageLocation({
   const locations = await prisma.location.findMany({
     where: {
       OR: [
-        { name: { contains: searchParams?.search || '', mode: 'insensitive' } },
-        { description: { contains: searchParams?.search || '', mode: 'insensitive' } },
-        { districts: { contains: searchParams?.search || '', mode: 'insensitive' } }
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { districts: { contains: search, mode: 'insensitive' } }
       ]
     },
     orderBy: { createdAt: 'desc' }

@@ -6,7 +6,9 @@ import Breadcrumbs from "@/components/location/Breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
-const EditLocation = async ({ params }: { params: { id: string } }) => {
+const EditLocation = async (props: any) => {
+    const resolvedProps = await Promise.resolve(props);
+    const params = resolvedProps.params as { id: string };
     const location = await fetchLocationDetail({ id: params.id })
     
     if (!location) {

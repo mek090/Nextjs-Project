@@ -17,8 +17,8 @@ const EditLocation = async (props: any) => {
 
     return (
         <section className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <div className="max-w-7xl mx-auto px-4 py-6">
-                <header className="mb-8">
+            <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6">
+                <header className="mb-6 sm:mb-8">
                     <Breadcrumbs
                         items={[
                             { label: 'Home', href: '/' },
@@ -31,7 +31,7 @@ const EditLocation = async (props: any) => {
                 
                 {/* <EditLocationHeader locationName={location.name} /> */}
                 
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <EditLocationForm location={location} />
                 </div>
             </div>

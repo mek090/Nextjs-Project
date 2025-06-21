@@ -38,8 +38,8 @@ const DeleteLocation = async (props: any) => {
         }
 
         return (
-            <section className="max-w-7xl mx-auto px-4 py-6">
-                <header className="mb-6">
+            <section className="max-w-7xl mx-auto px-4 py-4 sm:py-6">
+                <header className="mb-4 sm:mb-6">
                     <Breadcrumbs
                         items={[
                             { label: 'Home', href: '/' },
@@ -51,26 +51,26 @@ const DeleteLocation = async (props: any) => {
                 </header>
 
                 <Card className="max-w-2xl mx-auto">
-                    <CardHeader>
-                        <CardTitle className="text-2xl text-red-600 flex items-center gap-2">
-                            <Trash2 className="h-6 w-6" />
+                    <CardHeader className="p-4 sm:p-6">
+                        <CardTitle className="text-xl sm:text-2xl text-red-600 flex items-center gap-2">
+                            <Trash2 className="h-5 w-5 sm:h-6 sm:w-6" />
                             ยืนยันการลบสถานที่
                         </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <p className="text-gray-600">
+                    <CardContent className="p-4 sm:p-6">
+                        <div className="space-y-3 sm:space-y-4">
+                            <p className="text-sm sm:text-base text-gray-600">
                                 คุณกำลังจะลบสถานที่ <span className="font-semibold">{location.name}</span>
                             </p>
-                            <p className="text-red-600">
+                            <p className="text-sm sm:text-base text-red-600">
                                 การกระทำนี้ไม่สามารถย้อนกลับได้ คุณแน่ใจหรือไม่ว่าต้องการลบสถานที่นี้?
                             </p>
-                            <div className="flex justify-end gap-4 mt-6">
+                            <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                                 <form action={deleteLocation}>
                                     <Button
                                         type="submit"
                                         variant="destructive"
-                                        className="flex items-center gap-2"
+                                        className="flex items-center gap-2 w-full sm:w-auto"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                         ยืนยันการลบ

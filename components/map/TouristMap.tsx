@@ -292,32 +292,7 @@ export default function TouristMap({ className = "", height = "500px" }: Tourist
 
   return (
     <div className={className}>
-      {/* ตัวกรองหมวดหมู่ */}
-      <div className="mb-6">
-        <div className="flex items-center space-x-2 mb-3">
-          <Tag className="h-5 w-5 text-gray-600" />
-          <h3 className="text-lg font-semibold text-gray-800">กรองตามหมวดหมู่</h3>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <Badge
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              className={`cursor-pointer px-3 py-1 transition-all duration-200 ${
-                selectedCategory === category 
-                  ? 'bg-blue-500 text-white shadow-md' 
-                  : 'hover:bg-gray-100'
-              }`}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category === 'all' ? 'ทั้งหมด' : category} 
-              <span className="ml-1 text-xs">
-                ({category === 'all' ? locations.length : locations.filter(l => l.category === category).length})
-              </span>
-            </Badge>
-          ))}
-        </div>
-      </div>
+      
 
       {/* สถิติ */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -362,6 +337,33 @@ export default function TouristMap({ className = "", height = "500px" }: Tourist
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* ตัวกรองหมวดหมู่ */}
+      <div className="mb-6">
+        <div className="flex items-center space-x-2 mb-3">
+          <Tag className="h-5 w-5 text-gray-600" />
+          <h3 className="text-lg font-semibold text-gray-800">กรองตามหมวดหมู่</h3>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <Badge
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              className={`cursor-pointer px-3 py-1 transition-all duration-200 ${
+                selectedCategory === category 
+                  ? 'bg-blue-500 text-white shadow-md' 
+                  : 'hover:bg-gray-100'
+              }`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category === 'all' ? 'ทั้งหมด' : category} 
+              <span className="ml-1 text-xs">
+                ({category === 'all' ? locations.length : locations.filter(l => l.category === category).length})
+              </span>
+            </Badge>
+          ))}
+        </div>
       </div>
 
       {/* แผนที่ */}

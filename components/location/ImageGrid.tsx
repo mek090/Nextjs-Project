@@ -14,7 +14,7 @@ export default function ImageGrid({ images, locationName }: ImageGridProps) {
 
     return (
         <>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                 {images.map((img, index) => (
                     <div key={index} className="relative aspect-square cursor-pointer group">
                         <Image

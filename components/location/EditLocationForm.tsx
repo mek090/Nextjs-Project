@@ -18,7 +18,7 @@ const EditLocationForm = ({ location }: EditLocationFormProps) => {
         <FormContainer action={updateLocationAction}>
             <input type="hidden" name="id" value={location.id} />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                 <FormInput
                     name="name"
                     label="ชื่อสถานที่"
@@ -29,8 +29,8 @@ const EditLocationForm = ({ location }: EditLocationFormProps) => {
                 <CategoryInput defaultValue={location.category} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <div className="space-y-2 sm:space-y-4">
                     <FormInput
                         name="price"
                         label="ราคาค่าเข้าชม"
@@ -38,12 +38,12 @@ const EditLocationForm = ({ location }: EditLocationFormProps) => {
                         placeholder="เช่น ฟรี, 0-100, ติดต่อสอบถาม"
                         defaultValue={location.price}
                     />
-                    <p className="text-sm text-gray-500">ระบุราคา เช่น "ฟรี", "0-100 บาท", "ติดต่อสอบถาม"</p>
+                    <p className="text-xs sm:text-sm text-gray-500">ระบุราคา เช่น "ฟรี", "0-100 บาท", "ติดต่อสอบถาม"</p>
                 </div>
                 <ProvincesInput defaultValue={location.districts} />
             </div>
 
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
                 <TextareaInput
                     name="description"
                     LabelText="รายละเอียดสถานที่"
@@ -51,9 +51,9 @@ const EditLocationForm = ({ location }: EditLocationFormProps) => {
                 />
             </div>
 
-            <div className="mb-6">
-                <h2 className="text-xl font-semibold text-blue-800 mb-4">รูปภาพสถานที่</h2>
-                <p className="text-sm text-gray-600 mb-3">
+            <div className="mb-4 sm:mb-6">
+                <h2 className="text-lg sm:text-xl font-semibold text-blue-800 mb-2 sm:mb-4">รูปภาพสถานที่</h2>
+                <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">
                     คุณสามารถเพิ่มรูปภาพใหม่ หรือแก้ไขรูปภาพที่มีอยู่ได้
                     <br />
                     <span className="text-yellow-600">* หากไม่ต้องการเปลี่ยนแปลงรูปภาพ ให้ปล่อยว่างไว้</span>
@@ -62,7 +62,7 @@ const EditLocationForm = ({ location }: EditLocationFormProps) => {
                 <ImageInput defaultValue={location.image} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                 <FormInput
                     name="openTime"
                     label="เวลาเปิด (ไม่จำเป็น)"
@@ -78,13 +78,13 @@ const EditLocationForm = ({ location }: EditLocationFormProps) => {
                 />
             </div>
 
-            <div className="mb-8">
-                <h2 className="text-xl font-semibold text-blue-800 mb-4">ตำแหน่งที่ตั้ง</h2>
-                <p className="text-sm text-gray-600 mb-3">คลิกบนแผนที่เพื่อระบุตำแหน่งที่ตั้งที่แน่นอน</p>
+            <div className="mb-6 sm:mb-8">
+                <h2 className="text-lg sm:text-xl font-semibold text-blue-800 mb-2 sm:mb-4">ตำแหน่งที่ตั้ง</h2>
+                <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">คลิกบนแผนที่เพื่อระบุตำแหน่งที่ตั้งที่แน่นอน</p>
                 <MapLocation location={{ lat: location.lat, lng: location.lng }} />
             </div>
 
-            <div className="mt-8 text-center">
+            <div className="mt-6 sm:mt-8 text-center">
                 <SubmitButton
                     text="บันทึกการแก้ไข"
                     size="lg"

@@ -543,16 +543,16 @@ export default function DescriptionAI({
   const renderLocationHeader = () => {
     console.log('กำลังดึงข้อมูลอากาศสำหรับ: ', locationDistrict);
     return (
-      <div className="flex items-start gap-4 mb-6">
+      <div className="flex items-start gap-2 sm:gap-4 mb-4 sm:mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-white mb-1">
             {locationName}
           </h2>
           <div className="flex items-center gap-1 text-gray-600 dark:text-gray-300 mb-2">
-            <MapPin className="h-4 w-4 text-red-500" />
-            <span>อำเภอ{locationDistrict}, บุรีรัมย์</span>
+            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
+            <span className="text-xs sm:text-sm">อำเภอ{locationDistrict}, บุรีรัมย์</span>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1 sm:gap-2">
             <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium">
               {locationCategory}
             </span>
@@ -568,10 +568,10 @@ export default function DescriptionAI({
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-      <div className="p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Sparkles className="h-6 w-6 text-blue-500" />
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+      <div className="p-3 sm:p-4 md:p-6">
+        <div className="flex items-center gap-2 mb-4 sm:mb-6">
+          <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
             แนะนำสถานที่ท่องเที่ยว
           </h2>
         </div>
@@ -582,28 +582,28 @@ export default function DescriptionAI({
 
         {/* --- loading เฉพาะ tab รายละเอียด --- */}
         {activeTab === 'description' && isLoading ? (
-          <div className="flex flex-col items-center justify-center py-16 space-y-4">
-            <div className="relative h-20 w-20">
+          <div className="flex flex-col items-center justify-center py-12 sm:py-16 space-y-3 sm:space-y-4">
+            <div className="relative h-16 w-16 sm:h-20 sm:w-20">
               <div className="absolute inset-0 rounded-full border-t-4 border-b-4 border-blue-500 animate-spin"></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <Clock className="h-10 w-10 text-blue-500" />
+                <Clock className="h-8 w-8 sm:h-10 sm:w-10 text-blue-500" />
               </div>
             </div>
-            <p className="text-gray-600 dark:text-white font-medium text-center">
+            <p className="text-gray-600 dark:text-white font-medium text-center text-sm sm:text-base">
               กำลังรวบรวมข้อมูลการท่องเที่ยว...
               <br />
-              <span className="text-sm text-gray-500 dark:text-white">โปรดรอสักครู่</span>
+              <span className="text-xs sm:text-sm text-gray-500 dark:text-white">โปรดรอสักครู่</span>
             </p>
           </div>
         ) : error ? (
-          <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-6">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="h-6 w-6 text-red-500" />
-              <p className="text-red-700 dark:text-red-300 font-medium">ไม่สามารถรวบรวมข้อมูลได้</p>
+          <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 sm:p-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-500" />
+              <p className="text-red-700 dark:text-red-300 font-medium text-sm sm:text-base">ไม่สามารถรวบรวมข้อมูลได้</p>
             </div>
-            <p className="mt-2 text-red-600 dark:text-red-300">{error}</p>
+            <p className="mt-2 text-red-600 dark:text-red-300 text-xs sm:text-sm">{error}</p>
             <button
-              className="mt-4 px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/50 dark:hover:bg-red-900/70 rounded-lg text-red-700 dark:text-red-300 transition font-medium"
+              className="mt-3 sm:mt-4 px-3 sm:px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/50 dark:hover:bg-red-900/70 rounded-lg text-red-700 dark:text-red-300 transition font-medium text-xs sm:text-sm"
               onClick={() => window.location.reload()}
             >
               ลองใหม่อีกครั้ง
@@ -614,7 +614,7 @@ export default function DescriptionAI({
         )}
 
         {!isLoading && !error && (
-          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 italic text-right">
+          <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 italic text-right">
             ข้อมูลจาก Gemini AI • อัปเดตล่าสุด: {new Date().toLocaleDateString('th-TH')}
           </div>
         )}

@@ -51,25 +51,25 @@ const CollapsibleSection = ({
         : [];
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-3 sm:p-4 md:p-6">
+            <div className="flex justify-between items-center mb-3 sm:mb-4">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
                     {title}
                 </h2>
             </div>
             {/* แสดง Swiper ถ้ามีรูป */}
             {images.length > 0 && (
-                <div className="mb-4">
+                <div className="mb-3 sm:mb-4">
                     {images.length > 1 ? (
                         <Swiper
                             navigation
                             pagination={{ clickable: true }}
                             modules={[Navigation, Pagination]}
-                            className="h-56 w-full rounded-xl"
+                            className="h-40 sm:h-48 md:h-56 w-full rounded-xl"
                         >
                             {images.map((img, idx) => (
                                 <SwiperSlide key={idx}>
-                                    <div className="relative h-56 w-full">
+                                    <div className="relative h-40 sm:h-48 md:h-56 w-full">
                                         <Image
                                             src={img || '/placeholder.jpg'}
                                             alt={`รูปที่ ${idx + 1}`}
@@ -81,7 +81,7 @@ const CollapsibleSection = ({
                             ))}
                         </Swiper>
                     ) : (
-                        <div className="relative h-56 w-full">
+                        <div className="relative h-40 sm:h-48 md:h-56 w-full">
                             <Image
                                 src={images[0] || '/placeholder.jpg'}
                                 alt="รูปเดียว"
@@ -112,61 +112,3 @@ const CollapsibleSection = ({
 }
 
 export default CollapsibleSection
-
-
-
-
-// <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-//     <div className="flex justify-between items-center mb-4">
-//         <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
-//             {title}
-//         </h2>
-//         <button
-//             onClick={toggleExpand}
-//             className="flex items-center text-blue-500 hover:text-blue-700 transition-colors"
-//         >
-//             <span className="mr-1 text-sm">
-//                 {isExpanded ? 'แสดงน้อยลง' : 'แสดงเพิ่มเติม'}
-//             </span>
-//             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-//         </button>
-//     </div>
-
-//     <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-full' : 'max-h-96'}`}>
-//         <div className={`${!isExpanded && 'line-clamp-3'}`}>
-//             {type === 'description' && content && (
-//                 <Description description={content} />
-//             )}
-
-//             {type === 'ai-description' && locationName && locationDescription && (
-//                 <DescriptionAI
-//                     locationName={locationName}
-//                     locationDescription={locationDescription}
-//                     locationDistrict={locationDistrict || ''}
-//                     locationCategory={locationCategory || ''}
-//                     locationLat={locationLat}
-//                     locationLng={locationLng}
-//                 />
-//             )}
-//         </div>
-
-//         {/* Gradient fade effect when collapsed */}
-
-//         {!isExpanded && (
-//             <div className="h-16 bg-gradient-to-t from-white dark:from-gray-800 to-transparent w-full mt-[-50px] relative"></div>
-//         )}
-
-//         <button
-//             onClick={toggleExpand}
-//             className="flex items-center text-blue-500 hover:text-blue-700 transition-colors mt-5"
-//         >
-//             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-//             <span className="mr-1 text-sm">
-//                 {isExpanded ? 'แสดงน้อยลง' : 'แสดงเพิ่มเติม'}
-//             </span>
-//         </button>
-
-
-//     </div>
-
-// </div>

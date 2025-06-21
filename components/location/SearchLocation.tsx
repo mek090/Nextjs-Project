@@ -34,11 +34,11 @@ export default function SearchLocation() {
     <div className="relative w-full max-w-2xl mx-auto">
       {/* Main Search Input */}
       <div className={`relative group transition-all duration-300 ${
-        isFocused ? 'transform scale-105' : ''
+        isFocused ? 'transform scale-101 sm:scale-102 md:scale-105' : ''
       }`}>
         {/* Search Icon */}
-        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
-          <Search className={`w-5 h-5 transition-colors duration-200 ${
+        <div className="absolute left-2.5 sm:left-3 md:left-4 top-1/2 transform -translate-y-1/2 z-10">
+          <Search className={`w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-colors duration-200 ${
             isFocused ? 'text-blue-500' : 'text-gray-400'
           }`} />
         </div>
@@ -48,10 +48,10 @@ export default function SearchLocation() {
           type="text"
           placeholder="ค้นหาสถานที่ท่องเที่ยว เช่น วัปปทุม, ปราสาทหิน..."
           className={`
-            w-full pl-12 pr-12 py-4 text-lg
+            w-full pl-9 sm:pl-10 md:pl-12 pr-9 sm:pr-10 md:pr-12 py-2.5 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg
             bg-white/90 backdrop-blur-sm
             border-2 border-gray-200
-            rounded-xl shadow-lg
+            rounded-lg sm:rounded-xl shadow-lg
             transition-all duration-300
             placeholder:text-gray-400
             focus:border-blue-400 focus:ring-4 focus:ring-blue-100
@@ -68,38 +68,38 @@ export default function SearchLocation() {
         {value && (
           <button
             onClick={clearSearch}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 
+            className="absolute right-2.5 sm:right-3 md:right-4 top-1/2 transform -translate-y-1/2 
                      p-1 rounded-full hover:bg-gray-100 transition-colors duration-200
                      text-gray-400 hover:text-gray-600"
           >
-            <X className="w-5 h-5" />
+            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
           </button>
         )}
 
         {/* Loading indicator */}
         {value && value !== debouncedValue && (
-          <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
-            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute right-8 sm:right-10 md:right-12 top-1/2 transform -translate-y-1/2">
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         )}
       </div>
 
       {/* Search Suggestions */}
       {isFocused && !value && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-lg 
-                      rounded-xl shadow-xl border border-gray-200 p-4 z-20
+        <div className="absolute top-full left-0 right-0 mt-1.5 sm:mt-2 bg-white/95 backdrop-blur-lg 
+                      rounded-lg sm:rounded-xl shadow-xl border border-gray-200 p-2.5 sm:p-3 md:p-4 z-20
                       animate-in slide-in-from-top-2 duration-200">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
-              <MapPin className="w-4 h-4" />
+          <div className="space-y-1.5 sm:space-y-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 mb-2 sm:mb-2.5 md:mb-3">
+              <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
               <span className="font-medium">คำค้นหายอดนิยม</span>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1 sm:gap-1.5 md:gap-2">
               {suggestions.map((suggestion, index) => (
                 <button
                   key={index}
                   onClick={() => setValue(suggestion)}
-                  className="px-3 py-1.5 text-sm bg-blue-50 hover:bg-blue-100 
+                  className="px-2 sm:px-2.5 md:px-3 py-1 sm:py-1.5 text-xs sm:text-sm bg-blue-50 hover:bg-blue-100 
                            text-blue-700 rounded-full transition-colors duration-200
                            border border-blue-200 hover:border-blue-300"
                 >
@@ -113,8 +113,8 @@ export default function SearchLocation() {
 
       {/* Search Status */}
       {debouncedValue && (
-        <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+        <div className="mt-1.5 sm:mt-2 md:mt-3 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600">
+          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></div>
           <span>กำลังค้นหา "{debouncedValue}"</span>
         </div>
       )}

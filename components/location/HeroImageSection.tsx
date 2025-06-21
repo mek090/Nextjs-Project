@@ -10,13 +10,22 @@ export default function HeroImageSection({ images = [], alt }: { images: string[
   if (!images || images.length === 0) return null;
   if (images.length === 1) {
     return (
-      <div className="relative w-full h-full mb-4">
+      <div className="relative w-full h-full mb-2 sm:mb-4">
         <Image src={images[0] || "/placeholder.jpg"} alt={alt} fill className="object-cover rounded-lg" />
       </div>
     );
   }
   return (
-    <Swiper navigation pagination={{ clickable: true }} modules={[Navigation, Pagination]} className="h-full w-full rounded-lg">
+    <Swiper 
+      navigation 
+      pagination={{ clickable: true }} 
+      modules={[Navigation, Pagination]} 
+      className="h-full w-full rounded-lg"
+      navigation={{
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      }}
+    >
       {images.map((img, idx) => (
         <SwiperSlide key={idx}>
           <div className="relative h-full w-full">

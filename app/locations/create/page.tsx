@@ -16,7 +16,7 @@ const MapLocation = dynamic(() => import('@/components/map/MapLocation'), { ssr:
 
 const CreateLocation = () => {
     return (<>
-        <header className="container m-4">
+        <header className="container mx-auto px-4 m-2 sm:m-4">
             <Breadcrumbs
                 items={[
                     { label: 'Home', href: '/' },
@@ -26,16 +26,16 @@ const CreateLocation = () => {
                 ]}
             />
         </header>
-        <section className="max-w-4xl mx-auto p-6 mt-8 border-2 shadow-lg rounded-xl">
-            <div className="border-b pb-4 mb-6">
-                <h1 className="text-3xl font-bold text-blue-800">
+        <section className="max-w-4xl mx-auto px-4 sm:px-6 p-4 sm:p-6 mt-4 sm:mt-6 md:mt-8 border-2 shadow-lg rounded-lg sm:rounded-xl">
+            <div className="border-b pb-3 sm:pb-4 mb-4 sm:mb-6">
+                <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">
                     เพิ่มสถานที่ท่องเที่ยว
                 </h1>
-                <p className="text-gray-600 mt-2">กรอกข้อมูลสถานที่ท่องเที่ยวที่คุณต้องการ</p>
+                <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">กรอกข้อมูลสถานที่ท่องเที่ยวที่คุณต้องการ</p>
             </div>
 
             <FormContainer action={createLocationAction}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                     <FormInput
                         name="name"
                         label="ชื่อสถานที่"
@@ -45,32 +45,32 @@ const CreateLocation = () => {
                     <CategoryInput />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                    <div className="space-y-3 sm:space-y-4">
                         <FormInput
                             name="price"
                             label="ราคาค่าใช้จ่าย (บาท)"
                             type="text"
                             placeholder="เช่น ฟรี, 0-100, ติดต่อสอบถาม"
                         />
-                        <p className="text-sm text-gray-500">ระบุราคา เช่น "ฟรี", "0-100 บาท", "ติดต่อสอบถาม"</p>
+                        <p className="text-xs sm:text-sm text-gray-500">ระบุราคา เช่น "ฟรี", "0-100 บาท", "ติดต่อสอบถาม"</p>
                     </div>
                     <ProvincesInput />
                 </div>
 
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6">
                     <TextareaInput
                         name="description"
                         LabelText="รายละเอียดสถานที่"
                     />
                 </div>
 
-                <div className="mb-8 p-4 border-2 rounded-lg">
-                    <h2 className="text-xl font-semibold text-blue-800 mb-4">รูปภาพสถานที่</h2>
-                    <p className="text-sm text-gray-600 mb-3">อัพโหลดรูปภาพสถานที่ท่องเที่ยว</p>
+                <div className="mb-6 sm:mb-8 p-3 sm:p-4 border-2 rounded-lg">
+                    <h2 className="text-lg sm:text-xl font-semibold text-blue-800 mb-3 sm:mb-4">รูปภาพสถานที่</h2>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">อัพโหลดรูปภาพสถานที่ท่องเที่ยว</p>
                     <ImageInput />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                     <FormInput
                         name="openTime"
                         label="เวลาเปิด (ไม่จำเป็น)"
@@ -85,13 +85,13 @@ const CreateLocation = () => {
 
                 </div>
 
-                <div className="mb-8">
-                    <h2 className="text-xl font-semibold text-blue-800 mb-4">ตำแหน่งที่ตั้ง</h2>
-                    <p className="text-sm text-gray-600 mb-3">คลิกบนแผนที่เพื่อระบุตำแหน่งที่ตั้งที่แน่นอน</p>
+                <div className="mb-6 sm:mb-8">
+                    <h2 className="text-lg sm:text-xl font-semibold text-blue-800 mb-3 sm:mb-4">ตำแหน่งที่ตั้ง</h2>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">คลิกบนแผนที่เพื่อระบุตำแหน่งที่ตั้งที่แน่นอน</p>
                     <MapLocation />
                 </div>
 
-                <div className="mt-8 text-center">
+                <div className="mt-6 sm:mt-8 text-center">
                     <SubmitButton
                         text="บันทึกข้อมูลสถานที่"
                         size="lg"

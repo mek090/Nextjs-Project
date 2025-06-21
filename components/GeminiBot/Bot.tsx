@@ -343,9 +343,9 @@ export default function Bot({
   
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl backdrop-blur-lg border border-gray-300 dark:border-gray-700 h-full">
-      <div className="flex items-center mb-4">
-        <div className="w-16 h-16 rounded-full overflow-hidden mr-4 bg-blue-100 dark:bg-blue-900 border-2 border-blue-400">
+    <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-xl backdrop-blur-lg border border-gray-300 dark:border-gray-700 h-full">
+      <div className="flex items-center mb-4 sm:mb-6">
+        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden mr-3 sm:mr-4 bg-blue-100 dark:bg-blue-900 border-2 border-blue-400">
           <img
             src={getAvatarImage()}
             alt="น้องบุรี"
@@ -356,31 +356,22 @@ export default function Bot({
             }}
           />
         </div>
-        <div>
-          <h2 className="text-2xl font-bold flex items-center">
+        <div className="flex-1">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center flex-wrap gap-2">
             น้องบุรี
-            <span className="ml-2 text-sm bg-green-500 text-white px-2 py-1 rounded-full">BOT Support</span>
+            <span className="text-xs sm:text-sm bg-green-500 text-white px-2 py-1 rounded-full">
+              BOT Support
+            </span>
           </h2>
-          <p className="text-gray-600 dark:text-gray-300">ผู้ให้คำแนะนำด้านการท่องเที่ยวบุรีรัมย์</p>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+            ผู้ให้คำแนะนำด้านการท่องเที่ยวบุรีรัมย์
+          </p>
         </div>
-        {/* 
-        <Button
-          size="lg"
-          className="ml-16 bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:from-blue-600 hover:to-blue-700 hover:translate-x-2 transition-all duration-300"
-          asChild
-        >
-          <Link href='/chat' className="flex items-center space-x-1">
-            <span>ไปที่แชท</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </Link>
-        </Button> */}
       </div>
 
-      <div className="bg-blue-50 dark:bg-gray-700 rounded-xl p-4 mb-4">
-        <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="bg-blue-50 dark:bg-gray-700 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+        <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span className="text-blue-600 dark:text-blue-400 font-medium">
@@ -389,60 +380,83 @@ export default function Bot({
           <span className="mx-2">•</span>
           {timeOfDay === "กลางวัน" ? "☀️ กลางวัน" : "🌙 กลางคืน"}
         </div>
-
-        <div className="chat-bubble relative bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-          {loading ? (
-            <div className="flex flex-col items-center justify-center p-4">
-              <div className="animate-bounce flex space-x-1">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <div className="w-2 h-2 bg-blue-500 rounded-full animation-delay-200"></div>
-                <div className="w-2 h-2 bg-blue-500 rounded-full animation-delay-400"></div>
-              </div>
-              <p className="mt-3 text-gray-600 dark:text-gray-300">กำลังคิดคำแนะนำ...</p>
-            </div>
-          ) : (
-            <div className="prose dark:prose-invert max-w-none">
-              <ReactMarkdown>{suggestion}</ReactMarkdown>
-            </div>
-          )}
-
-          {/* ลูกศรชี้จาก avatar ไปยัง chat bubble */}
-          <div className="absolute top-4 -left-2 w-0 h-0 border-t-8 border-r-8 border-b-8 border-white dark:border-gray-800 border-transparent border-r-white dark:border-r-gray-800"></div>
-        </div>
       </div>
 
       {/* เพิ่มปุ่ม prompt suggestion ให้ผู้ใช้เลือกสอบถามเพิ่มเติม */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {promptSuggestions.map((item) => (
-          <Button
-            key={item.key}
-            variant={selectedPrompt === item.key ? "secondary" : "outline"}
-            size="sm"
-            onClick={() => generateCustomSuggestion(item.key)}
-            className={selectedPrompt === item.key ? "border-blue-500" : ""}
-          >
-            {item.label}
-          </Button>
-        ))}
+      <div className="mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+          <p className="text-sm sm:text-base font-medium text-gray-700 dark:text-gray-200">
+            เลือกสอบถามเพิ่มเติม
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          {promptSuggestions.map((item) => (
+            <Button
+              key={item.key}
+              variant={selectedPrompt === item.key ? "secondary" : "outline"}
+              size="sm"
+              onClick={() => generateCustomSuggestion(item.key)}
+              className={`text-xs sm:text-sm px-3 sm:px-4 py-2 h-8 sm:h-9 transition-all duration-200 ${
+                selectedPrompt === item.key 
+                  ? "bg-blue-500 text-white border-blue-500 shadow-md scale-105" 
+                  : "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300"
+              }`}
+            >
+              <span className="flex items-center gap-1 sm:gap-2">
+                {item.key === "attraction" && "🏛️"}
+                {item.key === "food" && "🍜"}
+                {item.key === "festival" && "🎉"}
+                {item.key === "culture" && "📚"}
+                {item.key === "accommodation" && "🏨"}
+                {item.label}
+              </span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div className="chat-bubble relative bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow border border-gray-100 dark:border-gray-600">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center p-4 sm:p-6">
+            <div className="animate-bounce flex space-x-1 mb-3">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-blue-500 rounded-full animation-delay-200"></div>
+              <div className="w-2 h-2 bg-blue-500 rounded-full animation-delay-400"></div>
+            </div>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 text-center">
+              กำลังคิดคำแนะนำ...
+            </p>
+          </div>
+        ) : (
+          <div className="prose dark:prose-invert max-w-none text-sm sm:text-base">
+            <ReactMarkdown>{suggestion}</ReactMarkdown>
+          </div>
+        )}
+
+        {/* ลูกศรชี้จาก avatar ไปยัง chat bubble */}
+        <div className="absolute top-4 -left-2 w-0 h-0 border-t-6 sm:border-t-8 border-r-6 sm:border-r-8 border-b-6 sm:border-b-8 border-white dark:border-gray-800 border-transparent border-r-white dark:border-r-gray-800"></div>
       </div>
 
       {/* ส่วนแสดงข้อมูลเพิ่มเติม */}
-      <div className="mt-4">
-        <h3 className="text-lg font-semibold mb-2">แหล่งข้อมูลเพิ่มเติม</h3>
-        <div className="grid grid-cols-2 gap-2">
+      <div className="mt-4 sm:mt-6">
+        <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-800 dark:text-white">
+          แหล่งข้อมูลเพิ่มเติม
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
           <a
             href="https://www.buriram.go.th"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-blue-50 dark:bg-blue-900/30 p-2 rounded text-center text-blue-600 dark:text-blue-300 hover:bg-blue-100 transition"
+            className="bg-blue-50 dark:bg-blue-900/30 p-3 sm:p-4 rounded-lg text-center text-blue-600 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all duration-200 text-sm sm:text-base font-medium"
           >
-            เว็บไซต์จังหวัด
+            🌐 เว็บไซต์จังหวัด
           </a>
           <a
             href="tel:044666666"
-            className="bg-green-50 dark:bg-green-900/30 p-2 rounded text-center text-green-600 dark:text-green-300 hover:bg-green-100 transition"
+            className="bg-green-50 dark:bg-green-900/30 p-3 sm:p-4 rounded-lg text-center text-green-600 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/50 transition-all duration-200 text-sm sm:text-base font-medium"
           >
-            ศูนย์บริการนักท่องเที่ยว
+            📞 ศูนย์บริการนักท่องเที่ยว
           </a>
         </div>
       </div>

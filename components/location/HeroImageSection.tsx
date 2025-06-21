@@ -17,7 +17,6 @@ export default function HeroImageSection({ images = [], alt }: { images: string[
   }
   return (
     <Swiper 
-      navigation 
       pagination={{ clickable: true }} 
       modules={[Navigation, Pagination]} 
       className="h-full w-full rounded-lg"

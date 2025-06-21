@@ -220,25 +220,19 @@ export default function Bot({
         ความยาวประมาณ 3-4 ย่อหน้า ใช้ emoji ประกอบเล็กน้อยเพื่อความน่าสนใจ แต่ไม่มากเกินไป
       `;
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.NEXT_PUBLIC_GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 800,
-            }
-          }),
-        }
-      );
+      const response = await fetch('/api/gemini/travel-suggestion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          weather,
+          timeOfDay,
+          selectedCity,
+          promptKey: selectedPrompt
+        }),
+      });
 
-      const data: GeminiResponse = await response.json();
-      const generatedText =
-        data.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "ไม่สามารถดึงข้อมูลคำแนะนำได้ กรุณาลองใหม่";
+      const data = await response.json();
+      const generatedText = data.suggestion || "ไม่สามารถดึงข้อมูลคำแนะนำได้ กรุณาลองใหม่";
       setSuggestion(generatedText);
     } catch (error) {
       console.error("เกิดข้อผิดพลาด:", error);
@@ -281,24 +275,18 @@ export default function Bot({
       const prompt = `
         คุณคือผู้ให้คำแนะนำด้านการท่องเที่ยวบุรีรัมย์ที่เป็นกันเอง มีความรู้เกี่ยวกับประวัติศาสตร์ วัฒนธรรม อาหาร และสถานที่ท่องเที่ยวในบุรีรัมย์เป็นอย่างดี\nชื่อของคุณคือ \"น้องบุรี\" ชอบแนะนำสถานที่ท่องเที่ยวในจังหวัดบุรีรัมย์และใช้ภาษาที่เป็นกันเอง สนิทสนม\nใส่สำนวนท้องถิ่นเล็กน้อยแต่ไม่มากเกินไป และใช้ภาษาที่เข้าใจง่ายสำหรับคนไทย\n\nข้อมูลปัจจุบัน:\n- สถานที่: ${name} (อำเภอ ${selectedCity})\n- สภาพอากาศ: ${description} (${weatherMain})\n- อุณหภูมิ: ${temp}°C\n- ความชื้น: ${humidity}%\n- เวลาปัจจุบัน: ${localTime} (เวลาท้องถิ่น)\n- ช่วงเวลา: ${timeOfDay}\n\nหัวข้อที่ผู้ใช้เลือก: ${customPrompt}\n\nตอบในรูปแบบสนทนา เป็นกันเอง ใส่ emoji เล็กน้อย ใช้ภาษาสั้นกระชับและมีสำนวนท้องถิ่น\nความยาว 2-3 ย่อหน้า`;
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.NEXT_PUBLIC_GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 800,
-            }
-          }),
-        }
-      );
-      const data: GeminiResponse = await response.json();
-      const generatedText =
-        data.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "ไม่สามารถดึงข้อมูลคำแนะนำได้ กรุณาลองใหม่";
+      const response = await fetch('/api/gemini/travel-suggestion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          weather,
+          timeOfDay,
+          selectedCity,
+          promptKey: selectedPrompt
+        }),
+      });
+      const data = await response.json();
+      const generatedText = data.suggestion || "ไม่สามารถดึงข้อมูลคำแนะนำได้ กรุณาลองใหม่";
       setSuggestion(generatedText);
     } catch (error) {
       setSuggestion("เกิดข้อผิดพลาดในการติดต่อ AI");

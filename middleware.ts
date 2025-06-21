@@ -7,6 +7,9 @@ const isPublicRoute = createRouteMatcher([
     '/settings(.*)',
     '/github(.*)',
     '/locations(.*)',
+    '/api/locations(.*)',
+    '/api/nearby(.*)',
+    '/api/gemini(.*)',
 ])
 
 

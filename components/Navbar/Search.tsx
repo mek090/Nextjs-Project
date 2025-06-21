@@ -72,15 +72,15 @@ const Search = () => {
     <form onSubmit={(e) => e.preventDefault()} className="w-full flex justify-center gap-2">
       <Input
         type="text"
-        placeholder="Search Location..."
-        className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl"
+        placeholder="ค้นหาสถานที่..."
+        className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl h-9 sm:h-10 text-sm sm:text-base"
         onChange={(e) => {
           const value = e.target.value;
           setSearch(value);
         }}
         value={search}
       />
-      <Button type="submit" size="icon" className="shrink-0" disabled={isSearching}>
+      <Button type="submit" size="icon" className="shrink-0 h-9 sm:h-10 w-9 sm:w-10" disabled={isSearching}>
         <SearchIcon className={`h-4 w-4 ${isSearching ? 'animate-spin' : ''}`} />
       </Button>
     </form>

@@ -50,8 +50,7 @@ export function DropdownListmenu() {
       <>
         <button>
 
-          <Skeleton className="w-10 h-10" />
-          {/* <RotateCw className="animate-spin" /> */}
+          <Skeleton className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10" />
         </button>
       </>
 
@@ -60,12 +59,16 @@ export function DropdownListmenu() {
 
   if (!user) {
     return (
-      <div className="flex gap-2">
+      <div className="flex gap-1 sm:gap-2">
         <SignInButton mode="modal">
-          <Button variant="outline">Sign In</Button>
+          <Button variant="outline" size="sm" className="h-8 px-2 sm:h-9 sm:px-3 text-xs sm:text-sm">
+            Sign In
+          </Button>
         </SignInButton>
         <SignUpButton mode="modal">
-          <Button>Sign Up</Button>
+          <Button size="sm" className="h-8 px-2 sm:h-9 sm:px-3 text-xs sm:text-sm">
+            Sign Up
+          </Button>
         </SignUpButton>
       </div>
     )
@@ -74,8 +77,7 @@ export function DropdownListmenu() {
   if (!role) {
     return (
       <button>
-          <Skeleton className="w-10 h-10" />
-          {/* <RotateCw className="animate-spin" /> */}
+          <Skeleton className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10" />
         </button>
     )
   }
@@ -87,12 +89,12 @@ export function DropdownListmenu() {
       <SignedIn>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              <AlignJustify />
+            <Button variant="outline" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10">
+              <AlignJustify className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="w-56">
+          <DropdownMenuContent className="w-48 sm:w-56 lg:w-64">
             {menuGroups.map((group, groupIndex) => (
               <div key={groupIndex}>
                 <DropdownMenuGroup>
@@ -101,16 +103,16 @@ export function DropdownListmenu() {
                       key={itemIndex}
                       hidden={item.hidden && (role == "user")}
                       disabled={item.disabled}
-                      className={`flex items-center gap-2 ${item.disabled ? "opacity-50 pointer-events-none cursor-not-allowed" : ""}`}
+                      className={`flex items-center gap-2 text-sm sm:text-base ${item.disabled ? "opacity-50 pointer-events-none cursor-not-allowed" : ""}`}
                     >
                       {!item.disabled ? (
                         <Link href={item.href} className="flex items-center gap-2 w-full">
-                          <item.icon size={16} />
+                          <item.icon size={16} className="flex-shrink-0" />
                           <span>{item.label}</span>
                         </Link>
                       ) : (
                         <>
-                          <item.icon size={16} />
+                          <item.icon size={16} className="flex-shrink-0" />
                           <span>{item.label}</span>
                         </>
                       )}
@@ -127,12 +129,16 @@ export function DropdownListmenu() {
       </SignedIn>
 
       <SignedOut>
-        <div className="flex gap-2">
+        <div className="flex gap-1 sm:gap-2">
           <SignInButton mode="modal">
-            <Button variant="outline">Sign In</Button>
+            <Button variant="outline" size="sm" className="h-8 px-2 sm:h-9 sm:px-3 text-xs sm:text-sm">
+              Sign In
+            </Button>
           </SignInButton>
           <SignUpButton mode="modal">
-            <Button>Sign Up</Button>
+            <Button size="sm" className="h-8 px-2 sm:h-9 sm:px-3 text-xs sm:text-sm">
+              Sign Up
+            </Button>
           </SignUpButton>
         </div>
       </SignedOut>

@@ -146,7 +146,7 @@ const CategoryList = () => {
     return (
         <div className="space-y-4">
             {/* Desktop View */}
-            <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+            <div className="hidden lg:grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-3 xl:gap-4">
                 {categories.map((item, index) => {
                     const isActive =
                         currentCategory === item.label ||
@@ -159,11 +159,11 @@ const CategoryList = () => {
                             className="group relative transition-all duration-300 hover:scale-105"
                         >
                             <article className={`
-                                relative overflow-hidden rounded-2xl p-6 text-center
+                                relative overflow-hidden rounded-xl xl:rounded-2xl p-4 xl:p-6 text-center
                                 transition-all duration-300 transform
                                 border-2 backdrop-blur-sm
                                 ${isActive
-                                    ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white border-blue-400 shadow-2xl shadow-blue-500/25'
+                                    ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white border-blue-400 shadow-xl shadow-blue-500/25'
                                     : 'bg-white/70 hover:bg-white border-gray-200 hover:border-blue-300 text-gray-700 hover:text-blue-600 shadow-lg hover:shadow-xl'
                                 }
                             `}>
@@ -173,15 +173,15 @@ const CategoryList = () => {
                                 {/* Active Indicator */}
                                 {isActive && (
                                     <div className="absolute top-2 right-2">
-                                        <Sparkles className="w-4 h-4 text-yellow-300 animate-pulse" />
+                                        <Sparkles className="w-3 h-3 xl:w-4 xl:h-4 text-yellow-300 animate-pulse" />
                                     </div>
                                 )}
                                 
                                 {/* Content */}
-                                <div className="relative z-10 space-y-3">
+                                <div className="relative z-10 space-y-2 xl:space-y-3">
                                     {/* Icon Container */}
                                     <div className={`
-                                        w-12 h-12 mx-auto rounded-full flex items-center justify-center
+                                        w-10 h-10 xl:w-12 xl:h-12 mx-auto rounded-full flex items-center justify-center
                                         transition-all duration-300
                                         ${isActive 
                                             ? 'bg-white/20 backdrop-blur-sm' 
@@ -189,7 +189,7 @@ const CategoryList = () => {
                                         }
                                     `}>
                                         <item.icon className={`
-                                            w-6 h-6 transition-all duration-300
+                                            w-5 h-5 xl:w-6 xl:h-6 transition-all duration-300
                                             ${isActive 
                                                 ? 'text-white' 
                                                 : 'text-blue-500 group-hover:text-blue-600 group-hover:scale-110'
@@ -199,7 +199,7 @@ const CategoryList = () => {
                                     
                                     {/* Label */}
                                     <p className={`
-                                        text-sm font-semibold capitalize transition-all duration-300
+                                        text-xs xl:text-sm font-semibold capitalize transition-all duration-300
                                         ${isActive ? 'text-white' : 'text-gray-700 group-hover:text-blue-600'}
                                     `}>
                                         {item.label}
@@ -208,7 +208,7 @@ const CategoryList = () => {
 
                                 {/* Hover Effect */}
                                 <div className={`
-                                    absolute inset-0 rounded-2xl transition-all duration-300
+                                    absolute inset-0 rounded-xl xl:rounded-2xl transition-all duration-300
                                     ${isActive 
                                         ? 'bg-gradient-to-br from-white/10 to-transparent' 
                                         : 'bg-gradient-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/5 group-hover:to-purple-500/5'
@@ -220,9 +220,73 @@ const CategoryList = () => {
                 })}
             </div>
 
+            {/* Tablet View */}
+            <div className="hidden md:block lg:hidden">
+                <div className="grid grid-cols-3 gap-3">
+                    {categories.map((item, index) => {
+                        const isActive =
+                            currentCategory === item.label ||
+                            (item.label === "All" && !currentCategory)
+                        
+                        return (
+                            <Link
+                                href={createHref(item.label)}
+                                key={item.label}
+                                className="group relative transition-all duration-300 hover:scale-105"
+                            >
+                                <article className={`
+                                    relative overflow-hidden rounded-xl p-4 text-center
+                                    transition-all duration-300 transform border-2 backdrop-blur-sm
+                                    ${isActive
+                                        ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white border-blue-400 shadow-lg shadow-blue-500/25'
+                                        : 'bg-white/70 hover:bg-white border-gray-200 hover:border-blue-300 text-gray-700 hover:text-blue-600 shadow-md hover:shadow-lg'
+                                    }
+                                `}>
+                                    {/* Active Indicator */}
+                                    {isActive && (
+                                        <div className="absolute top-2 right-2">
+                                            <Sparkles className="w-3 h-3 text-yellow-300 animate-pulse" />
+                                        </div>
+                                    )}
+                                    
+                                    {/* Content */}
+                                    <div className="relative z-10 space-y-2">
+                                        {/* Icon Container */}
+                                        <div className={`
+                                            w-10 h-10 mx-auto rounded-full flex items-center justify-center
+                                            transition-all duration-300
+                                            ${isActive 
+                                                ? 'bg-white/20 backdrop-blur-sm' 
+                                                : 'bg-blue-50 group-hover:bg-blue-100'
+                                            }
+                                        `}>
+                                            <item.icon className={`
+                                                w-5 h-5 transition-all duration-300
+                                                ${isActive 
+                                                    ? 'text-white' 
+                                                    : 'text-blue-500 group-hover:text-blue-600'
+                                                }
+                                            `} />
+                                        </div>
+                                        
+                                        {/* Label */}
+                                        <p className={`
+                                            text-xs font-semibold capitalize transition-all duration-300
+                                            ${isActive ? 'text-white' : 'text-gray-700 group-hover:text-blue-600'}
+                                        `}>
+                                            {item.label}
+                                        </p>
+                                    </div>
+                                </article>
+                            </Link>
+                        )
+                    })}
+                </div>
+            </div>
+
             {/* Mobile View - Horizontal Scroll */}
             <div className="md:hidden">
-                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide px-1">
                     {categories.map((item, index) => {
                         const isActive =
                             currentCategory === item.label ||
@@ -235,17 +299,17 @@ const CategoryList = () => {
                                 className="group flex-shrink-0 transition-all duration-300 hover:scale-105"
                             >
                                 <article className={`
-                                    relative overflow-hidden rounded-xl px-4 py-3 min-w-[120px]
-                                    flex flex-col items-center gap-2 text-center
+                                    relative overflow-hidden rounded-lg px-3 py-2 min-w-[100px]
+                                    flex flex-col items-center gap-1.5 text-center
                                     transition-all duration-300 border-2
                                     ${isActive
-                                        ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white border-blue-400 shadow-lg shadow-blue-500/25'
-                                        : 'bg-white/80 hover:bg-white border-gray-200 hover:border-blue-300 text-gray-700 hover:text-blue-600 shadow-md hover:shadow-lg'
+                                        ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white border-blue-400 shadow-md shadow-blue-500/25'
+                                        : 'bg-white/80 hover:bg-white border-gray-200 hover:border-blue-300 text-gray-700 hover:text-blue-600 shadow-sm hover:shadow-md'
                                     }
                                 `}>
                                     {/* Icon */}
                                     <div className={`
-                                        w-8 h-8 rounded-full flex items-center justify-center
+                                        w-7 h-7 rounded-full flex items-center justify-center
                                         transition-all duration-300
                                         ${isActive 
                                             ? 'bg-white/20 backdrop-blur-sm' 
@@ -253,7 +317,7 @@ const CategoryList = () => {
                                         }
                                     `}>
                                         <item.icon className={`
-                                            w-4 h-4 transition-all duration-300
+                                            w-3.5 h-3.5 transition-all duration-300
                                             ${isActive 
                                                 ? 'text-white' 
                                                 : 'text-blue-500 group-hover:text-blue-600'
@@ -264,7 +328,7 @@ const CategoryList = () => {
                                     {/* Label */}
                                     <p className={`
                                         text-xs font-semibold capitalize whitespace-nowrap
-                                        transition-all duration-300
+                                        transition-all duration-300 leading-tight
                                         ${isActive ? 'text-white' : 'text-gray-700 group-hover:text-blue-600'}
                                     `}>
                                         {item.label}
@@ -273,7 +337,7 @@ const CategoryList = () => {
                                     {/* Active Indicator for Mobile */}
                                     {isActive && (
                                         <div className="absolute top-1 right-1">
-                                            <div className="w-2 h-2 bg-yellow-300 rounded-full animate-pulse"></div>
+                                            <div className="w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse"></div>
                                         </div>
                                     )}
                                 </article>
@@ -285,36 +349,11 @@ const CategoryList = () => {
                 {/* Scroll Indicator */}
                 <div className="flex justify-center mt-2">
                     <div className="flex items-center gap-1 text-xs text-gray-500">
-                        <span>เลื่อนเพื่อดูเพิ่มเติม</span>
+                        <span>เลื่อนเพื่อดูหมวดหมู่เพิ่มเติม</span>
                         <ChevronRight className="w-3 h-3" />
                     </div>
                 </div>
             </div>
-
-            {/* Category Stats
-            <div className="flex justify-center mt-6">
-                <div className="bg-white/60 backdrop-blur-lg rounded-full px-4 py-2 border border-white/20 shadow-lg">
-                    <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <span className="text-gray-700">
-                                {categories.length} หมวดหมู่
-                            </span>
-                        </div>
-                        {currentCategory && (
-                            <>
-                                <div className="w-px h-4 bg-gray-300"></div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <span className="text-gray-700 font-medium">
-                                        เลือก: {currentCategory}
-                                    </span>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </div> */}
         </div>
     )
 }

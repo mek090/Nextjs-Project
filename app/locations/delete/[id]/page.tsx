@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic'
 
 const DeleteLocation = async (props: any) => {
     const resolvedProps = await Promise.resolve(props);
-    const params = resolvedProps.params as { id: string };
+    const params = await resolvedProps.params as { id: string };
     try {
         const location = await fetchLocationDetail({ id: params.id });
 

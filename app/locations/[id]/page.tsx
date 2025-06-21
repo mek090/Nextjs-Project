@@ -64,7 +64,7 @@ export async function generateMetadata(
 
 export default async function LocationDetail(props: any) {
     const resolvedProps = await Promise.resolve(props);
-    const params = resolvedProps.params as { id: string };
+    const params = await resolvedProps.params as { id: string };
     try {
         const id = params.id;
 

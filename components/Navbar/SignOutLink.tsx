@@ -33,7 +33,11 @@ const SignOutLink = () => {
   }, [signOut, router, toast])
 
   return (
-    <Button onClick={handleLogout}  className="w-full hover:translate-x-2 hover:bg-red-500 hover:text-white transition-all duration-300" variant="outline">
+    <Button 
+      onClick={handleLogout}  
+      className="w-full hover:translate-x-2 hover:bg-red-500 hover:text-white transition-all duration-300 text-sm sm:text-base h-8 sm:h-9" 
+      variant="outline"
+    >
       SIGN OUT
     </Button>
   )

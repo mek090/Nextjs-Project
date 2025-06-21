@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 const EditLocation = async (props: any) => {
     const resolvedProps = await Promise.resolve(props);
-    const params = resolvedProps.params as { id: string };
+    const params = await resolvedProps.params as { id: string };
     const location = await fetchLocationDetail({ id: params.id })
     
     if (!location) {

@@ -9,7 +9,7 @@ import { MapPin, Mountain, Calendar, Camera, Search } from "lucide-react"
 
 export default async function LocationsPage(props: any) {
   const resolvedProps = await Promise.resolve(props);
-  const searchParams = resolvedProps.searchParams as { search?: string, category?: string } | undefined;
+  const searchParams = await resolvedProps.searchParams as { search?: string, category?: string } | undefined;
   const search = searchParams?.search;
   const category = searchParams?.category;
   const locations = await fetchLocation({ search, category })

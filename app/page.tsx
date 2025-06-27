@@ -5,6 +5,7 @@ import { Suspense } from "react"
 import LoadingCard from "@/components/card/LoadingCard"
 import Search from "@/components/Navbar/Search"
 import { Star, MapPin, Clock, Heart, Globe, Camera, Mountain, Compass } from "lucide-react"
+import TouristMapClient from '@/components/map/TouristMapClient';
 
 const page = async (props: any) => {
   const resolvedProps = await Promise.resolve(props);

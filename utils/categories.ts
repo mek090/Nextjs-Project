@@ -14,7 +14,7 @@ import {
     MapPin, 
     Dot,
   } from "lucide-react";
-  
+
   export const categories = [
 
     {

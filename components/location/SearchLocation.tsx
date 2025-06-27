@@ -11,6 +11,9 @@ export default function SearchLocation() {
   const [value, setValue] = useState(searchParams.get('search') || '')
   const [debouncedValue] = useDebounce(value, 500)
   const [isFocused, setIsFocused] = useState(false)
+  const [suggestions, setSuggestions] = useState<string[]>([
+    'วัปปทุม', 'ปราสาทหิน', 'อุทยานแห่งชาติ', 'พระอาทิตย์ขึ้น', 'วัด'
+  ])
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
@@ -22,13 +25,21 @@ export default function SearchLocation() {
     router.push(`/locations?${params.toString()}`)
   }, [debouncedValue, router, searchParams])
 
+  useEffect(() => {
+    // ดึง top search keywords จาก API
+    fetch('/api/search/stats')
+      .then(res => res.json())
+      .then(data => {
+        if (data && Array.isArray(data.topSearches) && data.topSearches.length > 0) {
+          setSuggestions(data.topSearches.slice(0, 5).map((s: any) => s.query));
+        }
+      })
+      .catch(() => {/* fallback to default */});
+  }, []);
+
   const clearSearch = () => {
     setValue('')
   }
-
-  const suggestions = [
-    'วัปปทุม', 'ปราสาทหิน', 'อุทยานแห่งชาติ', 'พระอาทิตย์ขึ้น', 'วัด'
-  ]
 
   return (
     <div className="relative w-full max-w-2xl mx-auto">

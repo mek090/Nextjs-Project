@@ -1,8 +1,6 @@
 // import { createClient } from '@supabase/supabase-js'
 
-// const bucket = 'location-bucket'
-// const url = process.env.SUPABASE_URL as string
-// const key = process.env.SUPABASE_KEY as string
+const bucket = 'location-bucket'
 
 // // Create Supabase client
 // const supabase = createClient(url, key)
@@ -27,17 +25,16 @@
 // }
 
 
+// ในไฟล์ supabase.ts
 import { createClient } from '@supabase/supabase-js'
 
-const bucket = 'location-bucket'
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
 
 if (!url || !key) {
   throw new Error('Missing Supabase environment variables')
 }
 
-// Create Supabase client with realtime enabled
 export const supabase = createClient(url, key, {
   realtime: {
     params: {

@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server';
 export async function GET() {
     try {
         const locations = await prisma.location.findMany({
+            orderBy: { rating: 'desc' },
+            // take: 3,
             select: {
                 id: true,
                 name: true,
@@ -13,6 +15,8 @@ export async function GET() {
                 lng: true,
                 districts: true,
                 category: true,
+                rating: true,
+                googlePlaceId: true,
             }
         })
 

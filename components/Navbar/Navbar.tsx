@@ -2,7 +2,6 @@ import NotificationDropdown from "../notifications/NotificationDropdown"
 import { Darkmode } from "./Darkmode"
 import { DropdownListmenu } from "./DropdownListmenu"
 import Logo from "./Logo"
-import Search from "./Search"
 
 const Navbar = () => {
     return (

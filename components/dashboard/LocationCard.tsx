@@ -15,6 +15,7 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { deleteLocationAction } from '@/actions/actions';
+import Image from "next/image"
 
 interface Location {
   id: string
@@ -49,10 +50,13 @@ export default function LocationCard({ location }: LocationCardProps) {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 border-0 shadow-md bg-white dark:bg-gray-800">
       <div className="relative h-48 overflow-hidden">
-        <img
-          src={location.image[0]}
+        <Image
+          src={location.image[0] || "/placeholder.jpg"} // fallback เผื่อรูปว่าง
           alt={location.name}
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          fill
+          sizes="100%" // หรือจะใช้ "400px" ก็ได้ถ้าอยาก fix
+          className="object-cover transition-transform duration-300 hover:scale-105"
+          priority={false} // ถ้าอยาก preload ภาพหน้าแรกให้ใส่ true
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       </div>

@@ -69,7 +69,16 @@ const LocationCard = ({
         return `${(num / 1000).toFixed(1)}K บาท`;
     };
 
-
+    // ฟังก์ชันเลือกภาพที่ไม่ใช่ Google API
+    // const getValidImage = (images: string[] | string) => {
+    //     if (!images) return "/placeholder.jpg";
+    //     if (typeof images === "string") {
+    //         return images.includes("maps.googleapis.com") ? "/placeholder.jpg" : images;
+    //     }
+    //     // ถ้าเป็น array
+    //     const valid = images.find(img => !img.includes("maps.googleapis.com"));
+    //     return valid || "/placeholder.jpg";
+    // };
 
 
     return (
@@ -77,8 +86,17 @@ const LocationCard = ({
             {/* Image with subtle overlay effect */}
             <div className="relative w-full h-32 sm:h-36 md:h-40 lg:h-44 xl:h-48 overflow-hidden">
                 <Link href={`/locations/${id}`}>
+                    {/* <Image
+                        src={Array.isArray(location.image) ? location.image[0] : location.image}
+                        alt={location.name}
+                        fill
+                        className="object-cover"
+                        priority={index === 0}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
+                    /> */}
+
                     <Image
-                        src={typeof image === 'string' ? image : (Array.isArray(image) && image.length > 0 ? image[0] : '/placeholder.jpg')}
+                        src={Array.isArray(image) ? image[0] : image}
                         alt={name}
                         fill
                         sizes="300px"

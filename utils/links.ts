@@ -20,14 +20,14 @@ export const links2: NavbarLink[] = [
   { href: '/profile', label: 'Profile', icon: User2, hidden: false, },
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, hidden: true, },
 ];
-export const links3: NavbarLink[] = [
-  { href: '/team', label: 'Team', icon: UsersRound, hidden: false, },
-  { href: '/github', label: 'GitHub', icon: Github, disabled: true, hidden: false, },
-  { href: '/support', label: 'Support', icon: LifeBuoy, hidden: false, },
-];
+// export const links3: NavbarLink[] = [
+//   { href: '/team', label: 'Team', icon: UsersRound, hidden: false, },
+//   { href: '/github', label: 'GitHub', icon: Github, disabled: true, hidden: false, },
+//   { href: '/support', label: 'Support', icon: LifeBuoy, hidden: false, },
+// ];
 export const links4: NavbarLink[] = [
   { href: '/dashboard/managelocation', label: 'Manage Location', icon: MapPin, hidden: false, },
   { href: '/dashboard/manageuser', label: 'Manage User', icon: UserRoundCog, hidden: false, },
-{ href: '/dashboard/search-stats', label: 'Search Stats', icon: Search, hidden: false, },
+  { href: '/dashboard/search-stats', label: 'Search Stats', icon: Search, hidden: false, },
 ];
 

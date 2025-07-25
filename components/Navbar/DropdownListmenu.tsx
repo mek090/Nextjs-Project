@@ -6,14 +6,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { Button } from "@/components/ui/button"
 import { AlignJustify, RotateCw } from "lucide-react"
 import Link from "next/link"
-import { links, links2, links3, links4 } from "@/utils/links"
+import { links, links2,  links4 } from "@/utils/links"
 import SignOutLink from "./SignOutLink"
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { findRoleprofile } from "@/actions/actions"
 import { Skeleton } from "../ui/skeleton"
 
-const menuGroups = [links, links2, links3]
+const menuGroups = [links, links2]
 
 
 export function DropdownListmenu() {
@@ -119,7 +119,7 @@ export function DropdownListmenu() {
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
-                {groupIndex !== menuGroups.length - 1 && <DropdownMenuSeparator />}
+                {/* {groupIndex !== menuGroups.length - 1 && <DropdownMenuSeparator />} */}
               </div>
             ))}
             <DropdownMenuSeparator />

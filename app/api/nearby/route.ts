@@ -14,6 +14,13 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     return R * c;
 }
 
+// เพิ่มฟังก์ชันนี้
+function getValidImage(images: string[]): string {
+    if (!images || images.length === 0) return "/placeholder.jpg";
+    const valid = images.find(img => typeof img === "string" && !img.includes("maps.googleapis.com") && (img.startsWith("http://") || img.startsWith("https://") || img.startsWith("/")));
+    return valid || images[0] || "/placeholder.jpg";
+}
+
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
@@ -44,6 +51,7 @@ export async function GET(request: Request) {
         const nearbyLocations = locations
             .map(location => ({
                 ...location,
+                image: [getValidImage(location.image)],
                 distance: calculateDistance(lat, lng, location.lat, location.lng)
             }))
             .filter(location => location.distance <= radius)

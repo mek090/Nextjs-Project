@@ -49,40 +49,55 @@ export default function LocationCard({ location }: LocationCardProps) {
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 border-0 shadow-md bg-white dark:bg-gray-800">
-      <div className="relative h-48 overflow-hidden">
-        <Image
-          src={location.image[0] || "/placeholder.jpg"} // fallback เผื่อรูปว่าง
-          alt={location.name}
-          fill
-          sizes="100%" // หรือจะใช้ "400px" ก็ได้ถ้าอยาก fix
-          className="object-cover transition-transform duration-300 hover:scale-105"
-          priority={false} // ถ้าอยาก preload ภาพหน้าแรกให้ใส่ true
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-      </div>
+      <Link href={`/locations/${location.id}`} className="block">
+        <div className="relative h-48 overflow-hidden cursor-pointer group">
+          <Image
+            src={location.image[0] || "/placeholder.jpg"} // fallback เผื่อรูปว่าง
+            alt={location.name}
+            fill
+            sizes="100%" // หรือจะใช้ "400px" ก็ได้ถ้าอยาก fix
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            priority={false} // ถ้าอยาก preload ภาพหน้าแรกให้ใส่ true
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/30 transition-all duration-300" />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="bg-black/50 text-white px-4 py-2 rounded-lg text-sm font-medium">
+              ดูรายละเอียด
+            </div>
+          </div>
+        </div>
+      </Link>
 
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold line-clamp-1 text-gray-900 dark:text-gray-100">
-          {location.name}
-        </CardTitle>
+        <Link href={`/locations/${location.id}`} className="block hover:opacity-80 transition-opacity">
+          <CardTitle className="text-lg font-semibold line-clamp-1 text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
+            {location.name}
+          </CardTitle>
+        </Link>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
-          {location.description}
-        </p>
+        <Link href={`/locations/${location.id}`} className="block hover:opacity-80 transition-opacity">
+          <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
+            {location.description}
+          </p>
+        </Link>
 
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            <MapPin className="h-4 w-4" />
-            <span className="line-clamp-1">{location.districts}</span>
-          </div>
+          <Link href={`/locations/${location.id}`} className="block hover:opacity-80 transition-opacity">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
+              <MapPin className="h-4 w-4" />
+              <span className="line-clamp-1">{location.districts}</span>
+            </div>
+          </Link>
 
           {location.openTime && location.closeTime && (
-            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <Clock className="h-4 w-4" />
-              <span>{location.openTime} - {location.closeTime}</span>
-            </div>
+            <Link href={`/locations/${location.id}`} className="block hover:opacity-80 transition-opacity">
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
+                <Clock className="h-4 w-4" />
+                <span>{location.openTime} - {location.closeTime}</span>
+              </div>
+            </Link>
           )}
         </div>
 

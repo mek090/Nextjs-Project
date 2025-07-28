@@ -50,7 +50,7 @@ function SavePlaceButton({ place, savingPlaceId, savePlaceToDatabase }: {
         ) : savingPlaceId === place.place_id ? (
           <>
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            กำลังวิเคราะห์...
+            กำลังอัพโหลด...
           </>
         ) : (
           <>
@@ -250,6 +250,8 @@ export default function PlacesPage() {
         `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photo.photo_reference}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
       );
 
+      console.log('Images to upload:', images.length);
+
       const requestBody = {
         name: thaiName,
         description,
@@ -279,6 +281,9 @@ export default function PlacesPage() {
         throw new Error(errorData.error || 'Failed to save place');
       }
 
+      const responseData = await response.json();
+      console.log('Save response:', responseData);
+
       // อัพเดทสถานะการบันทึก
       const updatedPlaces = places.map(p =>
         p.place_id === place.place_id ? { ...p, isSaved: true } : p
@@ -290,7 +295,7 @@ export default function PlacesPage() {
       );
       setSearchResults(updatedSearchResults);
 
-      toast.success('บันทึกสถานที่เรียบร้อยแล้ว');
+      toast.success(`บันทึกสถานที่เรียบร้อยแล้ว${responseData.message ? ` (${responseData.message})` : ''}`);
     } catch (error) {
       console.error('Error saving place:', error);
       toast.error(error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการบันทึกสถานที่');

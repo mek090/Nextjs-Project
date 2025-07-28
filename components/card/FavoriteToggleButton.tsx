@@ -7,6 +7,7 @@ import { SignInButton } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import { toggleFavoriteAction, checkFavoriteStatus } from "@/actions/actions";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const FavoriteToggleButton = ({
     locationId,
@@ -16,6 +17,7 @@ const FavoriteToggleButton = ({
     initialIsFavorite: boolean
 }) => {
     const { userId } = useAuth();
+    const router = useRouter();
     const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
     const [loading, setLoading] = useState(false);
 
@@ -31,22 +33,24 @@ const FavoriteToggleButton = ({
             }
         };
         checkStatus();
-    }, [userId, locationId]);
+    }, [userId, locationId, initialIsFavorite]);
+
+    // อัพเดทสถานะเมื่อ initialIsFavorite เปลี่ยน
+    useEffect(() => {
+        setIsFavorite(initialIsFavorite);
+    }, [initialIsFavorite]);
 
     const handleToggleFavorite = async () => {
         if (!userId) return;
         setLoading(true);
         try {
-            // เช็คสถานะปัจจุบันก่อนทำการ toggle
-            const currentStatus = await checkFavoriteStatus(userId, locationId);
-            if (currentStatus !== isFavorite) {
-                setIsFavorite(currentStatus);
-            }
-            await toggleFavoriteAction(locationId, userId, !currentStatus);
-            setIsFavorite(!currentStatus);
+            // ใช้สถานะปัจจุบันจาก state แทนการเช็คจาก database อีกครั้ง
+            const newStatus = !isFavorite;
+            await toggleFavoriteAction(locationId, userId, newStatus);
+            setIsFavorite(newStatus);
 
             // แสดง toast notification
-            if (!currentStatus) {
+            if (newStatus) {
                 toast.success("เพิ่มในรายการโปรดแล้ว", {
                     description: "สถานที่นี้ถูกเพิ่มในรายการโปรดของคุณ"
                 });
@@ -55,11 +59,16 @@ const FavoriteToggleButton = ({
                     description: "สถานที่นี้ถูกลบออกจากรายการโปรดของคุณ"
                 });
             }
+
+            // Revalidate หน้าเพื่ออัพเดทสถานะ
+            router.refresh();
         } catch (error) {
             console.error("Failed to toggle favorite:", error);
             toast.error("เกิดข้อผิดพลาด", {
                 description: "ไม่สามารถดำเนินการได้ กรุณาลองใหม่อีกครั้ง"
             });
+            // ถ้าเกิด error ให้กลับไปสถานะเดิม
+            setIsFavorite(!isFavorite);
         } finally {
             setLoading(false);
         }

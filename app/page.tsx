@@ -20,7 +20,7 @@ const page = async (props: any) => {
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-500/10 to-teal-500/10 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-teal-900/20"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z%22 fill=%22%23007BFF%22 fill-opacity=%220.05%22/%3E%3C/svg%3E')] opacity-30"></div>
-        
+
         {/* Floating Icons - Responsive positioning */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-16 left-4 sm:top-20 sm:left-10 animate-float">
@@ -59,13 +59,13 @@ const page = async (props: any) => {
                   <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
                 </div>
               </div>
-              
+
               {/* Decorative Line */}
               <div className="flex items-center justify-center">
                 <div className="h-1 w-16 sm:w-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg"></div>
               </div>
             </div>
-            
+
             {/* Description */}
             <div className="max-w-3xl mx-auto px-4 sm:px-0">
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed font-medium">
@@ -113,30 +113,30 @@ const page = async (props: any) => {
       <footer className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 dark:from-gray-950 dark:via-blue-950 dark:to-indigo-950 text-white">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.05%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-        
+
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="text-center space-y-4 sm:space-y-6">
-            {/* Logo Section */}
+            {/* Brand */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
-              <div className="p-2 sm:p-3 bg-white/10 backdrop-blur-sm rounded-full">
-                <MapPin className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+              <div className="p-2 sm:p-3 bg-white/10 backdrop-blur-sm rounded-2xl ring-1 ring-white/15">
+                <MapPin className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-400" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
-                คู่มือท่องเที่ยว
+              <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                Buriram Explorer
               </h3>
             </div>
 
             {/* Copyright */}
             <p className="text-base sm:text-lg text-gray-300 mb-4 sm:mb-6 px-4 sm:px-0">
-              &copy; 2025 คู่มือท่องเที่ยว | ออกแบบสำหรับนักสำรวจ
+              &copy; 2025 Buriram Explorer • สร้างเพื่อการค้นพบสถานที่ดี ๆ ในบุรีรัมย์
             </p>
 
-            {/* Links - Responsive layout */}
-            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-6">
+            {/* Links */}
+            {/* <nav className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-6">
               {[
-                { label: 'เงื่อนไขการใช้งาน', href: '#' },
-                { label: 'นโยบายความเป็นส่วนตัว', href: '#' },
-                { label: 'ติดต่อเรา', href: '#' }
+                { label: 'ข้อกำหนดการใช้บริการ', href: '/terms' },
+                { label: 'นโยบายความเป็นส่วนตัว', href: '/privacy' },
+                { label: 'ติดต่อทีมงาน', href: '/contact' },
               ].map((link, index) => (
                 <a
                   key={index}
@@ -144,17 +144,17 @@ const page = async (props: any) => {
                   className="group relative px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-300 hover:text-white transition-all duration-300"
                 >
                   <span className="relative z-10">{link.label}</span>
-                  <div className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </a>
               ))}
-            </div>
+            </nav> */}
 
-            {/* Decorative Elements */}
+            {/* Decorative */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/10">
               <div className="flex items-center gap-2 sm:gap-4">
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
                 <span className="text-xs sm:text-sm text-gray-400">Made with ❤️ CS65</span>
-                <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></div>
+                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
               </div>
             </div>
           </div>
